@@ -1,6 +1,6 @@
 # Skifree.js
 
-This is a **work in progress** port of the popular 1991 PC game [Skifree](http://en.wikipedia.org/wiki/Skifree).
+This is a **work in progress** JavaScript port of the popular 1991 PC game [Skifree](http://en.wikipedia.org/wiki/Skifree).
 
 I just started work this Christmas 2012 so I've not done a whole lot yet. So far you can just sort of ski down a never-ending skislope with a few trees which do not yet have transparent backgrounds. Nor does your character.
 
