@@ -20,6 +20,15 @@ var sprites = {
 		parts : {
 			main : [ 0, 28, 30, 34 ]
 		}
+	},
+	'monster' : {
+		$imageFile : 'sprite-characters.png',
+		parts : {
+			sEast1 : [ 64, 112, 26, 43 ],
+			sEast2 : [ 90, 112, 32, 43 ],
+			sWest1 : [ 64, 158, 26, 43 ],
+			sWest2 : [ 90, 158, 32, 43 ]
+		}
 	}
 };
 
@@ -45,6 +54,7 @@ function loadImages (sources, next) {
 function drawScene (images) {
 	var skier;
 	var trees = [];
+	var monsters = [];
 	var mouseX = getCentreOfViewport();
 	var mouseY = mainCanvas.height;
 
@@ -77,12 +87,25 @@ function drawScene (images) {
 			tree.draw(dContext, 'main');
 		});
 
+		monsters.each(function (monster, i) {
+			monster.moveToward(skier.getXPosition(), skier.getYPosition());
+			monster.draw(dContext);
+		});
+
 		if (Number.random(10) === 1) {
 			(Number.random(1)).times(function () {
 				var newTree = new Sprite(sprites.smallTree);
 				newTree.setPosition(getRandomlyInTheCentre(), getBelowViewport());
 				trees.push(newTree);
 			});
+		}
+
+		if (Number.random(100) === 1) {
+			var newMonster = new Monster(sprites.monster);
+			console.log('Making a monster');
+			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
+			newMonster.setSpeed(1);
+			monsters.push(newMonster);
 		}
 	}, 10);
 
@@ -112,6 +135,10 @@ function getMiddleOfViewport() {
 
 function getBelowViewport() {
 	return mainCanvas.height + (mainCanvas.height / 4).floor();
+}
+
+function getAboveViewport() {
+	return 0 - (mainCanvas.height / 4).floor();
 }
 
 window.addEventListener('resize', resizeCanvas, false);

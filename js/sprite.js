@@ -38,6 +38,14 @@ function Sprite (data) {
 		return that.x;
 	};
 
+	this.getYPosition = function getYPosition () {
+		return that.y;
+	};
+
+	this.setSpeed = function setSpeed (s) {
+		that.speed = s;
+	};
+
 	this.moveToward = function moveToward (cx, cy) {
 		that.movingToward = [ cx, cy ];
 
@@ -51,9 +59,9 @@ function Sprite (data) {
 		
 		if (cy) {
 			if (that.y > cy) {
-				that.y -= Math.min(speed, Math.abs(that.y - cy));
+				that.y -= Math.min(that.speed, Math.abs(that.y - cy));
 			} else if (that.y < cy) {
-				that.y += Math.min(speed, Math.abs(that.y - cy));
+				that.y += Math.min(that.speed, Math.abs(that.y - cy));
 			}
 		}
 	};
