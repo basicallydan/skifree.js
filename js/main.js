@@ -74,7 +74,7 @@ function drawScene (images) {
 
 		mainCanvas.width = mainCanvas.width;
 
-		skier.moveToward(mouseX);
+		skier.moveToward(mouseX, mouseY);
 
 		skier.draw(dContext);
 
@@ -83,34 +83,39 @@ function drawScene (images) {
 				console.log('Deleting tree');
 				return (delete trees[i]);
 			}
-			tree.setPosition(false, '-2');
+
+			var skierOpposite = skier.getMovingTowardOpposite();
+
+			tree.moveToward(tree.getXPosition() - skierOpposite[0], tree.getYPosition() - skierOpposite[1]);
 			tree.draw(dContext, 'main');
 		});
 
-		monsters.each(function (monster, i) {
-			monster.moveToward(skier.getXPosition(), skier.getYPosition());
-			monster.draw(dContext);
-		});
+		// monsters.each(function (monster, i) {
+		// 	monster.moveToward(skier.getXPosition(), skier.getYPosition());
+		// 	monster.draw(dContext);
+		// });
 
 		if (Number.random(10) === 1) {
 			(Number.random(1)).times(function () {
 				var newTree = new Sprite(sprites.smallTree);
-				newTree.setPosition(getRandomlyInTheCentre(), getBelowViewport());
+				newTree.setSpeed = skier.getSpeed();
+				newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
 				trees.push(newTree);
 			});
 		}
 
-		if (Number.random(100) === 1) {
-			var newMonster = new Monster(sprites.monster);
-			console.log('Making a monster');
-			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
-			newMonster.setSpeed(1);
-			monsters.push(newMonster);
-		}
+		// if (Number.random(100) === 1) {
+		// 	var newMonster = new Monster(sprites.monster);
+		// 	console.log('Making a monster');
+		// 	newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
+		// 	newMonster.setSpeed(1);
+		// 	monsters.push(newMonster);
+		// }
 	}, 10);
 
 	$(mainCanvas).mousemove(function (e) {
 		mouseX = e.pageX;
+		mouseY = e.pageY;
 	});
 }
 
@@ -120,8 +125,16 @@ function resizeCanvas() {
 }
 
 // X-pos canvas functions
-function getRandomlyInTheCentre() {
-	return Number.random(0, mainCanvas.width);
+function getRandomlyInTheCentre(buffer) {
+	var min = 0;
+	var max = mainCanvas.width;
+
+	if (buffer) {
+		min -= buffer;
+		max += buffer;
+	}
+
+	return Number.random(min, max);
 }
 
 function getCentreOfViewport() {
@@ -145,4 +158,43 @@ window.addEventListener('resize', resizeCanvas, false);
 
 resizeCanvas();
 
+// function run (firstFn) {
+// 	var fns = [];
+// 	var fnParams = [];
+
+// 	function then (nextFn) {
+// 		fns.push(nextFn);
+// 		if (parameters.length > 1) {
+// 			fnParams.push(parameters.slice(1));
+// 		} else {
+// 			fnParams.push(false);
+// 		}
+// 	}
+
+// 	function go () {
+// 		(fns.length - 1).times(function (i) {
+// 			var newParams;
+// 			if (fnParams[i]) {
+// 				newParams = fnParams[i];
+// 				newParams = newParams.concat(function () {
+// 					if (fn[i + 1]) {
+// 						return fn[i + 1]
+// 					}
+// 				});
+// 			}
+// 			fns[i]()
+// 		});
+// 	}
+
+// 	then (firstFn, parameters);
+
+// 	return {
+// 		then : then,
+// 		go : go
+// 	};
+// }
+
 loadImages(imageSources, drawScene);
+
+run(loadImages, imageSources)
+	.then(drawScene);

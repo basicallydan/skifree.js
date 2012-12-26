@@ -46,6 +46,10 @@ function Sprite (data) {
 		that.speed = s;
 	};
 
+	that.getSpeed = function getSpeed () {
+		return that.speed;
+	};
+
 	this.moveToward = function moveToward (cx, cy) {
 		that.movingToward = [ cx, cy ];
 
