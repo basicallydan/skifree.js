@@ -12,7 +12,8 @@ var sprites = {
 			south : [ 65, 0, 17, 34 ],
 			sWest : [ 49, 37, 17, 34 ],
 			wsWest : [ 24, 37, 24, 34 ],
-			west : [ 0, 37, 24, 34 ]
+			west : [ 0, 37, 24, 34 ],
+			hit : [ 0, 78, 31, 31 ]
 		}
 	},
 	'smallTree' : {
@@ -53,6 +54,8 @@ function loadImages (sources, next) {
 
 function drawScene (images) {
 	var skier;
+	var hittableObjects = [];
+	var movingObjects = [];
 	var trees = [];
 	var monsters = [];
 	var mouseX = getCentreOfViewport();
@@ -68,6 +71,8 @@ function drawScene (images) {
 	tree = new Sprite(sprites.smallTree);
 
 	skier.setPosition(mouseX, getMiddleOfViewport());
+
+	movingObjects.push(skier);
 
 	setInterval(function () {
 		var xChange = '0';
@@ -85,8 +90,14 @@ function drawScene (images) {
 			}
 
 			var skierOpposite = skier.getMovingTowardOpposite();
+			var moveTreeTowardX = tree.getXPosition() - skierOpposite[0];
+			var moveTreeTowardY = tree.getYPosition() - skierOpposite[1];
 
-			tree.moveToward(tree.getXPosition() - skierOpposite[0], tree.getYPosition() - skierOpposite[1]);
+			if (skier.hits(tree)) {
+				skier.hasHitObstacle(tree);
+			}
+
+			tree.moveToward(moveTreeTowardX, moveTreeTowardY);
 			tree.draw(dContext, 'main');
 		});
 
@@ -103,6 +114,16 @@ function drawScene (images) {
 				trees.push(newTree);
 			});
 		}
+
+/*		movingObjects.each(function (o) {
+			hittableObjects.each(function (ho) {
+				if (ho !== o) {
+					if (o.hits(o)) {
+						console.log('A moving object has his an object');
+					}
+				}
+			});
+		});*/
 
 		// if (Number.random(100) === 1) {
 		// 	var newMonster = new Monster(sprites.monster);

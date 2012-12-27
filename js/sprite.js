@@ -42,6 +42,18 @@ function Sprite (data) {
 		return that.y;
 	};
 
+	this.getLeftEdge = this.getXPosition;
+
+	this.getTopEdge = this.getYPosition;
+
+	this.getRightEdge = function getRightEdge () {
+		return that.x + that.width;
+	};
+
+	this.getBottomEdge = function getBottomEdge () {
+		return that.y + that.height;
+	};
+
 	this.setSpeed = function setSpeed (s) {
 		that.speed = s;
 	};
@@ -67,6 +79,24 @@ function Sprite (data) {
 			} else if (that.y < cy) {
 				that.y += Math.min(that.speed, Math.abs(that.y - cy));
 			}
+		}
+	};
+
+	this.hits = function hits (other) {
+		if (other.getLeftEdge() < that.getRightEdge() &&
+			other.getTopEdge() < that.getBottomEdge() &&
+			(that.getLeftEdge() < other.getLeftEdge() &&
+			that.getTopEdge() < other.getTopEdge())
+		) {
+			return 'fromAbove';
+		} else if (other.getRightEdge() > that.getLeftEdge() &&
+			other.getBottomEdge() > that.getTopEdge() &&
+			(that.getRightEdge() > other.getRightEdge() &&
+			that.getBottomEdge() > other.getBottomEdge())
+		) {
+			return 'fromBelow';
+		} else {
+			return false;
 		}
 	};
 

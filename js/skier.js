@@ -2,8 +2,11 @@ function Skier(data) {
 	var that = new Sprite(data);
 	var super_draw = that.superior('draw');
 	that.isMoving = true;
+	that.hasBeenHit = false;
 
 	that.moveToward = function (cx, cy) {
+		if (that.hasBeenHit) return;
+
 		if (cy > that.y) {
 			that.isMoving = true;
 		} else {
@@ -13,7 +16,7 @@ function Skier(data) {
 	};
 
 	that.getMovingTowardOpposite = function () {
-		if (!that.isMoving) {
+		if (!that.isMoving || that.hasBeenHit) {
 			return [0, 0];
 		}
 
@@ -28,7 +31,20 @@ function Skier(data) {
 
 	that.draw = function(dContext) {
 		var spritePartToUse = function () {
+			if (that.hasBeenHit) {
+				return 'hit';
+			}
+			
 			var xDiff = that.movingToward[0] - that.x;
+			var yDiff = that.movingToward[1] - that.y;
+			if (yDiff < 0) {
+				if (xDiff > 0) {
+					return 'east';
+				} else {
+					return 'west';
+				}
+			}
+
 			if (xDiff > 300) {
 				return 'esEast';
 			} else if (xDiff > 75) {
@@ -42,6 +58,15 @@ function Skier(data) {
 		};
 
 		return super_draw(dContext, spritePartToUse());
+	};
+
+	that.hasHitObstacle = function(obs) {
+		that.isMoving = false;
+		that.hasBeenHit = true;
+		setTimeout (function() {
+			that.isMoving = true;
+			that.hasBeenHit = false;
+		}, 2000);
 	};
 
 	return that;
