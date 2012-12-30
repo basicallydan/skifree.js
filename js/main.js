@@ -1,6 +1,7 @@
 var mainCanvas = document.getElementById('skifree-canvas');
 var dContext = mainCanvas.getContext('2d');
 var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
+var global = this;
 
 var sprites = {
 	'skier' : {
@@ -76,6 +77,7 @@ function drawScene (images) {
 
 	setInterval(function () {
 		var xChange = '0';
+		var skierOpposite = skier.getMovingTowardOpposite();
 
 		mainCanvas.width = mainCanvas.width;
 
@@ -89,24 +91,24 @@ function drawScene (images) {
 				return (delete trees[i]);
 			}
 
-			var skierOpposite = skier.getMovingTowardOpposite();
-			var moveTreeTowardX = tree.getXPosition() - skierOpposite[0];
-			var moveTreeTowardY = tree.getYPosition() - skierOpposite[1];
+			var moveTreeTowardX = tree.getXPosition() + skierOpposite[0];
+			var moveTreeTowardY = tree.getYPosition() + skierOpposite[1];
+
+			tree.moveToward(moveTreeTowardX, moveTreeTowardY);
 
 			if (skier.hits(tree)) {
 				skier.hasHitObstacle(tree);
 			}
 
-			tree.moveToward(moveTreeTowardX, moveTreeTowardY);
 			tree.draw(dContext, 'main');
 		});
 
-		// monsters.each(function (monster, i) {
-		// 	monster.moveToward(skier.getXPosition(), skier.getYPosition());
-		// 	monster.draw(dContext);
-		// });
+/*		monsters.each(function (monster, i) {
+			monster.moveToward(skier.getXPosition(), skier.getYPosition());
+			monster.draw(dContext);
+		});*/
 
-		if (Number.random(10) === 1) {
+		if (Number.random(10) === 1 && skier.isMoving) {
 			(Number.random(1)).times(function () {
 				var newTree = new Sprite(sprites.smallTree);
 				newTree.setSpeed = skier.getSpeed();
@@ -125,13 +127,13 @@ function drawScene (images) {
 			});
 		});*/
 
-		// if (Number.random(100) === 1) {
-		// 	var newMonster = new Monster(sprites.monster);
-		// 	console.log('Making a monster');
-		// 	newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
-		// 	newMonster.setSpeed(1);
-		// 	monsters.push(newMonster);
-		// }
+/*		if (Number.random(100) === 1) {
+			var newMonster = new Monster(sprites.monster);
+			console.log('Making a monster');
+			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
+			newMonster.setSpeed(1);
+			monsters.push(newMonster);
+		}*/
 	}, 10);
 
 	$(mainCanvas).mousemove(function (e) {
@@ -179,43 +181,4 @@ window.addEventListener('resize', resizeCanvas, false);
 
 resizeCanvas();
 
-// function run (firstFn) {
-// 	var fns = [];
-// 	var fnParams = [];
-
-// 	function then (nextFn) {
-// 		fns.push(nextFn);
-// 		if (parameters.length > 1) {
-// 			fnParams.push(parameters.slice(1));
-// 		} else {
-// 			fnParams.push(false);
-// 		}
-// 	}
-
-// 	function go () {
-// 		(fns.length - 1).times(function (i) {
-// 			var newParams;
-// 			if (fnParams[i]) {
-// 				newParams = fnParams[i];
-// 				newParams = newParams.concat(function () {
-// 					if (fn[i + 1]) {
-// 						return fn[i + 1]
-// 					}
-// 				});
-// 			}
-// 			fns[i]()
-// 		});
-// 	}
-
-// 	then (firstFn, parameters);
-
-// 	return {
-// 		then : then,
-// 		go : go
-// 	};
-// }
-
 loadImages(imageSources, drawScene);
-
-run(loadImages, imageSources)
-	.then(drawScene);
