@@ -2,15 +2,21 @@
 
 This is a **work in progress** JavaScript port of the popular 1991 PC game [Skifree](http://en.wikipedia.org/wiki/Skifree).
 
-I just started work this Christmas 2012 so I've not done a whole lot yet. So far you can just sort of ski down a never-ending skislope with a few trees which do not yet have transparent backgrounds. Nor does your character.
+I just started work this Christmas 2012 so I've not done a whole lot yet.
+
+## Features so far:
+
+* Skiing down a never-ending skislope with randomly-generated trees which do not have transparent backgrounds
+* Collision detection with trees - and the appropriate reaction
+* Turning left and right
+* Stopping
 
 ## So, what's left to do?
 
 This is what I'm gonna do, probably in this order. Who the hell knows. There are other features to the original game but I'm not going to add them to the list until I've gotten through this one.
 
-* Collision detection
-* Crashing into little trees
 * Distance tracking
+* MONSTAHS! GRAAAAHHH!!
 * Rainbow jump platforms & jumping
 * Big trees & crashing into them both whilst skiing and jumping
 * Rocks
@@ -25,6 +31,11 @@ Some features which weren't in the original which I'd like to give a go:
 
 * Open up index.html in Chrome, or maybe even Firefox - I haven't tested it in anything but Chrome 23.0 yet, and I probably won't I'm afraid
 * Go.
+
+## I like to run Unit tests before I do ANYTHING.
+
+* Right, well first you need to do an `npm install`
+* Run `mocha` and you should see some beautiful passing tests
 
 ## This is pretty frickin' sweet but it's clearly not finished. I can totally improve it. Let me improve it, dammit.
 
