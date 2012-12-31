@@ -85,6 +85,16 @@ function drawScene (images) {
 
 		skier.draw(dContext);
 
+		monsters.each(function (monster, i) {
+			monster.moveToward(skier.getXPosition(), skier.getYPosition());
+			monster.draw(dContext);
+
+			if (skier.hits(monster)) {
+				skier.hasHitObstacle(monster);
+				delete monsters[i];
+			}
+		});
+
 		trees.each(function (tree, i) {
 			if (tree.isAbove(0)) {
 				console.log('Deleting tree');
@@ -100,13 +110,14 @@ function drawScene (images) {
 				skier.hasHitObstacle(tree);
 			}
 
+			monsters.each(function (monster, i) {
+				if (monster.hits(tree)) {
+					return (delete monsters[i]);
+				}
+			});
+
 			tree.draw(dContext, 'main');
 		});
-
-/*		monsters.each(function (monster, i) {
-			monster.moveToward(skier.getXPosition(), skier.getYPosition());
-			monster.draw(dContext);
-		});*/
 
 		if (Number.random(10) === 1 && skier.isMoving) {
 			(Number.random(1)).times(function () {
@@ -127,13 +138,13 @@ function drawScene (images) {
 			});
 		});*/
 
-/*		if (Number.random(100) === 1) {
+		if (Number.random(300) === 1) {
 			var newMonster = new Monster(sprites.monster);
 			console.log('Making a monster');
 			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
 			newMonster.setSpeed(1);
 			monsters.push(newMonster);
-		}*/
+		}
 	}, 10);
 
 	$(mainCanvas).mousemove(function (e) {
