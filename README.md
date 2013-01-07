@@ -4,19 +4,21 @@ This is a **work in progress** JavaScript port of the popular 1991 PC game [Skif
 
 I just started work this Christmas 2012 so I've not done a whole lot yet.
 
+[**Play this right now if you want to**](http://basicallydan.github.com/skifree.js) (opens a demo page)
+
 ## Features so far:
 
 * Skiing down a never-ending skislope with randomly-generated trees which do not have transparent backgrounds
 * Collision detection with trees - and the appropriate reaction
 * Turning left and right
 * Stopping
+* MONSTAHS! GRAAAAHHH! Although, all they will do at the moment is whack into you and slow you down for a minute.
 
 ## So, what's left to do?
 
 This is what I'm gonna do, probably in this order. Who the hell knows. There are other features to the original game but I'm not going to add them to the list until I've gotten through this one.
 
 * Distance tracking
-* MONSTAHS! GRAAAAHHH!!
 * Rainbow jump platforms & jumping
 * Big trees & crashing into them both whilst skiing and jumping
 * Rocks
