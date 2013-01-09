@@ -1,12 +1,13 @@
 var Sprite = require('./Sprite');
 
 (function(global) {
-	function Skier(data) {
+	function Skier(data, heightData) {
 		var that = new Sprite(data);
 		var super_draw = that.superior('draw');
 		var super_hits = that.superior('hits');
 
 		var obstaclesHit = [];
+		var pixelsTravelled = 0;
 
 		that.isMoving = true;
 		that.hasBeenHit = false;
@@ -15,6 +16,7 @@ var Sprite = require('./Sprite');
 			if (that.hasBeenHit) return;
 
 			if (cy > that.y) {
+				pixelsTravelled += that.speed;
 				that.isMoving = true;
 			} else {
 				that.isMoving = false;
@@ -34,6 +36,10 @@ var Sprite = require('./Sprite');
 			var oppositeY = -skierMouseY;
 
 			return [ oppositeX, oppositeY ];
+		};
+
+		that.getPixelsTravelledDownMountain = function () {
+			return pixelsTravelled;
 		};
 
 		that.draw = function(dContext) {

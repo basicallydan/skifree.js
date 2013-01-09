@@ -19,19 +19,23 @@
 		that.draw = function (dContext) {
 			var yOffset = 0;
 			that.lines.each(function (line) {
-				var textSize = dContext.measureText(line);
+				var fontSize = +dContext.font.slice(0,2);
+				var textWidth = dContext.measureText(line).width;
+				var textHeight = fontSize * 1.5;
 				var xPos, yPos;
 				if (that.top) {
-					yPos = that.top;
+					yPos = that.top + yOffset;
 				} else if (that.bottom) {
-					yPos = dContext.canvas.height - that.top - textSize.height;
+					yPos = dContext.canvas.height - that.top - textHeight + yOffset;
 				}
 
 				if (that.right) {
-					xPos = dContext.canvas.width - that.right - textSize.width;
+					xPos = dContext.canvas.width - that.right - textWidth;
 				} else if (that.left) {
 					xPos = that.left;
 				}
+
+				yOffset += textHeight;
 
 				dContext.fillText(line, xPos, yPos);
 			});

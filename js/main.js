@@ -33,6 +33,9 @@ var sprites = {
 		}
 	}
 };
+var pixelsPerMetre = 18;
+var monstersComeOut = false;
+var distanceTravelledInMetres = 0;
 
 function loadImages (sources, next) {
 	var loaded = 0;
@@ -55,6 +58,7 @@ function loadImages (sources, next) {
 
 function drawScene (images) {
 	var skier;
+	var infoBox;
 	var hittableObjects = [];
 	var movingObjects = [];
 	var trees = [];
@@ -69,14 +73,24 @@ function drawScene (images) {
 	};
 
 	skier = new Skier(sprites.skier);
-	tree = new Sprite(sprites.smallTree);
+
+	infoBox = new InfoBox({
+		initialLines : [
+			'SkiFree.js',
+			'Travelled 0m',
+			'Created by Dan Hough (@basicallydan)'
+		],
+		position: {
+			top: 15,
+			right: 10
+		}
+	});
 
 	skier.setPosition(mouseX, getMiddleOfViewport());
 
 	movingObjects.push(skier);
 
 	setInterval(function () {
-		var xChange = '0';
 		var skierOpposite = skier.getMovingTowardOpposite();
 
 		mainCanvas.width = mainCanvas.width;
@@ -122,23 +136,27 @@ function drawScene (images) {
 		if (Number.random(10) === 1 && skier.isMoving) {
 			(Number.random(1)).times(function () {
 				var newTree = new Sprite(sprites.smallTree);
-				newTree.setSpeed = skier.getSpeed();
+				newTree.setSpeed(skier.getSpeed());
 				newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
 				trees.push(newTree);
 			});
 		}
 
-/*		movingObjects.each(function (o) {
-			hittableObjects.each(function (ho) {
-				if (ho !== o) {
-					if (o.hits(o)) {
-						console.log('A moving object has his an object');
-					}
-				}
-			});
-		});*/
+		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 
-		if (Number.random(300) === 1) {
+		infoBox.setLines([
+			'SkiFree.js',
+			'Travelled ' + distanceTravelledInMetres + 'm',
+			'Created by Dan Hough (@basicallydan)'
+		]);
+
+		if (!monstersComeOut && distanceTravelledInMetres >= 300) {
+			monstersComeOut = true;
+		}
+
+		infoBox.draw(dContext);
+
+		if (monstersComeOut && Number.random(300) === 1) {
 			var newMonster = new Monster(sprites.monster);
 			console.log('Making a monster');
 			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());

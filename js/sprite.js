@@ -4,7 +4,7 @@
 		that.x = 0;
 		that.y = 0;
 		that.height = 0;
-		that.speed = 2;
+		that.speed = 3;
 		that.data = data;
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
