@@ -7,6 +7,7 @@
 		that.speed = 2;
 		that.data = data;
 		that.movingToward = [ 0, 0 ];
+		that.metresDownTheMountain = 0;
 
 		function incrementX(amount) {
 			that.x += amount.toNumber();
