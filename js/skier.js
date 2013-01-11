@@ -3,14 +3,20 @@ var Sprite = require('./Sprite');
 (function(global) {
 	function Skier(data, heightData) {
 		var that = new Sprite(data);
-		var super_draw = that.superior('draw');
-		var super_hits = that.superior('hits');
+		var sup = {
+			draw: that.superior('draw'),
+			hits: that.superior('hits')
+		};
 
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
 
 		that.isMoving = true;
 		that.hasBeenHit = false;
+
+		function getBeingEatenSprite() {
+			return 'hits';
+		}
 
 		that.moveToward = function (cx, cy) {
 			if (that.hasBeenHit) return;
@@ -47,6 +53,10 @@ var Sprite = require('./Sprite');
 				if (that.hasBeenHit) {
 					return 'hit';
 				}
+
+				if (that.isBeingEaten) {
+					return getBeingEatenSprite();
+				}
 				
 				var xDiff = that.movingToward[0] - that.x;
 				var yDiff = that.movingToward[1] - that.y;
@@ -70,7 +80,7 @@ var Sprite = require('./Sprite');
 				return 'south';
 			};
 
-			return super_draw(dContext, spritePartToUse());
+			return sup.draw(dContext, spritePartToUse());
 		};
 
 		that.hits = function (obs) {
@@ -78,7 +88,7 @@ var Sprite = require('./Sprite');
 				return false;
 			}
 
-			if (super_hits(obs)) {
+			if (sup.hits(obs)) {
 				obstaclesHit.push(obs);
 				return true;
 			}
@@ -86,13 +96,19 @@ var Sprite = require('./Sprite');
 			return false;
 		};
 
-		that.hasHitObstacle = function (obs) {
+		that.hasHitObstacle = function () {
 			that.isMoving = false;
 			that.hasBeenHit = true;
 			setTimeout (function() {
 				that.isMoving = true;
 				that.hasBeenHit = false;
 			}, 1500);
+		};
+
+		that.isEatenBy = function (monster, whenEaten) {
+			that.isMoving = false;
+			that.isBeingEaten = true;
+			setTimeout (whenEaten, 1500);
 		};
 
 		return that;

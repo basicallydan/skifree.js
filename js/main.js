@@ -100,12 +100,17 @@ function drawScene (images) {
 		skier.draw(dContext);
 
 		monsters.each(function (monster, i) {
-			monster.moveToward(skier.getXPosition(), skier.getYPosition());
+			if (!skier.isBeingEaten) {
+				monster.moveToward(skier.getXPosition(), skier.getYPosition());
+			}
+
 			monster.draw(dContext);
 
 			if (skier.hits(monster)) {
 				skier.hasHitObstacle(monster);
-				delete monsters[i];
+				skier.isEatenBy(monster, function () {
+					delete monsters[i];
+				});
 			}
 		});
 
@@ -150,7 +155,7 @@ function drawScene (images) {
 			'Created by Dan Hough (@basicallydan)'
 		]);
 
-		if (!monstersComeOut && distanceTravelledInMetres >= 300) {
+		if (!monstersComeOut && distanceTravelledInMetres >= 20) {
 			monstersComeOut = true;
 		}
 
