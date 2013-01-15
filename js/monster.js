@@ -3,9 +3,17 @@ function Monster(data) {
 	var super_draw = that.superior('draw');
 	var spriteVersion = 1;
 
+	that.isEating = false;
+	that.isFull = false;
+
 	that.draw = function(dContext) {
 		var spritePartToUse = function () {
 			var xDiff = that.movingToward[0] - that.x;
+
+			if (that.isEating) {
+				return 'eating1';
+			}
+
 			if (spriteVersion + 0.1 > 2) {
 				spriteVersion = 0.1;
 			} else {

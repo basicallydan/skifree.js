@@ -8,6 +8,7 @@
 		that.data = data;
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
+		that.movingWithConviction = false;
 
 		function incrementX(amount) {
 			that.x += amount.toNumber();
@@ -79,6 +80,8 @@
 		this.moveToward = function moveToward (cx, cy) {
 			that.movingToward = [ cx, cy ];
 
+			that.movingWithConviction = false;
+
 			if (typeof cx !== 'undefined') {
 				if (that.x > cx) {
 					that.x -= Math.min(that.speed, Math.abs(that.x - cx));
@@ -94,6 +97,11 @@
 					that.y += Math.min(that.speed, Math.abs(that.y - cy));
 				}
 			}
+		};
+
+		this.moveTowardWithConviction = function moveToward (cx, cy) {
+			that.moveToward(cx, cy);
+			that.movingWithConviction = true;
 		};
 
 		this.hits = function hits (other) {

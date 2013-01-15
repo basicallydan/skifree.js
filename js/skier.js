@@ -15,7 +15,7 @@ var Sprite = require('./Sprite');
 		that.hasBeenHit = false;
 
 		function getBeingEatenSprite() {
-			return 'hits';
+			return 'hit';
 		}
 
 		that.moveToward = function (cx, cy) {

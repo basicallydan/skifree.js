@@ -29,7 +29,10 @@ var sprites = {
 			sEast1 : [ 64, 112, 26, 43 ],
 			sEast2 : [ 90, 112, 32, 43 ],
 			sWest1 : [ 64, 158, 26, 43 ],
-			sWest2 : [ 90, 158, 32, 43 ]
+			sWest2 : [ 90, 158, 32, 43 ],
+			eating1 : [ 122, 112, 34, 43 ],
+			eating2 : [ 156, 112, 31, 43 ],
+			eating3 : [ 187, 112, 31, 43 ]
 		}
 	}
 };
@@ -100,16 +103,37 @@ function drawScene (images) {
 		skier.draw(dContext);
 
 		monsters.each(function (monster, i) {
-			if (!skier.isBeingEaten) {
+			if (monster.isAbove(getAboveViewport() - 100)) {
+				console.log('Deleting monster');
+				return (delete monsters[i]);
+			}
+
+			if (monster.isFull) {
+				if (!monster.movingWithConviction) {
+					monster.setSpeed(skier.getSpeed());
+					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+				}
+			} else if (!skier.isBeingEaten) {
 				monster.moveToward(skier.getXPosition(), skier.getYPosition());
+			} else if (skier.isBeingEaten && !monster.isEating) {
+				if (!monster.movingWithConviction) {
+					monster.setSpeed(skier.getSpeed());
+					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+				}
 			}
 
 			monster.draw(dContext);
 
 			if (skier.hits(monster)) {
 				skier.hasHitObstacle(monster);
+				monster.isEating = true;
 				skier.isEatenBy(monster, function () {
-					delete monsters[i];
+					monster.isFull = true;
+					monster.isEating = false;
+					monster.movingWithConviction = false;
+					skier.isBeingEaten = false;
+					monster.setSpeed(skier.getSpeed());
+					monster.moveToward(monster.getXPosition() + skierOpposite[0], skier.getYPosition() + skierOpposite[1]);
 				});
 			}
 		});
@@ -163,7 +187,7 @@ function drawScene (images) {
 
 		if (monstersComeOut && Number.random(300) === 1) {
 			var newMonster = new Monster(sprites.monster);
-			console.log('Making a monster');
+			// console.log('Making a monster');
 			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
 			newMonster.setSpeed(1);
 			monsters.push(newMonster);
