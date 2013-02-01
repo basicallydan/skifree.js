@@ -9,6 +9,9 @@
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
 		that.movingWithConviction = false;
+		that.maxHeight = (function () {
+			return Object.values(that.data.parts).map(function (p) { return p[3]; }).max();
+		}());
 
 		function incrementX(amount) {
 			that.x += amount.toNumber();
@@ -75,6 +78,10 @@
 
 		this.setWidth = function setHeight (w) {
 			that.width = w;
+		};
+
+		this.getMaxHeight = function getMaxHeight() {
+			return that.maxHeight;
 		};
 
 		this.move = function move () {
