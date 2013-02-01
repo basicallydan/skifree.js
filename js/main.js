@@ -175,7 +175,7 @@ function drawScene (images) {
 			tree.draw(dContext, 'main');
 		});
 
-		if (Number.random(10) === 1 && skier.isMoving) {
+		if (Number.random(8) === 1 && skier.isMoving) {
 			(Number.random(1)).times(function () {
 				var newTree = new Sprite(sprites.smallTree);
 				newTree.setSpeed(skier.getSpeed());
@@ -194,7 +194,7 @@ function drawScene (images) {
 			'Created by Dan Hough (@basicallydan)'
 		]);
 
-		if (!monstersComeOut && distanceTravelledInMetres >= 20) {
+		if (!monstersComeOut && distanceTravelledInMetres >= 200) {
 			monstersComeOut = true;
 		}
 
@@ -208,9 +208,19 @@ function drawScene (images) {
 		}
 	}, 10);
 
-	$(mainCanvas).mousemove(function (e) {
+	$(mainCanvas)
+/*	.mousemove(function (e) {
 		mouseX = e.pageX;
 		mouseY = e.pageY;
+	})*/
+	.hammer({})
+	.bind('hold', function (e) {
+		mouseX = e.position[0].x;
+		mouseY = e.position[0].y;
+	})
+	.bind('drag', function (e) {
+		mouseX = e.position.x;
+		mouseY = e.position.y;
 	});
 }
 
