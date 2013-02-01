@@ -14,6 +14,8 @@ I just started work this Christmas 2012 so I've not done a whole lot yet.
 * Stopping
 * MONSTAHS! GRAAAAHHH! They even eat you and then run away because they're full
 * Distance tracking so you can see how far you've gone you absolute badass
+* Speed boost (this was a little-known feature to get away from monsters) using the F key
+* **MOBILE SUPPORT** - This is cool - try loading the [**the demo page**](http://basicallydan.github.com/skifree.js) on a mobile device and then use your finger to direct the skier around the pistle. Also try double-tap ;)
 
 ## So, what's left to do?
 
@@ -28,10 +30,12 @@ Some features which weren't in the original which I'd like to give a go:
 
 * Being a snowboarder instead of a boring old skier
 * Tricks, or something?
+* LocalStorage high-score
+* Multiplayer (ooooo wouldn't that be fun?!)
 
 ## F*ck this, let me play the game goddammit
 
-* Open up index.html in Chrome, or maybe even Firefox - I haven't tested it in anything but Chrome 23.0 yet, and I probably won't I'm afraid
+* Open up index.html in Chrome, or maybe even Firefox - I haven't tested it in anything but Chrome and Mobile Safari yet, and I probably won't I'm afraid
 * Go.
 
 ## I like to run Unit tests before I do ANYTHING.
