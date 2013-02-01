@@ -209,12 +209,16 @@ function drawScene (images) {
 	}, 10);
 
 	$(mainCanvas)
-/*	.mousemove(function (e) {
+	.mousemove(function (e) {
 		mouseX = e.pageX;
 		mouseY = e.pageY;
-	})*/
+	})
 	.hammer({})
 	.bind('hold', function (e) {
+		mouseX = e.position[0].x;
+		mouseY = e.position[0].y;
+	})
+	.bind('tap', function (e) {
 		mouseX = e.position[0].x;
 		mouseY = e.position[0].y;
 	})
