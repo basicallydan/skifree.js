@@ -8,6 +8,8 @@ var Sprite = require('./Sprite');
 			hits: that.superior('hits')
 		};
 
+		var canSpeedBoost = true;
+
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
 
@@ -94,6 +96,20 @@ var Sprite = require('./Sprite');
 			}
 
 			return false;
+		};
+
+		that.speedBoost = function () {
+			var originalSpeed = that.speed;
+			if (canSpeedBoost) {
+				canSpeedBoost = false;
+				that.setSpeed(that.speed * 2);
+				setTimeout(function () {
+					that.setSpeed(originalSpeed);
+					setTimeout(function () {
+						canSpeedBoost = true;
+					}, 10000);
+				}, 2000);
+			}
 		};
 
 		that.hasHitObstacle = function () {

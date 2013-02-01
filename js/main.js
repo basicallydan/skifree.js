@@ -2,6 +2,8 @@ var mainCanvas = document.getElementById('skifree-canvas');
 var dContext = mainCanvas.getContext('2d');
 var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var global = this;
+var infoBoxControls = 'Use the mouse to control the skier';
+if (isMobileDevice()) infoBoxControls = 'Tap on the piste to control the skier';
 
 var sprites = {
 	'skier' : {
@@ -98,7 +100,7 @@ function drawScene (images) {
 	infoBox = new InfoBox({
 		initialLines : [
 			'SkiFree.js',
-			'Use the mouse to control the skier',
+			infoBoxControls,
 			'Travelled 0m',
 			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
@@ -109,7 +111,7 @@ function drawScene (images) {
 		}
 	});
 
-	skier.setPosition(mouseX, getMiddleOfViewport());
+	skier.setPosition(mouseX, getMiddleOfViewport() - skier.getMaxHeight());
 
 	setInterval(function () {
 		var skierOpposite = skier.getMovingTowardOpposite();
@@ -129,7 +131,7 @@ function drawScene (images) {
 			if (monster.isFull) {
 				monster.move();
 			} else if (!skier.isBeingEaten) {
-				monster.setSpeed(1);
+				monster.setSpeed(4 - skier.getSpeed());
 				monster.moveToward(skier.getXPosition(), skier.getYPosition(), true);
 			} else if (skier.isBeingEaten && !monster.isEating) {
 				monster.setSpeed(skier.getSpeed());
@@ -156,6 +158,7 @@ function drawScene (images) {
 				console.log('Deleting tree');
 				return (delete trees[i]);
 			}
+			tree.setSpeed(skier.getSpeed());
 
 			var moveTreeTowardX = tree.getXPosition() + skierOpposite[0];
 			var moveTreeTowardY = tree.getYPosition() + skierOpposite[1];
@@ -188,10 +191,11 @@ function drawScene (images) {
 
 		infoBox.setLines([
 			'SkiFree.js',
-			'Use the mouse to control the skier',
+			infoBoxControls,
 			'Travelled ' + distanceTravelledInMetres + 'm',
 			'Skiers left: ' + livesLeft,
-			'Created by Dan Hough (@basicallydan)'
+			'Created by Dan Hough (@basicallydan)',
+			'Current Speed: ' + skier.getSpeed()
 		]);
 
 		if (!monstersComeOut && distanceTravelledInMetres >= 200) {
@@ -217,6 +221,11 @@ function drawScene (images) {
 		mouseX = e.pageX;
 		mouseY = e.pageY;
 	})
+	.bind('keypress', function (e) {
+		if (e.keyCode === 102) {
+			skier.speedBoost();
+		}
+	})
 	.hammer({})
 	.bind('hold', function (e) {
 		mouseX = e.position[0].x;
@@ -229,7 +238,12 @@ function drawScene (images) {
 	.bind('drag', function (e) {
 		mouseX = e.position.x;
 		mouseY = e.position.y;
-	});
+	})
+	.bind('doubletap', function (e) {
+		skier.speedBoost();
+	})
+	// Focus on the canvas so we can listen for key events immediately
+	.focus();
 }
 
 function resizeCanvas() {
@@ -265,6 +279,22 @@ function getBelowViewport() {
 
 function getAboveViewport() {
 	return 0 - (mainCanvas.height / 4).floor();
+}
+
+function isMobileDevice() {
+	if(navigator.userAgent.match(/Android/i) ||
+		navigator.userAgent.match(/webOS/i) ||
+		navigator.userAgent.match(/iPhone/i) ||
+		navigator.userAgent.match(/iPad/i) ||
+		navigator.userAgent.match(/iPod/i) ||
+		navigator.userAgent.match(/BlackBerry/i) ||
+		navigator.userAgent.match(/Windows Phone/i)
+	) {
+		return true;
+	}
+	else {
+		return false;
+	}
 }
 
 window.addEventListener('resize', resizeCanvas, false);
