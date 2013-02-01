@@ -12,13 +12,13 @@ I just started work this Christmas 2012 so I've not done a whole lot yet.
 * Collision detection with trees - and the appropriate reaction
 * Turning left and right
 * Stopping
-* MONSTAHS! GRAAAAHHH! Although, all they will do at the moment is whack into you and slow you down for a minute.
+* MONSTAHS! GRAAAAHHH! They even eat you and then run away because they're full
+* Distance tracking so you can see how far you've gone you absolute badass
 
 ## So, what's left to do?
 
 This is what I'm gonna do, probably in this order. Who the hell knows. There are other features to the original game but I'm not going to add them to the list until I've gotten through this one.
 
-* Distance tracking
 * Rainbow jump platforms & jumping
 * Big trees & crashing into them both whilst skiing and jumping
 * Rocks
