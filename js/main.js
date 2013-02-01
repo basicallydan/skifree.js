@@ -222,8 +222,29 @@ function drawScene (images) {
 		mouseY = e.pageY;
 	})
 	.bind('keypress', function (e) {
+		// F Key
 		if (e.keyCode === 102) {
 			skier.speedBoost();
+		}
+		//W Key
+		if (e.Keycode === 87 || e.keyCode === 119) {
+			mouseX = 0;
+			mouseY = 0;
+		}
+		// A Key
+		if (e.keyCode === 65 || e.keyCode === 97) {
+			mouseX = 0;
+			mouseY = mainCanvas.height;
+		}
+		// S Key
+		if (e.keyCode === 83 || e.keyCode === 115) {
+			mouseX = mainCanvas.width / 2;
+			mouseY = mainCanvas.height;
+		}
+		// D Key
+		if (e.keyCode === 68 || e.keyCode === 100) {
+			mouseX = mainCanvas.width;
+			mouseY = mainCanvas.height;
 		}
 	})
 	.hammer({})
