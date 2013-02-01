@@ -77,26 +77,36 @@
 			that.width = w;
 		};
 
-		this.moveToward = function moveToward (cx, cy) {
-			that.movingToward = [ cx, cy ];
-
-			that.movingWithConviction = false;
-
-			if (typeof cx !== 'undefined') {
-				if (that.x > cx) {
-					that.x -= Math.min(that.speed, Math.abs(that.x - cx));
-				} else if (that.x < cx) {
-					that.x += Math.min(that.speed, Math.abs(that.x - cx));
+		this.move = function move () {
+			if (typeof that.movingToward[0] !== 'undefined') {
+				if (that.x > that.movingToward[0]) {
+					that.x -= Math.min(that.speed, Math.abs(that.x - that.movingToward[0]));
+				} else if (that.x < that.movingToward[0]) {
+					that.x += Math.min(that.speed, Math.abs(that.x - that.movingToward[0]));
 				}
 			}
 			
-			if (typeof cy !== 'undefined') {
-				if (that.y > cy) {
-					that.y -= Math.min(that.speed, Math.abs(that.y - cy));
-				} else if (that.y < cy) {
-					that.y += Math.min(that.speed, Math.abs(that.y - cy));
+			if (typeof that.movingToward[1] !== 'undefined') {
+				if (that.y > that.movingToward[1]) {
+					that.y -= Math.min(that.speed, Math.abs(that.y - that.movingToward[1]));
+				} else if (that.y < that.movingToward[1]) {
+					that.y += Math.min(that.speed, Math.abs(that.y - that.movingToward[1]));
 				}
 			}
+		};
+
+		this.moveToward = function moveToward (cx, cy, override) {
+			if (override) {
+				that.movingWithConviction = false;
+			}
+
+			if (!that.movingWithConviction) {
+				that.movingToward = [ cx, cy ];
+
+				that.movingWithConviction = false;
+			}
+
+			that.move();
 		};
 
 		this.moveTowardWithConviction = function moveToward (cx, cy) {

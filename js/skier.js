@@ -15,7 +15,7 @@ var Sprite = require('./Sprite');
 		that.hasBeenHit = false;
 
 		function getBeingEatenSprite() {
-			return 'hit';
+			return 'blank';
 		}
 
 		that.moveToward = function (cx, cy) {
@@ -50,12 +50,12 @@ var Sprite = require('./Sprite');
 
 		that.draw = function(dContext) {
 			var spritePartToUse = function () {
-				if (that.hasBeenHit) {
-					return 'hit';
-				}
-
 				if (that.isBeingEaten) {
 					return getBeingEatenSprite();
+				}
+
+				if (that.hasBeenHit) {
+					return 'hit';
 				}
 				
 				var xDiff = that.movingToward[0] - that.x;
@@ -106,9 +106,9 @@ var Sprite = require('./Sprite');
 		};
 
 		that.isEatenBy = function (monster, whenEaten) {
+			monster.startEating(whenEaten);
 			that.isMoving = false;
 			that.isBeingEaten = true;
-			setTimeout (whenEaten, 1500);
 		};
 
 		return that;

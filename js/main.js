@@ -7,6 +7,7 @@ var sprites = {
 	'skier' : {
 		$imageFile : 'sprite-characters.png',
 		parts : {
+			blank : [ 0, 0, 0, 0 ],
 			east : [ 0, 0, 24, 34 ],
 			esEast : [ 24, 0, 24, 34 ],
 			sEast : [ 49, 0, 17, 34 ],
@@ -32,13 +33,16 @@ var sprites = {
 			sWest2 : [ 90, 158, 32, 43 ],
 			eating1 : [ 122, 112, 34, 43 ],
 			eating2 : [ 156, 112, 31, 43 ],
-			eating3 : [ 187, 112, 31, 43 ]
+			eating3 : [ 187, 112, 31, 43 ],
+			eating4 : [ 219, 112, 25, 43 ],
+			eating5 : [ 243, 112, 26, 43 ]
 		}
 	}
 };
 var pixelsPerMetre = 18;
 var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
+var livesLeft = 5;
 
 function loadImages (sources, next) {
 	var loaded = 0;
@@ -62,12 +66,11 @@ function loadImages (sources, next) {
 function drawScene (images) {
 	var skier;
 	var infoBox;
-	var hittableObjects = [];
-	var movingObjects = [];
 	var trees = [];
 	var monsters = [];
 	var mouseX = getCentreOfViewport();
 	var mouseY = mainCanvas.height;
+	var paused = false;
 
 	dContext.getLoadedImage = function (imgPath) {
 		if (images[imgPath]) {
@@ -75,12 +78,28 @@ function drawScene (images) {
 		}
 	};
 
+	function resetGame () {
+		pixelsPerMetre = 18;
+		monstersComeOut = false;
+		distanceTravelledInMetres = 0;
+		livesLeft = 5;
+		monsters = [];
+		trees = [];
+	}
+
+	function detectEnd () {
+		if (livesLeft === 0) {
+			paused = true;
+		}
+	}
+
 	skier = new Skier(sprites.skier);
 
 	infoBox = new InfoBox({
 		initialLines : [
 			'SkiFree.js',
 			'Travelled 0m',
+			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
 		],
 		position: {
@@ -90,8 +109,6 @@ function drawScene (images) {
 	});
 
 	skier.setPosition(mouseX, getMiddleOfViewport());
-
-	movingObjects.push(skier);
 
 	setInterval(function () {
 		var skierOpposite = skier.getMovingTowardOpposite();
@@ -109,31 +126,26 @@ function drawScene (images) {
 			}
 
 			if (monster.isFull) {
-				if (!monster.movingWithConviction) {
-					monster.setSpeed(skier.getSpeed());
-					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
-				}
+				monster.move();
 			} else if (!skier.isBeingEaten) {
-				monster.moveToward(skier.getXPosition(), skier.getYPosition());
+				monster.setSpeed(1);
+				monster.moveToward(skier.getXPosition(), skier.getYPosition(), true);
 			} else if (skier.isBeingEaten && !monster.isEating) {
-				if (!monster.movingWithConviction) {
-					monster.setSpeed(skier.getSpeed());
-					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
-				}
+				monster.setSpeed(skier.getSpeed());
+				monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 			}
 
 			monster.draw(dContext);
 
 			if (skier.hits(monster)) {
 				skier.hasHitObstacle(monster);
-				monster.isEating = true;
 				skier.isEatenBy(monster, function () {
+					livesLeft -= 1;
 					monster.isFull = true;
 					monster.isEating = false;
-					monster.movingWithConviction = false;
 					skier.isBeingEaten = false;
 					monster.setSpeed(skier.getSpeed());
-					monster.moveToward(monster.getXPosition() + skierOpposite[0], skier.getYPosition() + skierOpposite[1]);
+					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 				});
 			}
 		});
@@ -176,6 +188,7 @@ function drawScene (images) {
 		infoBox.setLines([
 			'SkiFree.js',
 			'Travelled ' + distanceTravelledInMetres + 'm',
+			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
 		]);
 
@@ -187,7 +200,6 @@ function drawScene (images) {
 
 		if (monstersComeOut && Number.random(300) === 1) {
 			var newMonster = new Monster(sprites.monster);
-			// console.log('Making a monster');
 			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
 			newMonster.setSpeed(1);
 			monsters.push(newMonster);

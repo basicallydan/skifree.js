@@ -2,6 +2,7 @@ function Monster(data) {
 	var that = new Sprite(data);
 	var super_draw = that.superior('draw');
 	var spriteVersion = 1;
+	var eatingStage = 0;
 
 	that.isEating = false;
 	that.isFull = false;
@@ -11,7 +12,7 @@ function Monster(data) {
 			var xDiff = that.movingToward[0] - that.x;
 
 			if (that.isEating) {
-				return 'eating1';
+				return 'eating' + eatingStage;
 			}
 
 			if (spriteVersion + 0.1 > 2) {
@@ -28,6 +29,23 @@ function Monster(data) {
 
 		return super_draw(dContext, spritePartToUse());
 	};
+
+	function startEating (whenDone) {
+		eatingStage += 1;
+		that.isEating = true;
+		that.isMoving = false;
+		if (eatingStage < 6) {
+			setTimeout(function () {
+				startEating(whenDone);
+			}, 300);
+		} else {
+			that.isEating = false;
+			that.isMoving = true;
+			whenDone();
+		}
+	}
+
+	that.startEating = startEating;
 
 	return that;
 }
