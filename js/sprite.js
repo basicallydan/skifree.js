@@ -5,7 +5,7 @@
 		that.y = 0;
 		that.height = 0;
 		that.speed = 3;
-		that.data = data;
+		that.data = data || { parts : {} };
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
 		that.movingWithConviction = false;
