@@ -98,6 +98,7 @@ function drawScene (images) {
 	infoBox = new InfoBox({
 		initialLines : [
 			'SkiFree.js',
+			'Use the mouse to control the skier',
 			'Travelled 0m',
 			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
@@ -187,6 +188,7 @@ function drawScene (images) {
 
 		infoBox.setLines([
 			'SkiFree.js',
+			'Use the mouse to control the skier',
 			'Travelled ' + distanceTravelledInMetres + 'm',
 			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
