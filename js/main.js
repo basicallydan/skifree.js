@@ -213,6 +213,10 @@ function drawScene (images) {
 		mouseX = e.pageX;
 		mouseY = e.pageY;
 	})
+	.bind('click', function (e) {
+		mouseX = e.pageX;
+		mouseY = e.pageY;
+	})
 	.hammer({})
 	.bind('hold', function (e) {
 		mouseX = e.position[0].x;
