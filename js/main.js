@@ -45,6 +45,8 @@ var pixelsPerMetre = 18;
 var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
 var livesLeft = 5;
+var highScore = 0;
+if (localStorage.getItem('highScore')) highScore = localStorage.getItem('highScore');
 
 function loadImages (sources, next) {
 	var loaded = 0;
@@ -85,14 +87,15 @@ function drawScene (images) {
 		monstersComeOut = false;
 		distanceTravelledInMetres = 0;
 		livesLeft = 5;
+		highScore = localStorage.getItem('highScore');
 		monsters = [];
 		trees = [];
 	}
 
 	function detectEnd () {
-		if (livesLeft === 0) {
-			paused = true;
-		}
+		paused = true;
+		highScore = localStorage.setItem('highScore', distanceTravelledInMetres);
+		console.log('Game over!');
 	}
 
 	skier = new Skier(sprites.skier);
@@ -102,6 +105,7 @@ function drawScene (images) {
 			'SkiFree.js',
 			infoBoxControls,
 			'Travelled 0m',
+			'High Score: ' + highScore,
 			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
 		],
@@ -194,6 +198,7 @@ function drawScene (images) {
 			infoBoxControls,
 			'Travelled ' + distanceTravelledInMetres + 'm',
 			'Skiers left: ' + livesLeft,
+			'High Score: ' + highScore,
 			'Created by Dan Hough (@basicallydan)',
 			'Current Speed: ' + skier.getSpeed()
 		]);
@@ -209,6 +214,11 @@ function drawScene (images) {
 			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
 			newMonster.setSpeed(1);
 			monsters.push(newMonster);
+		}
+
+		if (livesLeft === 0) {
+			detectEnd();
+			resetGame();
 		}
 	}, 10);
 
