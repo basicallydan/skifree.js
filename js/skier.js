@@ -7,6 +7,12 @@ var Sprite = require('./Sprite');
 			draw: that.superior('draw'),
 			hits: that.superior('hits')
 		};
+		var directions = {
+			esEast: function(xDiff) { return xDiff > 300; },
+			sEast: function(xDiff) { return xDiff > 75; },
+			wsWest: function(xDiff) { return xDiff < -300; },
+			sWest: function(xDiff) { return xDiff < -75; }
+		};
 
 		var canSpeedBoost = true;
 
@@ -78,13 +84,13 @@ var Sprite = require('./Sprite');
 					}
 				}
 
-				if (xDiff > 300) {
+				if (directions.esEast(xDiff)) {
 					return 'esEast';
-				} else if (xDiff > 75) {
+				} else if (directions.sEast(xDiff)) {
 					return 'sEast';
-				} else if (xDiff < -300) {
+				} else if (directions.wsWest(xDiff)) {
 					return 'wsWest';
-				} else if (xDiff < -76) {
+				} else if (directions.sWest(xDiff)) {
 					return 'sWest';
 				}
 				return 'south';
