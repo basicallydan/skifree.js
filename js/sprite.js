@@ -1,6 +1,9 @@
 (function (global) {
+	var GUID = require('./lib/guid');
 	function Sprite (data) {
+		var hittableObjects = {};
 		var that = this;
+		that.id = GUID();
 		that.x = 0;
 		that.y = 0;
 		that.height = 0;
@@ -9,6 +12,7 @@
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
 		that.movingWithConviction = false;
+		that.deleted = false;
 		that.maxHeight = (function () {
 			return Object.values(that.data.parts).map(function (p) { return p[3]; }).max();
 		}());
@@ -84,6 +88,21 @@
 			return that.maxHeight;
 		};
 
+		this.cycle = function () {
+			Object.keys(hittableObjects, function (k, objectData) {
+				if (objectData.object.deleted) {
+					console.log('Deleting reference');
+					delete hittableObjects[k];
+				} else {
+					if (that.hits(objectData.object)) {
+						objectData.callbacks.each(function (callback) {
+							callback(that, objectData.object);
+						});
+					}
+				}
+			});
+		};
+
 		this.move = function move () {
 			if (typeof that.movingToward[0] !== 'undefined') {
 				if (that.x > that.movingToward[0]) {
@@ -119,6 +138,21 @@
 		this.moveTowardWithConviction = function moveToward (cx, cy) {
 			that.moveToward(cx, cy);
 			that.movingWithConviction = true;
+		};
+
+		this.onHitting = function (objectToHit, callback) {
+			if (hittableObjects[objectToHit.id]) {
+				return hittableObjects[objectToHit.id].callbacks.push(callback);
+			}
+
+			hittableObjects[objectToHit.id] = {
+				object: objectToHit,
+				callbacks: [ callback ]
+			};
+		};
+
+		this.deleteOnNextCycle = function () {
+			that.deleted = true;
 		};
 
 		this.hits = function hits (other) {

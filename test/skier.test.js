@@ -1,4 +1,4 @@
-var extenders = require(__dirname + '/../js/extenders');
+var extenders = require(__dirname + '/../js/lib/extenders');
 var Sprite = require(__dirname + '/../js/sprite');
 var Skier = require(__dirname + '/../js/skier');
 var should = require('should');

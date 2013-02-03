@@ -155,5 +155,50 @@ describe('Sprite', function() {
 			object1.hits(object2).should.not.equal(false);
 			object2.hits(object1).should.not.equal(false);
 		});
+
+		it('should run the appropriate callback when two things hit in a cycle', function() {
+			var object1 = new Sprite();
+			var object2 = new Sprite();
+			var testString = 'not hit';
+			
+			object1.setPosition(1, 1);
+			object1.setHeight(10);
+			object1.setWidth(10);
+
+			object2.setPosition(3, 3);
+			object2.setHeight(10);
+			object2.setWidth(10);
+
+			object1.onHitting(object2, function () {
+				testString = 'hit';
+			});
+
+			object1.cycle();
+
+			testString.should.equal('hit');
+		});
+
+		it('should not register the hit if a hittable object has been deleted', function() {
+			var object1 = new Sprite();
+			var object2 = new Sprite();
+			var testString = 'not hit';
+
+			object1.setPosition(1, 1);
+			object1.setHeight(10);
+			object1.setWidth(10);
+
+			object2.setPosition(3, 3);
+			object2.setHeight(10);
+			object2.setWidth(10);
+
+			object1.onHitting(object2, function () {
+				testString = 'hit';
+			});
+
+			object2.deleteOnNextCycle();
+			object1.cycle();
+
+			testString.should.equal('not hit');
+		});
 	});
 });

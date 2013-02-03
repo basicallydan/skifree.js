@@ -67,6 +67,10 @@ function loadImages (sources, next) {
 	});
 }
 
+function treeMonsterHitBehaviour(monster, tree) {
+	monster.deleteOnNextCycle();
+}
+
 function drawScene (images) {
 	var skier;
 	var infoBox;
@@ -128,7 +132,7 @@ function drawScene (images) {
 		skier.draw(dContext);
 
 		monsters.each(function (monster, i) {
-			if (monster.isAbove(getAboveViewport() - 100)) {
+			if (monster.isAbove(getAboveViewport() - 100) || monster.deleted) {
 				console.log('Deleting monster');
 				return (delete monsters[i]);
 			}
@@ -156,10 +160,13 @@ function drawScene (images) {
 					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 				});
 			}
+
+			monster.cycle();
 		});
 
 		trees.each(function (tree, i) {
 			if (tree.isAbove(0)) {
+				tree.deleteOnNextCycle();
 				console.log('Deleting tree');
 				return (delete trees[i]);
 			}
@@ -174,12 +181,6 @@ function drawScene (images) {
 				skier.hasHitObstacle(tree);
 			}
 
-			monsters.each(function (monster, i) {
-				if (monster.hits(tree)) {
-					return (delete monsters[i]);
-				}
-			});
-
 			tree.draw(dContext, 'main');
 		});
 
@@ -188,6 +189,9 @@ function drawScene (images) {
 				var newTree = new Sprite(sprites.smallTree);
 				newTree.setSpeed(skier.getSpeed());
 				newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+				monsters.each(function (monster) {
+					monster.onHitting(newTree, treeMonsterHitBehaviour);
+				});
 				trees.push(newTree);
 			});
 		}
@@ -214,6 +218,9 @@ function drawScene (images) {
 			var newMonster = new Monster(sprites.monster);
 			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
 			newMonster.setSpeed(1);
+			trees.each(function (tree) {
+				newMonster.onHitting(tree, treeMonsterHitBehaviour);
+			});
 			monsters.push(newMonster);
 		}
 
