@@ -7,8 +7,7 @@
 var global = this;
 
 function require (name) {
-	if (name.substring(0, 2) == './') {
-		name = name.substring(2);
-	}
+	var indexToGoFrom = name.lastIndexOf('/');
+	name = name.substring(indexToGoFrom + 1);
 	return global[name];
 }
