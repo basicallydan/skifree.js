@@ -1,7 +1,7 @@
 var Sprite = require('./Sprite');
 
 (function(global) {
-	function Skier(data, heightData) {
+	function Skier(data) {
 		var that = new Sprite(data);
 		var sup = {
 			draw: that.superior('draw'),
@@ -15,6 +15,14 @@ var Sprite = require('./Sprite');
 
 		that.isMoving = true;
 		that.hasBeenHit = false;
+
+		that.reset = function () {
+			obstaclesHit = [];
+			pixelsTravelled = 0;
+			that.isMoving = true;
+			that.hasBeenHit = false;
+			canSpeedBoost = true;
+		};
 
 		function getBeingEatenSprite() {
 			return 'blank';
@@ -125,6 +133,14 @@ var Sprite = require('./Sprite');
 			monster.startEating(whenEaten);
 			that.isMoving = false;
 			that.isBeingEaten = true;
+		};
+
+		that.reset = function () {
+			obstaclesHit = [];
+			pixelsTravelled = 0;
+			that.isMoving = true;
+			that.hasBeenHit = false;
+			canSpeedBoost = true;
 		};
 
 		return that;
