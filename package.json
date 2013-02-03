@@ -8,6 +8,7 @@
 	},
 	"devDependencies": {
 		"sugar":"1.3.x",
-		"mocha":"1.7.x"
+		"mocha":"1.8.x",
+		"should": "1.2.x"
 	}
 }
