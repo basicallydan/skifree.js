@@ -48,6 +48,15 @@ Some features which weren't in the original which I'd like to give a go:
 * Make a pull request with your awesome additions.
 * Maybe raise an issue?
 
+## Contributors
+
+Here's some lovely people who were kind enough to have opinions and spirit enough to make a pull request.
+
+* [@tomgrim1](https://github.com/tomgrim1)
+* [@ddoolin](https://github.com/ddoolin)
+
+Thanks!
+
 ## Third-party credits
 
 * [HTML5 Boilerplate](http://html5boilerplate.com) provided a bunch of useful markup and stuff
