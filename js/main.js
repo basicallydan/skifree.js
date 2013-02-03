@@ -44,7 +44,7 @@ var sprites = {
 var pixelsPerMetre = 18;
 var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
-var livesLeft = 1;
+var livesLeft = 5;
 var highScore = 0;
 if (localStorage.getItem('highScore')) highScore = localStorage.getItem('highScore');
 
