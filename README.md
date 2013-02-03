@@ -61,3 +61,7 @@ Thanks!
 
 * [HTML5 Boilerplate](http://html5boilerplate.com) provided a bunch of useful markup and stuff
 * [Wing Wang Wao](http://spriters-resource.com/submitter/Wing%20Wang%20Wao) of the [Spriters Resource Forum](http://spriters-resource.com) did an amazing job of providing the sprites which I have extended slightly. Thanks!
+
+## License
+
+* See [license.txt](blob/master/license.txt)
