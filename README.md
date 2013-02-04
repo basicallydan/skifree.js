@@ -16,12 +16,12 @@ I just started work this Christmas 2012 so I've not done a whole lot yet.
 * Distance tracking so you can see how far you've gone you absolute badass
 * Speed boost (this was a little-known feature to get away from monsters) using the F key
 * **MOBILE SUPPORT** - This is cool - try loading the [**the demo page**](http://basicallydan.github.com/skifree.js) on a mobile device and then use your finger to direct the skier around the pistle. Also try double-tap ;)
+* Rainbow jump platforms & jumping - though a couple of improvements could be made
 
 ## So, what's left to do?
 
 This is what I'm gonna do, probably in this order. Who the hell knows. There are other features to the original game but I'm not going to add them to the list until I've gotten through this one.
 
-* Rainbow jump platforms & jumping
 * Big trees & crashing into them both whilst skiing and jumping
 * Rocks
 * Snowboarders
