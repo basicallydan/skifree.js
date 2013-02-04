@@ -150,7 +150,6 @@ function drawScene (images) {
 
 		monsters.each(function (monster, i) {
 			if (monster.isAbove(getAboveViewport() - 100) || monster.deleted) {
-				console.log('Deleting monster');
 				return (delete monsters[i]);
 			}
 
@@ -171,7 +170,6 @@ function drawScene (images) {
 		trees.each(function (tree, i) {
 			if (tree.isAbove(0)) {
 				tree.deleteOnNextCycle();
-				console.log('Deleting tree');
 				return (delete trees[i]);
 			}
 
