@@ -14,15 +14,18 @@ var Sprite = require('./Sprite');
 			sWest: function(xDiff) { return xDiff < -75; }
 		};
 
-		var recoveryTimeout;
+		var cancelableStateTimeout;
 
 		var canSpeedBoost = true;
 
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
 
+		var z = 0;
+
 		that.isMoving = true;
 		that.hasBeenHit = false;
+		that.isJumping = false;
 
 		that.reset = function () {
 			obstaclesHit = [];
@@ -34,6 +37,10 @@ var Sprite = require('./Sprite');
 
 		function getBeingEatenSprite() {
 			return 'blank';
+		}
+
+		function getJumpingSprite() {
+			return 'jumping';
 		}
 
 		that.moveToward = function (cx, cy) {
@@ -56,6 +63,10 @@ var Sprite = require('./Sprite');
 			var spritePartToUse = function () {
 				if (that.isBeingEaten) {
 					return getBeingEatenSprite();
+				}
+
+				if (that.isJumping) {
+					return getJumpingSprite();
 				}
 
 				if (that.hasBeenHit) {
@@ -92,6 +103,10 @@ var Sprite = require('./Sprite');
 				return false;
 			}
 
+			if (!obs.occupiesZIndex(z)) {
+				return false;
+			}
+
 			if (sup.hits(obs)) {
 				obstaclesHit.push(obs.id);
 				return true;
@@ -117,13 +132,29 @@ var Sprite = require('./Sprite');
 		that.hasHitObstacle = function () {
 			that.isMoving = false;
 			that.hasBeenHit = true;
-			if (recoveryTimeout) {
-				clearTimeout(recoveryTimeout);
+			if (cancelableStateTimeout) {
+				clearTimeout(cancelableStateTimeout);
 			}
-			recoveryTimeout = setTimeout(function() {
+			cancelableStateTimeout = setTimeout(function() {
 				that.isMoving = true;
 				that.hasBeenHit = false;
 			}, 1500);
+		};
+
+		that.hasHitJump = function () {
+			that.isMoving = true;
+			that.hasBeenHit = false;
+			that.isJumping = true;
+			z = 1;
+			that.incrementSpeedBy(1);
+			if (cancelableStateTimeout) {
+				clearTimeout(cancelableStateTimeout);
+			}
+			cancelableStateTimeout = setTimeout(function() {
+				z = 0;
+				that.isJumping = false;
+				that.incrementSpeedBy(-1);
+			}, 2500);
 		};
 
 		that.isEatenBy = function (monster, whenEaten) {

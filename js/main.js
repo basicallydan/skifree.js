@@ -17,7 +17,8 @@ var sprites = {
 			sWest : [ 49, 37, 17, 34 ],
 			wsWest : [ 24, 37, 24, 34 ],
 			west : [ 0, 37, 24, 34 ],
-			hit : [ 0, 78, 31, 31 ]
+			hit : [ 0, 78, 31, 31 ],
+			jumping : [ 84, 0, 32, 34 ]
 		},
 		id : 'player'
 	},
@@ -39,6 +40,12 @@ var sprites = {
 			eating3 : [ 187, 112, 31, 43 ],
 			eating4 : [ 219, 112, 25, 43 ],
 			eating5 : [ 243, 112, 26, 43 ]
+		}
+	},
+	'jump' : {
+		$imageFile : 'skifree-objects.png',
+		parts : {
+			main : [ 109, 55, 32, 8 ]
 		}
 	}
 };
@@ -76,6 +83,10 @@ function skierHitsTreeBehaviour(skier, tree) {
 	skier.hasHitObstacle(tree);
 }
 
+function skierHitsJumpBehaviour(skier, jump) {
+	skier.hasHitJump(jump);
+}
+
 function skierHitsMonsterBehaviour(skier, monster) {
 	skier.hasHitObstacle(monster);
 	skier.isEatenBy(monster, function () {
@@ -93,6 +104,7 @@ function drawScene (images) {
 	var infoBox;
 	var trees = [];
 	var monsters = [];
+	var jumps = [];
 	var mouseX = getCentreOfViewport();
 	var mouseY = mainCanvas.height;
 	var paused = false;
@@ -144,7 +156,9 @@ function drawScene (images) {
 
 		mainCanvas.width = mainCanvas.width;
 
-		skier.moveToward(mouseX, mouseY);
+		if (!skier.isJumping) {
+			skier.moveToward(mouseX, mouseY);
+		}
 
 		skier.draw(dContext);
 
@@ -178,6 +192,17 @@ function drawScene (images) {
 			tree.draw(dContext, 'main');
 		});
 
+		jumps.each(function (jump, i) {
+			if (jump.isAbove(0)) {
+				jump.deleteOnNextCycle();
+				return (delete jumps[i]);
+			}
+
+			jump.moveAwayFromSprite(skier);
+
+			jump.draw(dContext, 'main');
+		});
+
 		if (Number.random(16) === 1 && skier.isMoving) {
 			var newTree = new Sprite(sprites.smallTree);
 			newTree.setSpeed(skier.getSpeed());
@@ -190,6 +215,16 @@ function drawScene (images) {
 			skier.onHitting(newTree, skierHitsTreeBehaviour);
 
 			trees.push(newTree);
+		}
+
+		if (Number.random(32) === 1 && skier.isMoving) {
+			var newJump = new Sprite(sprites.jump);
+			newJump.setSpeed(skier.getSpeed());
+			newJump.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+
+			skier.onHitting(newJump, skierHitsJumpBehaviour);
+
+			jumps.push(newJump);
 		}
 
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
