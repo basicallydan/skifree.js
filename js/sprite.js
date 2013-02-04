@@ -3,7 +3,7 @@
 	function Sprite (data) {
 		var hittableObjects = {};
 		var that = this;
-		that.id = GUID();
+		that.id = data.id || GUID();
 		that.x = 0;
 		that.y = 0;
 		that.height = 0;
@@ -88,6 +88,20 @@
 			return that.maxHeight;
 		};
 
+		that.getMovingTowardOpposite = function () {
+			if (!that.isMoving) {
+				return [0, 0];
+			}
+
+			var dx = (that.movingToward[0] - that.getXPosition());
+			var dy = (that.movingToward[1] - that.getYPosition());
+
+			var oppositeX = (Math.abs(dx) > 75 ? 0 - dx : 0);
+			var oppositeY = -dy;
+
+			return [ oppositeX, oppositeY ];
+		};
+
 		this.cycle = function () {
 			Object.keys(hittableObjects, function (k, objectData) {
 				if (objectData.object.deleted) {
@@ -133,6 +147,16 @@
 			}
 
 			that.move();
+		};
+
+		this.moveAwayFromSprite = function (otherSprite) {
+			var opposite = otherSprite.getMovingTowardOpposite();
+			that.setSpeed(otherSprite.getSpeed());
+
+			var moveTowardX = that.getXPosition() + opposite[0];
+			var moveTowardY = that.getYPosition() + opposite[1];
+
+			that.moveToward(moveTowardX, moveTowardY);
 		};
 
 		this.moveTowardWithConviction = function moveToward (cx, cy) {

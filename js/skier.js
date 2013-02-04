@@ -14,6 +14,8 @@ var Sprite = require('./Sprite');
 			sWest: function(xDiff) { return xDiff < -75; }
 		};
 
+		var recoveryTimeout;
+
 		var canSpeedBoost = true;
 
 		var obstaclesHit = [];
@@ -44,20 +46,6 @@ var Sprite = require('./Sprite');
 				that.isMoving = false;
 			}
 			that.movingToward = [ cx, cy ];
-		};
-
-		that.getMovingTowardOpposite = function () {
-			if (!that.isMoving || that.hasBeenHit) {
-				return [0, 0];
-			}
-
-			var skierMouseX = (that.movingToward[0] - that.getXPosition());
-			var skierMouseY = (that.movingToward[1] - that.getYPosition());
-
-			var oppositeX = (Math.abs(skierMouseX) > 75 ? 0 - skierMouseX : 0);
-			var oppositeY = -skierMouseY;
-
-			return [ oppositeX, oppositeY ];
 		};
 
 		that.getPixelsTravelledDownMountain = function () {
@@ -100,12 +88,12 @@ var Sprite = require('./Sprite');
 		};
 
 		that.hits = function (obs) {
-			if (obstaclesHit.indexOf(obs) !== -1) {
+			if (obstaclesHit.indexOf(obs.id) !== -1) {
 				return false;
 			}
 
 			if (sup.hits(obs)) {
-				obstaclesHit.push(obs);
+				obstaclesHit.push(obs.id);
 				return true;
 			}
 
@@ -129,7 +117,10 @@ var Sprite = require('./Sprite');
 		that.hasHitObstacle = function () {
 			that.isMoving = false;
 			that.hasBeenHit = true;
-			setTimeout (function() {
+			if (recoveryTimeout) {
+				clearTimeout(recoveryTimeout);
+			}
+			recoveryTimeout = setTimeout(function() {
 				that.isMoving = true;
 				that.hasBeenHit = false;
 			}, 1500);
