@@ -2,9 +2,9 @@
 	var GUID = require('./lib/guid');
 	function Sprite (data) {
 		var hittableObjects = {};
+		var zIndexesOccupied = [ 0 ];
 		var that = this;
-		if (data && data.id) that.id = data.id;
-		else that.id = GUID();
+		that.id = GUID();
 		that.x = 0;
 		that.y = 0;
 		that.height = 0;
@@ -17,6 +17,14 @@
 		that.maxHeight = (function () {
 			return Object.values(that.data.parts).map(function (p) { return p[3]; }).max();
 		}());
+
+		if (data && data.id){
+			that.id = data.id;
+		}
+
+		if (data && data.zIndexesOccupied) {
+			zIndexesOccupied = data.zIndexesOccupied;
+		}
 
 		function incrementX(amount) {
 			that.x += amount.toNumber();
@@ -69,8 +77,12 @@
 			return [that.x, that.y + that.height];
 		};
 
-		this.setSpeed = function setSpeed (s) {
+		this.setSpeed = function (s) {
 			that.speed = s;
+		};
+
+		this.incrementSpeedBy = function (s) {
+			that.speed += s;
 		};
 
 		that.getSpeed = function getSpeed () {
@@ -177,6 +189,10 @@
 
 		this.deleteOnNextCycle = function () {
 			that.deleted = true;
+		};
+
+		this.occupiesZIndex = function (z) {
+			return zIndexesOccupied.indexOf(z) >= 0;
 		};
 
 		this.hits = function hits (other) {
