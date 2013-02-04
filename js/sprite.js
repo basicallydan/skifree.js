@@ -3,7 +3,8 @@
 	function Sprite (data) {
 		var hittableObjects = {};
 		var that = this;
-		that.id = data.id || GUID();
+		if (data && data.id) that.id = data.id;
+		else that.id = GUID();
 		that.x = 0;
 		that.y = 0;
 		that.height = 0;
@@ -105,7 +106,6 @@
 		this.cycle = function () {
 			Object.keys(hittableObjects, function (k, objectData) {
 				if (objectData.object.deleted) {
-					console.log('Deleting reference');
 					delete hittableObjects[k];
 				} else {
 					if (that.hits(objectData.object)) {
