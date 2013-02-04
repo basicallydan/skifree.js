@@ -18,7 +18,8 @@ var sprites = {
 			wsWest : [ 24, 37, 24, 34 ],
 			west : [ 0, 37, 24, 34 ],
 			hit : [ 0, 78, 31, 31 ]
-		}
+		},
+		id : 'player'
 	},
 	'smallTree' : {
 		$imageFile : 'skifree-objects.png',
@@ -67,8 +68,24 @@ function loadImages (sources, next) {
 	});
 }
 
-function treeMonsterHitBehaviour(monster, tree) {
+function monsterHitsTreeBehaviour(monster) {
 	monster.deleteOnNextCycle();
+}
+
+function skierHitsTreeBehaviour(skier, tree) {
+	skier.hasHitObstacle(tree);
+}
+
+function skierHitsMonsterBehaviour(skier, monster) {
+	skier.hasHitObstacle(monster);
+	skier.isEatenBy(monster, function () {
+		livesLeft -= 1;
+		monster.isFull = true;
+		monster.isEating = false;
+		skier.isBeingEaten = false;
+		monster.setSpeed(skier.getSpeed());
+		monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+	});
 }
 
 function drawScene (images) {
@@ -148,19 +165,6 @@ function drawScene (images) {
 			}
 
 			monster.draw(dContext);
-
-			if (skier.hits(monster)) {
-				skier.hasHitObstacle(monster);
-				skier.isEatenBy(monster, function () {
-					livesLeft -= 1;
-					monster.isFull = true;
-					monster.isEating = false;
-					skier.isBeingEaten = false;
-					monster.setSpeed(skier.getSpeed());
-					monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
-				});
-			}
-
 			monster.cycle();
 		});
 
@@ -170,33 +174,47 @@ function drawScene (images) {
 				console.log('Deleting tree');
 				return (delete trees[i]);
 			}
-			tree.setSpeed(skier.getSpeed());
 
-			var moveTreeTowardX = tree.getXPosition() + skierOpposite[0];
-			var moveTreeTowardY = tree.getYPosition() + skierOpposite[1];
-
-			tree.moveToward(moveTreeTowardX, moveTreeTowardY);
-
-			if (skier.hits(tree)) {
-				skier.hasHitObstacle(tree);
-			}
+			tree.moveAwayFromSprite(skier);
 
 			tree.draw(dContext, 'main');
 		});
 
-		if (Number.random(8) === 1 && skier.isMoving) {
-			(Number.random(1)).times(function () {
-				var newTree = new Sprite(sprites.smallTree);
-				newTree.setSpeed(skier.getSpeed());
-				newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
-				monsters.each(function (monster) {
-					monster.onHitting(newTree, treeMonsterHitBehaviour);
-				});
-				trees.push(newTree);
+		if (Number.random(16) === 1 && skier.isMoving) {
+			var newTree = new Sprite(sprites.smallTree);
+			newTree.setSpeed(skier.getSpeed());
+			newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+
+			monsters.each(function (monster) {
+				monster.onHitting(newTree, monsterHitsTreeBehaviour);
 			});
+
+			skier.onHitting(newTree, skierHitsTreeBehaviour);
+
+			trees.push(newTree);
 		}
 
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
+
+		if (!monstersComeOut && distanceTravelledInMetres >= 200) {
+			monstersComeOut = true;
+		}
+
+		if (monstersComeOut && Number.random(300) === 1) {
+			var newMonster = new Monster(sprites.monster);
+			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
+			newMonster.setSpeed(1);
+
+			trees.each(function (tree) {
+				newMonster.onHitting(tree, monsterHitsTreeBehaviour);
+			});
+
+			skier.onHitting(newMonster, skierHitsMonsterBehaviour);
+
+			monsters.push(newMonster);
+		}
+
+		skier.cycle();
 
 		infoBox.setLines([
 			'SkiFree.js',
@@ -208,21 +226,7 @@ function drawScene (images) {
 			'Current Speed: ' + skier.getSpeed()
 		]);
 
-		if (!monstersComeOut && distanceTravelledInMetres >= 200) {
-			monstersComeOut = true;
-		}
-
 		infoBox.draw(dContext);
-
-		if (monstersComeOut && Number.random(300) === 1) {
-			var newMonster = new Monster(sprites.monster);
-			newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
-			newMonster.setSpeed(1);
-			trees.each(function (tree) {
-				newMonster.onHitting(tree, treeMonsterHitBehaviour);
-			});
-			monsters.push(newMonster);
-		}
 
 		if (livesLeft === 0) {
 			detectEnd();
