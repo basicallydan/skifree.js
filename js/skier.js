@@ -5,6 +5,7 @@ var Sprite = require('./Sprite');
 		var that = new Sprite(data);
 		var sup = {
 			draw: that.superior('draw'),
+			cycle: that.superior('cycle'),
 			hits: that.superior('hits')
 		};
 		var directions = {
@@ -47,7 +48,6 @@ var Sprite = require('./Sprite');
 			if (that.hasBeenHit) return;
 
 			if (cy > that.y) {
-				pixelsTravelled += that.speed;
 				that.isMoving = true;
 			} else {
 				that.isMoving = false;
@@ -57,6 +57,14 @@ var Sprite = require('./Sprite');
 
 		that.getPixelsTravelledDownMountain = function () {
 			return pixelsTravelled;
+		};
+
+		that.cycle = function () {
+			if (!that.hasBeenHit) {
+				pixelsTravelled += that.speed;
+			}
+			
+			return sup.cycle();
 		};
 
 		that.draw = function(dContext) {
@@ -154,7 +162,7 @@ var Sprite = require('./Sprite');
 				z = 0;
 				that.isJumping = false;
 				that.incrementSpeedBy(-1);
-			}, 2500);
+			}, 1000);
 		};
 
 		that.isEatenBy = function (monster, whenEaten) {
