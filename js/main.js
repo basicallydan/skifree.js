@@ -35,6 +35,12 @@ var sprites = {
 		},
 		zIndexesOccupied : [0, 1]
 	},
+	'thickSnow' : {
+		$imageFile : 'skifree-objects.png',
+		parts : {
+			main : [ 143, 53, 43, 10 ]
+		}
+	},
 	'monster' : {
 		$imageFile : 'sprite-characters.png',
 		parts : {
@@ -94,6 +100,11 @@ function skierHitsJumpBehaviour(skier, jump) {
 	skier.hasHitJump(jump);
 }
 
+function skierHitsThickSnowBehaviour(skier, thickSnow) {
+	// Need to implement this
+	// skier.hasHitThickSnow(thickSnow);
+}
+
 function skierHitsMonsterBehaviour(skier, monster) {
 	skier.hasHitObstacle(monster);
 	skier.isEatenBy(monster, function () {
@@ -109,9 +120,11 @@ function skierHitsMonsterBehaviour(skier, monster) {
 function drawScene (images) {
 	var skier;
 	var infoBox;
+	var staticObjects = [];
 	var trees = [];
 	var monsters = [];
 	var jumps = [];
+	var thickSnowPatches = [];
 	var mouseX = getCentreOfViewport();
 	var mouseY = mainCanvas.height;
 	var paused = false;
@@ -193,21 +206,17 @@ function drawScene (images) {
 				tree.deleteOnNextCycle();
 				return (delete trees[i]);
 			}
-
-			tree.moveAwayFromSprite(skier);
-
-			tree.draw(dContext, 'main');
 		});
 
-		jumps.each(function (jump, i) {
-			if (jump.isAbove(0)) {
-				jump.deleteOnNextCycle();
-				return (delete jumps[i]);
+		staticObjects.each(function (staticObject, i) {
+			if (staticObject.isAbove(0)) {
+				staticObject.deleteOnNextCycle();
+				return (delete staticObjects[i]);
 			}
 
-			jump.moveAwayFromSprite(skier);
+			staticObject.moveAwayFromSprite(skier);
 
-			jump.draw(dContext, 'main');
+			staticObject.draw(dContext, 'main');
 		});
 
 		if (Number.random(16) === 1 && skier.isMoving) {
@@ -223,6 +232,7 @@ function drawScene (images) {
 				skier.onHitting(newTree, skierHitsSmallTreeBehaviour);
 
 				trees.push(newTree);
+				staticObjects.push(newTree);
 			}());
 		}
 
@@ -239,17 +249,32 @@ function drawScene (images) {
 				skier.onHitting(newTree, skierHitsSmallTreeBehaviour);
 
 				trees.push(newTree);
+				staticObjects.push(newTree);
 			}());
 		}
 
 		if (Number.random(32) === 1 && skier.isMoving) {
-			var newJump = new Sprite(sprites.jump);
-			newJump.setSpeed(skier.getSpeed());
-			newJump.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+			(function () {
+				var newJump = new Sprite(sprites.jump);
+				newJump.setSpeed(skier.getSpeed());
+				newJump.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
 
-			skier.onHitting(newJump, skierHitsJumpBehaviour);
+				skier.onHitting(newJump, skierHitsJumpBehaviour);
 
-			jumps.push(newJump);
+				staticObjects.push(newJump);
+			}());
+		}
+
+		if (Number.random(32) === 1 && skier.isMoving) {
+			(function () {
+				var newThickSnow = new Sprite(sprites.thickSnow);
+				newThickSnow.setSpeed(skier.getSpeed());
+				newThickSnow.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+
+				// skier.onHitting(newThickSnow, skierHitsThickSnowBehaviour);
+
+				staticObjects.push(newThickSnow);
+			}());
 		}
 
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
