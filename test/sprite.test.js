@@ -155,7 +155,9 @@ describe('Sprite', function() {
 			object1.hits(object2).should.not.equal(false);
 			object2.hits(object1).should.not.equal(false);
 		});
+	});
 
+	describe('#onHitting()', function () {
 		it('should run the appropriate callback when two things hit in a cycle', function() {
 			var object1 = new Sprite();
 			var object2 = new Sprite();

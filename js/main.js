@@ -28,6 +28,13 @@ var sprites = {
 			main : [ 0, 28, 30, 34 ]
 		}
 	},
+	'tallTree' : {
+		$imageFile : 'skifree-objects.png',
+		parts : {
+			main : [ 95, 66, 32, 64 ]
+		},
+		zIndexesOccupied : [0, 1]
+	},
 	'monster' : {
 		$imageFile : 'sprite-characters.png',
 		parts : {
@@ -79,7 +86,7 @@ function monsterHitsTreeBehaviour(monster) {
 	monster.deleteOnNextCycle();
 }
 
-function skierHitsTreeBehaviour(skier, tree) {
+function skierHitsSmallTreeBehaviour(skier, tree) {
 	skier.hasHitObstacle(tree);
 }
 
@@ -204,17 +211,35 @@ function drawScene (images) {
 		});
 
 		if (Number.random(16) === 1 && skier.isMoving) {
-			var newTree = new Sprite(sprites.smallTree);
-			newTree.setSpeed(skier.getSpeed());
-			newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+			(function () {
+				var newTree = new Sprite(sprites.smallTree);
+				newTree.setSpeed(skier.getSpeed());
+				newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
 
-			monsters.each(function (monster) {
-				monster.onHitting(newTree, monsterHitsTreeBehaviour);
-			});
+				monsters.each(function (monster) {
+					monster.onHitting(newTree, monsterHitsTreeBehaviour);
+				});
 
-			skier.onHitting(newTree, skierHitsTreeBehaviour);
+				skier.onHitting(newTree, skierHitsSmallTreeBehaviour);
 
-			trees.push(newTree);
+				trees.push(newTree);
+			}());
+		}
+
+		if (Number.random(32) === 1 && skier.isMoving) {
+			(function () {
+				var newTree = new Sprite(sprites.tallTree);
+				newTree.setSpeed(skier.getSpeed());
+				newTree.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+
+				monsters.each(function (monster) {
+					monster.onHitting(newTree, monsterHitsTreeBehaviour);
+				});
+
+				skier.onHitting(newTree, skierHitsSmallTreeBehaviour);
+
+				trees.push(newTree);
+			}());
 		}
 
 		if (Number.random(32) === 1 && skier.isMoving) {

@@ -21,6 +21,7 @@ var Sprite = require('./Sprite');
 
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
+		var standardSpeed = 3;
 
 		var z = 0;
 
@@ -140,6 +141,9 @@ var Sprite = require('./Sprite');
 		that.hasHitObstacle = function () {
 			that.isMoving = false;
 			that.hasBeenHit = true;
+			z = 0;
+			that.isJumping = false;
+			that.speed = standardSpeed;
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
