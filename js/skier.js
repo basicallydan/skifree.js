@@ -60,7 +60,7 @@ var Sprite = require('./Sprite');
 		};
 
 		that.cycle = function () {
-			if (!that.hasBeenHit) {
+			if (that.isMoving) {
 				pixelsTravelled += that.speed;
 			}
 			
