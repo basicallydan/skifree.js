@@ -155,6 +155,51 @@ describe('Sprite', function() {
 			object1.hits(object2).should.not.equal(false);
 			object2.hits(object1).should.not.equal(false);
 		});
+
+		it('should not register two objects with hitboxes as having hit if they intersect in both dimensions but their hitboxes do not', function() {
+			var object1 = new Sprite({
+				hitBoxes: {
+					0: [ 0, 5, 10, 10 ]
+				}
+			});
+			var object2 = new Sprite({
+				hitBoxes: {
+					0: [ 0, 5, 10, 10 ]
+				}
+			});
+			var object3 = new Sprite({
+				hitBoxes: {
+					0: [ 0, 0, 5, 5 ]
+				}
+			});
+			var object4 = new Sprite({
+				hitBoxes: {
+					0: [ 0, 0, 10, 10 ]
+				}
+			});
+
+			object1.setPosition(0, 0);
+			object1.setHeight(10);
+			object1.setWidth(10);
+
+			object2.setPosition(0, 9);
+			object2.setHeight(10);
+			object2.setWidth(10);
+
+			object3.setPosition(20, 0);
+			object3.setHeight(10);
+			object3.setWidth(10);
+
+			object4.setPosition(20, 9);
+			object4.setHeight(10);
+			object4.setWidth(10);
+
+			object1.hits(object2).should.equal(false);
+			object2.hits(object1).should.equal(false);
+
+			object3.hits(object4).should.equal(false);
+			object4.hits(object3).should.equal(false);
+		});
 	});
 
 	describe('#onHitting()', function () {

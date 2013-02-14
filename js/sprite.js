@@ -7,6 +7,7 @@
 		that.id = GUID();
 		that.x = 0;
 		that.y = 0;
+		that.z = 0;
 		that.height = 0;
 		that.speed = 3;
 		that.data = data || { parts : {} };
@@ -17,6 +18,10 @@
 		that.maxHeight = (function () {
 			return Object.values(that.data.parts).map(function (p) { return p[3]; }).max();
 		}());
+
+		if (!that.data.parts) {
+			that.data.parts = {};
+		}
 
 		if (data && data.id){
 			that.id = data.id;
@@ -32,6 +37,14 @@
 
 		function incrementY(amount) {
 			that.y += amount.toNumber();
+		}
+
+		function getHitBox(forZIndex) {
+			if (that.data.hitBoxes) {
+				if (data.hitBoxes[forZIndex]) {
+					return data.hitBoxes[forZIndex];
+				}
+			}
 		}
 
 		this.draw = function draw (dCtx, spriteFrame) {
@@ -61,15 +74,41 @@
 			return that.y;
 		};
 
-		this.getLeftEdge = this.getXPosition;
+		this.getLeftHitBoxEdge = function getLeftHitBoxEdge(zIndex) {
+			zIndex = zIndex || 0;
+			var lhbe = this.getXPosition();
+			if (getHitBox(zIndex)) {
+				lhbe += getHitBox(zIndex)[0];
+			}
+			return lhbe;
+		};
 
-		this.getTopEdge = this.getYPosition;
+		this.getTopHitBoxEdge = function getTopHitBoxEdge(zIndex) {
+			zIndex = zIndex || 0;
+			var thbe = this.getYPosition();
+			if (getHitBox(zIndex)) {
+				thbe += getHitBox(zIndex)[1];
+			}
+			return thbe;
+		};
 
-		this.getRightEdge = function getRightEdge () {
+		this.getRightHitBoxEdge = function getRightHitBoxEdge(zIndex) {
+			zIndex = zIndex || 0;
+
+			if (getHitBox(zIndex)) {
+				return that.x + getHitBox(zIndex)[2];
+			}
+
 			return that.x + that.width;
 		};
 
-		this.getBottomEdge = function getBottomEdge () {
+		this.getBottomHitBoxEdge = function getBottomHitBoxEdge(zIndex) {
+			zIndex = zIndex || 0;
+
+			if (getHitBox(zIndex)) {
+				return that.y + getHitBox(zIndex)[3];
+			}
+
 			return that.y + that.height;
 		};
 
@@ -200,22 +239,22 @@
 			var horizontalIntersect = false;
 
 			// Test that THIS has a bottom edge inside of the other object
-			if (other.getTopEdge() <= that.getBottomEdge() && other.getBottomEdge() >= that.getBottomEdge()) {
+			if (other.getTopHitBoxEdge(that.z) <= that.getBottomHitBoxEdge(that.z) && other.getBottomHitBoxEdge(that.z) >= that.getBottomHitBoxEdge(that.z)) {
 				verticalIntersect = true;
 			}
 
 			// Test that THIS has a top edge inside of the other object
-			if (other.getTopEdge() <= that.getTopEdge() && other.getBottomEdge() >= that.getTopEdge()) {
+			if (other.getTopHitBoxEdge(that.z) <= that.getTopHitBoxEdge(that.z) && other.getBottomHitBoxEdge(that.z) >= that.getTopHitBoxEdge(that.z)) {
 				verticalIntersect = true;
 			}
 
 			// Test that THIS has a right edge inside of the other object
-			if (other.getLeftEdge() <= that.getRightEdge() && other.getRightEdge() >= that.getRightEdge()) {
+			if (other.getLeftHitBoxEdge(that.z) <= that.getRightHitBoxEdge(that.z) && other.getRightHitBoxEdge(that.z) >= that.getRightHitBoxEdge(that.z)) {
 				horizontalIntersect = true;
 			}
 
 			// Test that THIS has a left edge inside of the other object
-			if (other.getLeftEdge() <= that.getLeftEdge() && other.getRightEdge() >= that.getLeftEdge()) {
+			if (other.getLeftHitBoxEdge(that.z) <= that.getLeftHitBoxEdge(that.z) && other.getRightHitBoxEdge(that.z) >= that.getLeftHitBoxEdge(that.z)) {
 				horizontalIntersect = true;
 			}
 
@@ -229,10 +268,10 @@
 		return that;
 	}
 
-	global.Sprite = Sprite;
+	global.sprite = Sprite;
 })( this );
 
 
 if (typeof module !== 'undefined') {
-	module.exports = this.Sprite;
+	module.exports = this.sprite;
 }

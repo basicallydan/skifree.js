@@ -42,6 +42,28 @@ describe('Skier', function() {
 			skier.hits(tallSprite).should.equal(true);
 		});
 
+		it('should still hit taller objects with a high-up z-index if jumping', function() {
+			var skier = new Skier();
+			skier.setPosition(30, 25);
+			skier.setHeight(10);
+			skier.setWidth(10);
+			skier.hasHitJump();
+			
+			var tallSprite = new Sprite({
+				zIndexesOccupied : [0, 1],
+				hitBoxes: {
+					0: [0, 15, 10, 20],
+					1: [0, 5, 10, 15]
+				}
+			});
+
+			tallSprite.setHeight(20);
+			tallSprite.setWidth(10);
+			tallSprite.setPosition(30, 30);
+
+			skier.hits(tallSprite).should.equal(true);
+		});
+
 		it('should not hit shorter objects if jumping', function() {
 			var skier = new Skier();
 			skier.setPosition(10, 30);

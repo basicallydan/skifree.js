@@ -23,8 +23,6 @@ var Sprite = require('./Sprite');
 		var pixelsTravelled = 0;
 		var standardSpeed = 3;
 
-		var z = 0;
-
 		that.isMoving = true;
 		that.hasBeenHit = false;
 		that.isJumping = false;
@@ -116,7 +114,7 @@ var Sprite = require('./Sprite');
 				return false;
 			}
 
-			if (!obs.occupiesZIndex(z)) {
+			if (!obs.occupiesZIndex(that.z)) {
 				return false;
 			}
 
@@ -144,7 +142,7 @@ var Sprite = require('./Sprite');
 		that.hasHitObstacle = function (obs) {
 			that.isMoving = false;
 			that.hasBeenHit = true;
-			z = 0;
+			that.z = 0;
 			that.isJumping = false;
 
 			obstaclesHit.push(obs.id);
@@ -164,13 +162,13 @@ var Sprite = require('./Sprite');
 			that.isMoving = true;
 			that.hasBeenHit = false;
 			that.isJumping = true;
-			z = 1;
+			that.z = 1;
 			that.incrementSpeedBy(1);
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
 			cancelableStateTimeout = setTimeout(function() {
-				z = 0;
+				that.z = 0;
 				that.isJumping = false;
 				that.incrementSpeedBy(-1);
 			}, 1000);
@@ -195,9 +193,9 @@ var Sprite = require('./Sprite');
 		return that;
 	}
 
-	global.Skier = Skier;
+	global.skier = Skier;
 })(this);
 
 if (typeof module !== 'undefined') {
-	module.exports = this.Skier;
+	module.exports = this.skier;
 }

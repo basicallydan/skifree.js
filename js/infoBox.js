@@ -44,9 +44,9 @@
 		return that;
 	}
 
-	global.InfoBox = InfoBox;
+	global.infoBox = InfoBox;
 })(this);
 
 if (typeof module !== 'undefined') {
-	module.exports = this.InfoBox;
+	module.exports = this.infoBox;
 }

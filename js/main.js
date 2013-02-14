@@ -6,6 +6,9 @@ var infoBoxControls = 'Use the mouse to control the skier';
 if (isMobileDevice()) infoBoxControls = 'Tap on the piste to control the skier';
 var EventedArray = require('eventedArray');
 var Monster = require('monster');
+var Sprite = require('sprite');
+var Skier = require('skier');
+var InfoBox = require('infoBox');
 
 var sprites = {
 	'skier' : {
@@ -30,6 +33,9 @@ var sprites = {
 		parts : {
 			main : [ 0, 28, 30, 34 ]
 		},
+		hitBoxes: {
+			0: [ 0, 18, 30, 34 ]
+		},
 		hitBehaviour: {}
 	},
 	'tallTree' : {
@@ -38,6 +44,10 @@ var sprites = {
 			main : [ 95, 66, 32, 64 ]
 		},
 		zIndexesOccupied : [0, 1],
+		hitBoxes: {
+			0: [0, 54, 32, 64],
+			1: [0, 10, 32, 54]
+		},
 		hitBehaviour: {}
 	},
 	'thickSnow' : {
@@ -143,7 +153,7 @@ function thickSnowHitsSkierBehaviour(thickSnow, skier) {
 	skier.setSpeed(2);
 	setTimeout(function() {
 		skier.resetSpeed();
-	}, 700);
+	}, 300);
 }
 
 sprites.thickSnow.hitBehaviour.skier = thickSnowHitsSkierBehaviour;
@@ -294,7 +304,7 @@ function drawScene (images) {
 			monstersComeOut = true;
 		}
 
-		if (monstersComeOut && Number.random(100) === 1) {
+		if (monstersComeOut && Number.random(400) === 1) {
 			spawnMonster();
 		}
 
