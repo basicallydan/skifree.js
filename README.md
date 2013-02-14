@@ -17,6 +17,8 @@ I just started work this Christmas 2012 so I've not done a whole lot yet.
 * Speed boost (this was a little-known feature to get away from monsters) using the F key
 * **MOBILE SUPPORT** - This is cool - try loading the [**the demo page**](http://basicallydan.github.com/skifree.js) on a mobile device and then use your finger to direct the skier around the pistle. Also try double-tap ;)
 * Rainbow jump platforms & jumping - though a couple of improvements could be made
+* LocalStorage high-score (thanks, [@ddoolin](https://github.com/ddoolin)!)
+* Custom-sized Hitboxes
 
 ## So, what's left to do?
 
@@ -30,7 +32,6 @@ Some features which weren't in the original which I'd like to give a go:
 
 * Being a snowboarder instead of a boring old skier
 * Tricks, or something?
-* LocalStorage high-score
 * Multiplayer (ooooo wouldn't that be fun?!)
 
 ## F*ck this, let me play the game goddammit
