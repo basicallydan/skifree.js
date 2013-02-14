@@ -120,7 +120,7 @@
 				if (objectData.object.deleted) {
 					delete hittableObjects[k];
 				} else {
-					if (that.hits(objectData.object)) {
+					if (objectData.object.hits(that)) {
 						objectData.callbacks.each(function (callback) {
 							callback(that, objectData.object);
 						});
@@ -129,7 +129,7 @@
 			});
 		};
 
-		this.move = function move () {
+		this.move = function () {
 			if (typeof that.movingToward[0] !== 'undefined') {
 				if (that.x > that.movingToward[0]) {
 					that.x -= Math.min(that.speed, Math.abs(that.x - that.movingToward[0]));
@@ -147,7 +147,7 @@
 			}
 		};
 
-		this.moveToward = function moveToward (cx, cy, override) {
+		this.moveToward = function (cx, cy, override) {
 			if (override) {
 				that.movingWithConviction = false;
 			}
@@ -171,7 +171,7 @@
 			that.moveToward(moveTowardX, moveTowardY);
 		};
 
-		this.moveTowardWithConviction = function moveToward (cx, cy) {
+		this.moveTowardWithConviction = function (cx, cy) {
 			that.moveToward(cx, cy);
 			that.movingWithConviction = true;
 		};
@@ -195,7 +195,7 @@
 			return zIndexesOccupied.indexOf(z) >= 0;
 		};
 
-		this.hits = function hits (other) {
+		this.hits = function (other) {
 			var verticalIntersect = false;
 			var horizontalIntersect = false;
 

@@ -21,6 +21,7 @@ var Sprite = require('./Sprite');
 
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
+		var standardSpeed = 3;
 
 		var z = 0;
 
@@ -57,6 +58,10 @@ var Sprite = require('./Sprite');
 
 		that.getPixelsTravelledDownMountain = function () {
 			return pixelsTravelled;
+		};
+
+		that.resetSpeed = function () {
+			that.setSpeed(standardSpeed);
 		};
 
 		that.cycle = function () {
@@ -116,7 +121,6 @@ var Sprite = require('./Sprite');
 			}
 
 			if (sup.hits(obs)) {
-				obstaclesHit.push(obs.id);
 				return true;
 			}
 
@@ -137,9 +141,16 @@ var Sprite = require('./Sprite');
 			}
 		};
 
-		that.hasHitObstacle = function () {
+		that.hasHitObstacle = function (obs) {
 			that.isMoving = false;
 			that.hasBeenHit = true;
+			z = 0;
+			that.isJumping = false;
+
+			obstaclesHit.push(obs.id);
+
+			that.resetSpeed();
+
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
@@ -166,7 +177,9 @@ var Sprite = require('./Sprite');
 		};
 
 		that.isEatenBy = function (monster, whenEaten) {
+			that.hasHitObstacle(monster);
 			monster.startEating(whenEaten);
+			obstaclesHit.push(monster.id);
 			that.isMoving = false;
 			that.isBeingEaten = true;
 		};

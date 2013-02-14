@@ -24,4 +24,38 @@ describe('Skier', function() {
 			skier.getMovingTowardOpposite()[1].should.equal(-6);
 		});
 	});
+
+	describe('#hits()', function() {
+		it('should still hit taller objects if jumping', function() {
+			var skier = new Skier();
+			skier.setPosition(10, 30);
+			skier.hasHitJump();
+			
+			var tallSprite = new Sprite({
+				zIndexesOccupied : [0, 1]
+			});
+
+			tallSprite.setHeight(10);
+			tallSprite.setWidth(10);
+			tallSprite.setPosition(10, 30);
+
+			skier.hits(tallSprite).should.equal(true);
+		});
+
+		it('should not hit shorter objects if jumping', function() {
+			var skier = new Skier();
+			skier.setPosition(10, 30);
+			skier.hasHitJump();
+
+			var shortSprite = new Sprite({
+				zIndexesOccupied : [0]
+			});
+
+			shortSprite.setHeight(10);
+			shortSprite.setWidth(10);
+			shortSprite.setPosition(10, 30);
+
+			skier.hits(shortSprite).should.equal(false);
+		});
+	});
 });
