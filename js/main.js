@@ -101,8 +101,11 @@ function skierHitsJumpBehaviour(skier, jump) {
 }
 
 function skierHitsThickSnowBehaviour(skier, thickSnow) {
-	// Need to implement this
-	// skier.hasHitThickSnow(thickSnow);
+	// Need to implement this properly
+	skier.setSpeed(2);
+	setTimeout(function() {
+		skier.resetSpeed();
+	}, 1500);
 }
 
 function skierHitsMonsterBehaviour(skier, monster) {

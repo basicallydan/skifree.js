@@ -60,6 +60,10 @@ var Sprite = require('./Sprite');
 			return pixelsTravelled;
 		};
 
+		that.resetSpeed = function () {
+			that.setSpeed(standardSpeed);
+		};
+
 		that.cycle = function () {
 			if (that.isMoving) {
 				pixelsTravelled += that.speed;
