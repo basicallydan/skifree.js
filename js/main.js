@@ -199,11 +199,11 @@ function drawScene (images) {
 			}
 		});
 
-/*		staticObjects.onPush(function (obj) {
+		staticObjects.onPush(function (obj) {
 			if (obj.data.hitBehaviour.monster) {
 				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
 			}
-		});*/
+		});
 
 		monsters.push(newMonster);
 	}
