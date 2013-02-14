@@ -222,7 +222,7 @@ function drawScene (images) {
 			staticObject.draw(dContext, 'main');
 		});
 
-		if (Number.random(16) === 1 && skier.isMoving) {
+		if (Number.random(24) === 1 && skier.isMoving) {
 			(function () {
 				var newTree = new Sprite(sprites.smallTree);
 				newTree.setSpeed(skier.getSpeed());
@@ -239,7 +239,7 @@ function drawScene (images) {
 			}());
 		}
 
-		if (Number.random(32) === 1 && skier.isMoving) {
+		if (Number.random(40) === 1 && skier.isMoving) {
 			(function () {
 				var newTree = new Sprite(sprites.tallTree);
 				newTree.setSpeed(skier.getSpeed());
@@ -256,7 +256,7 @@ function drawScene (images) {
 			}());
 		}
 
-		if (Number.random(32) === 1 && skier.isMoving) {
+		if (Number.random(40) === 1 && skier.isMoving) {
 			(function () {
 				var newJump = new Sprite(sprites.jump);
 				newJump.setSpeed(skier.getSpeed());
@@ -268,7 +268,7 @@ function drawScene (images) {
 			}());
 		}
 
-		if (Number.random(32) === 1 && skier.isMoving) {
+		if (Number.random(40) === 1 && skier.isMoving) {
 			(function () {
 				var newThickSnow = new Sprite(sprites.thickSnow);
 				newThickSnow.setSpeed(skier.getSpeed());
