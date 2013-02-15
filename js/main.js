@@ -9,84 +9,8 @@ var Monster = require('monster');
 var Sprite = require('sprite');
 var Skier = require('skier');
 var InfoBox = require('infoBox');
+var sprites = require('spriteInfo');
 
-var sprites = {
-	'skier' : {
-		$imageFile : 'sprite-characters.png',
-		parts : {
-			blank : [ 0, 0, 0, 0 ],
-			east : [ 0, 0, 24, 34 ],
-			esEast : [ 24, 0, 24, 34 ],
-			sEast : [ 49, 0, 17, 34 ],
-			south : [ 65, 0, 17, 34 ],
-			sWest : [ 49, 37, 17, 34 ],
-			wsWest : [ 24, 37, 24, 34 ],
-			west : [ 0, 37, 24, 34 ],
-			hit : [ 0, 78, 31, 31 ],
-			jumping : [ 84, 0, 32, 34 ]
-		},
-		id : 'player',
-		hitBehaviour: {}
-	},
-	'smallTree' : {
-		$imageFile : 'skifree-objects.png',
-		parts : {
-			main : [ 0, 28, 30, 34 ]
-		},
-		hitBoxes: {
-			0: [ 0, 18, 30, 34 ]
-		},
-		hitBehaviour: {}
-	},
-	'tallTree' : {
-		$imageFile : 'skifree-objects.png',
-		parts : {
-			main : [ 95, 66, 32, 64 ]
-		},
-		zIndexesOccupied : [0, 1],
-		hitBoxes: {
-			0: [0, 54, 32, 64],
-			1: [0, 10, 32, 54]
-		},
-		hitBehaviour: {}
-	},
-	'thickSnow' : {
-		$imageFile : 'skifree-objects.png',
-		parts : {
-			main : [ 143, 53, 43, 10 ]
-		},
-		hitBehaviour: {}
-	},
-	'monster' : {
-		$imageFile : 'sprite-characters.png',
-		parts : {
-			sEast1 : [ 64, 112, 26, 43 ],
-			sEast2 : [ 90, 112, 32, 43 ],
-			sWest1 : [ 64, 158, 26, 43 ],
-			sWest2 : [ 90, 158, 32, 43 ],
-			eating1 : [ 122, 112, 34, 43 ],
-			eating2 : [ 156, 112, 31, 43 ],
-			eating3 : [ 187, 112, 31, 43 ],
-			eating4 : [ 219, 112, 25, 43 ],
-			eating5 : [ 243, 112, 26, 43 ]
-		},
-		hitBehaviour: {}
-	},
-	'jump' : {
-		$imageFile : 'skifree-objects.png',
-		parts : {
-			main : [ 109, 55, 32, 8 ]
-		},
-		hitBehaviour: {}
-	},
-	'signFreeStyle' : {
-		$imageFile : 'skifree-objects.png',
-		parts : {
-			main : [ 130, 95, 40, 35 ]
-		},
-		hitBehaviour: {}
-	}
-};
 var pixelsPerMetre = 18;
 var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
@@ -113,58 +37,6 @@ function loadImages (sources, next) {
 	});
 }
 
-function monsterHitsTreeBehaviour(monster) {
-	monster.deleteOnNextCycle();
-}
-
-sprites.monster.hitBehaviour.tree = monsterHitsTreeBehaviour;
-
-function treeHitsMonsterBehaviour(tree, monster) {
-	monster.deleteOnNextCycle();
-}
-
-sprites.smallTree.hitBehaviour.monster = treeHitsMonsterBehaviour;
-sprites.tallTree.hitBehaviour.monster = treeHitsMonsterBehaviour;
-
-function skierHitsTreeBehaviour(skier, tree) {
-	skier.hasHitObstacle(tree);
-}
-
-function treeHitsSkierBehaviour(tree, skier) {
-	skier.hasHitObstacle(tree);
-}
-
-sprites.smallTree.hitBehaviour.skier = treeHitsSkierBehaviour;
-sprites.tallTree.hitBehaviour.skier = treeHitsSkierBehaviour;
-
-function skierHitsJumpBehaviour(skier, jump) {
-	skier.hasHitJump(jump);
-}
-
-function jumpHitsSkierBehaviour(jump, skier) {
-	skier.hasHitJump(jump);
-}
-
-sprites.jump.hitBehaviour.skier = jumpHitsSkierBehaviour;
-
-function skierHitsThickSnowBehaviour(skier, thickSnow) {
-	// Need to implement this properly
-	skier.setSpeed(2);
-	setTimeout(function() {
-		skier.resetSpeed();
-	}, 700);
-}
-
-function thickSnowHitsSkierBehaviour(thickSnow, skier) {
-	// Need to implement this properly
-	skier.setSpeed(2);
-	setTimeout(function() {
-		skier.resetSpeed();
-	}, 300);
-}
-
-sprites.thickSnow.hitBehaviour.skier = thickSnowHitsSkierBehaviour;
-
 function monsterHitsSkierBehaviour(monster, skier) {
 	skier.isEatenBy(monster, function () {
 		livesLeft -= 1;
@@ -172,11 +44,11 @@ function monsterHitsSkierBehaviour(monster, skier) {
 		monster.isEating = false;
 		skier.isBeingEaten = false;
 		monster.setSpeed(skier.getSpeed());
-		monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+		monster.setPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 	});
 }
 
-function drawScene (images) {
+function startGame (images) {
 	var skier;
 	var infoBox;
 	var staticObjects = new SpriteArray();
@@ -203,52 +75,11 @@ function drawScene (images) {
 		skier.reset();
 	}
 
-	function spawnMonster () {
-		var newMonster = new Monster(sprites.monster);
-		newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
-		newMonster.setSpeed(1);
-
-		newMonster.onHitting(skier, monsterHitsSkierBehaviour);
-
-		staticObjects.each(function (obj) {
-			if (obj.data.hitBehaviour.monster) {
-				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
-			}
-		});
-
-		staticObjects.onPush(function (obj) {
-			if (obj.data.hitBehaviour.monster) {
-				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
-			}
-		});
-
-		monsters.push(newMonster);
-	}
-
 	function detectEnd () {
 		paused = true;
 		highScore = localStorage.setItem('highScore', distanceTravelledInMetres);
 		console.log('Game over!');
 	}
-
-	skier = new Skier(sprites.skier);
-
-	infoBox = new InfoBox({
-		initialLines : [
-			'SkiFree.js',
-			infoBoxControls,
-			'Travelled 0m',
-			'High Score: ' + highScore,
-			'Skiers left: ' + livesLeft,
-			'Created by Dan Hough (@basicallydan)'
-		],
-		position: {
-			top: 15,
-			right: 10
-		}
-	});
-
-	skier.setPosition(mouseX, getMiddleOfViewport() - skier.getMaxHeight());
 
 	function randomlyGenerateObject(sprite, dropRate) {
 		if (Number.random(100) <= dropRate && skier.isMoving) {
@@ -271,13 +102,52 @@ function drawScene (images) {
 		}
 	}
 
+	function spawnMonster () {
+		var newMonster = new Monster(sprites.monster);
+		newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
+		newMonster.follow(skier);
+		newMonster.onHitting(skier, monsterHitsSkierBehaviour);
+
+		staticObjects.each(function (obj) {
+			if (obj.data.hitBehaviour.monster) {
+				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
+			}
+		});
+
+		staticObjects.onPush(function (obj) {
+			if (obj.data.hitBehaviour.monster) {
+				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
+			}
+		});
+
+		monsters.push(newMonster);
+	}
+
+	skier = new Skier(sprites.skier);
+	skier.setPosition(mouseX, getMiddleOfViewport() - skier.getMaxHeight());
+
+	infoBox = new InfoBox({
+		initialLines : [
+			'SkiFree.js',
+			infoBoxControls,
+			'Travelled 0m',
+			'High Score: ' + highScore,
+			'Skiers left: ' + livesLeft,
+			'Created by Dan Hough (@basicallydan)'
+		],
+		position: {
+			top: 15,
+			right: 10
+		}
+	});
+
 	setInterval(function () {
 		var skierOpposite = skier.getMovingTowardOpposite();
 
 		mainCanvas.width = mainCanvas.width;
 
 		if (!skier.isJumping) {
-			skier.moveToward(mouseX, mouseY);
+			skier.setPositionTarget(mouseX, mouseY);
 		}
 
 		skier.draw(dContext);
@@ -288,17 +158,16 @@ function drawScene (images) {
 			}
 
 			if (monster.isFull) {
-				monster.move();
+				monster.stopFollowing();
 			} else if (!skier.isBeingEaten) {
-				monster.setSpeed(4 - skier.getSpeed());
-				monster.moveToward(skier.getXPosition(), skier.getYPosition(), true);
+				monster.follow(skier);
 			} else if (skier.isBeingEaten && !monster.isEating) {
-				monster.setSpeed(skier.getSpeed());
-				monster.moveTowardWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+				monster.stopFollowing();
+				monster.setPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 			}
 
-			monster.draw(dContext);
 			monster.cycle();
+			monster.draw(dContext);
 		});
 
 		randomlyGenerateObject(sprites.smallTree, 10);
@@ -461,4 +330,4 @@ window.addEventListener('resize', resizeCanvas, false);
 
 resizeCanvas();
 
-loadImages(imageSources, drawScene);
+loadImages(imageSources, startGame);

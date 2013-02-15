@@ -9,7 +9,9 @@ describe('Skier', function() {
 		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going right', function() {
 			var skier = new Skier();
 			skier.setPosition(10, 30);
-			skier.moveToward(100, 36);
+			skier.setPositionTarget(100, 36);
+
+			skier.cycle();
 
 			skier.getMovingTowardOpposite()[0].should.equal(-90);
 			skier.getMovingTowardOpposite()[1].should.equal(-6);
@@ -18,7 +20,9 @@ describe('Skier', function() {
 		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going left', function() {
 			var skier = new Skier();
 			skier.setPosition(10, 30);
-			skier.moveToward(-100, 36);
+			skier.setPositionTarget(-100, 36);
+			
+			skier.cycle();
 
 			skier.getMovingTowardOpposite()[0].should.equal(110);
 			skier.getMovingTowardOpposite()[1].should.equal(-6);

@@ -33,7 +33,9 @@ describe('Sprite', function() {
 
 			sprite.setPosition(5, 10);
 
-			sprite.moveToward(10, 18);
+			sprite.setPositionTarget(10, 18);
+
+			sprite.cycle();
 
 			assert.equal(8, sprite.getXPosition());
 			assert.equal(13, sprite.getYPosition());
@@ -46,7 +48,9 @@ describe('Sprite', function() {
 
 			sprite.setPosition(5, 10);
 
-			sprite.moveToward(1, 18);
+			sprite.setPositionTarget(1, 18);
+
+			sprite.cycle();
 
 			assert.equal(2, sprite.getXPosition());
 			assert.equal(13, sprite.getYPosition());
@@ -59,7 +63,9 @@ describe('Sprite', function() {
 
 			sprite.setPosition(5, 10);
 
-			sprite.moveToward(1, 1);
+			sprite.setPositionTarget(1, 1);
+
+			sprite.cycle();
 
 			assert.equal(2, sprite.getXPosition());
 			assert.equal(7, sprite.getYPosition());
@@ -72,7 +78,9 @@ describe('Sprite', function() {
 
 			sprite.setPosition(5, 10);
 
-			sprite.moveToward(7, 11);
+			sprite.setPositionTarget(7, 11);
+
+			sprite.cycle();
 
 			assert.equal(7, sprite.getXPosition());
 			assert.equal(11, sprite.getYPosition());
@@ -85,7 +93,9 @@ describe('Sprite', function() {
 
 			sprite.setPosition(6, 20);
 
-			sprite.moveToward(-50, -10);
+			sprite.setPositionTarget(-50, -10);
+
+			sprite.cycle();
 
 			sprite.getXPosition().should.equal(3);
 			sprite.getYPosition().should.equal(17);

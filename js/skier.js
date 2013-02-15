@@ -43,14 +43,15 @@ var Sprite = require('./Sprite');
 			return 'jumping';
 		}
 
-		that.moveToward = function (cx, cy) {
+		that.setPositionTarget = function (cx, cy) {
 			if (that.hasBeenHit) return;
 
-			if (cy > that.y) {
+			if (cy > that.screenY) {
 				that.isMoving = true;
 			} else {
 				that.isMoving = false;
 			}
+
 			that.movingToward = [ cx, cy ];
 		};
 
@@ -67,7 +68,7 @@ var Sprite = require('./Sprite');
 				pixelsTravelled += that.speed;
 			}
 			
-			return sup.cycle();
+			that.checkHittableObjects();
 		};
 
 		that.draw = function(dContext) {
@@ -84,8 +85,8 @@ var Sprite = require('./Sprite');
 					return 'hit';
 				}
 				
-				var xDiff = that.movingToward[0] - that.x;
-				var yDiff = that.movingToward[1] - that.y;
+				var xDiff = that.movingToward[0] - that.screenX;
+				var yDiff = that.movingToward[1] - that.screenY;
 				if (yDiff < 0) {
 					if (xDiff > 0) {
 						return 'east';
@@ -114,7 +115,7 @@ var Sprite = require('./Sprite');
 				return false;
 			}
 
-			if (!obs.occupiesZIndex(that.z)) {
+			if (!obs.occupiesZIndex(that.screenZ)) {
 				return false;
 			}
 
@@ -142,7 +143,7 @@ var Sprite = require('./Sprite');
 		that.hasHitObstacle = function (obs) {
 			that.isMoving = false;
 			that.hasBeenHit = true;
-			that.z = 0;
+			that.screenZ = 0;
 			that.isJumping = false;
 
 			obstaclesHit.push(obs.id);
@@ -162,13 +163,13 @@ var Sprite = require('./Sprite');
 			that.isMoving = true;
 			that.hasBeenHit = false;
 			that.isJumping = true;
-			that.z = 1;
+			that.screenZ = 1;
 			that.incrementSpeedBy(1);
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
 			cancelableStateTimeout = setTimeout(function() {
-				that.z = 0;
+				that.screenZ = 0;
 				that.isJumping = false;
 				that.incrementSpeedBy(-1);
 			}, 1000);
