@@ -4,6 +4,7 @@
 		var hittableObjects = {};
 		var zIndexesOccupied = [ 0 ];
 		var that = this;
+		var trackedSpriteToMoveAround;
 		that.id = GUID();
 		that.x = 0;
 		that.y = 0;
@@ -45,6 +46,16 @@
 					return data.hitBoxes[forZIndex];
 				}
 			}
+		}
+
+		function moveAwayFromSprite(otherSprite) {
+			var opposite = otherSprite.getMovingTowardOpposite();
+			that.setSpeed(otherSprite.getSpeed());
+
+			var moveTowardX = that.getXPosition() + opposite[0];
+			var moveTowardY = that.getYPosition() + opposite[1];
+
+			that.moveToward(moveTowardX, moveTowardY);
 		}
 
 		this.draw = function draw (dCtx, spriteFrame) {
@@ -166,6 +177,10 @@
 					}
 				}
 			});
+
+			if (trackedSpriteToMoveAround) {
+				moveAwayFromSprite(trackedSpriteToMoveAround);
+			}
 		};
 
 		this.move = function () {
@@ -200,14 +215,8 @@
 			that.move();
 		};
 
-		this.moveAwayFromSprite = function (otherSprite) {
-			var opposite = otherSprite.getMovingTowardOpposite();
-			that.setSpeed(otherSprite.getSpeed());
-
-			var moveTowardX = that.getXPosition() + opposite[0];
-			var moveTowardY = that.getYPosition() + opposite[1];
-
-			that.moveToward(moveTowardX, moveTowardY);
+		this.trackSpriteToMoveAround = function (otherSprite) {
+			trackedSpriteToMoveAround = otherSprite;
 		};
 
 		this.moveTowardWithConviction = function (cx, cy) {

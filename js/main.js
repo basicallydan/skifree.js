@@ -4,7 +4,7 @@ var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var global = this;
 var infoBoxControls = 'Use the mouse to control the skier';
 if (isMobileDevice()) infoBoxControls = 'Tap on the piste to control the skier';
-var EventedArray = require('eventedArray');
+var SpriteArray = require('spriteArray');
 var Monster = require('monster');
 var Sprite = require('sprite');
 var Skier = require('skier');
@@ -76,6 +76,13 @@ var sprites = {
 		$imageFile : 'skifree-objects.png',
 		parts : {
 			main : [ 109, 55, 32, 8 ]
+		},
+		hitBehaviour: {}
+	},
+	'signFreeStyle' : {
+		$imageFile : 'skifree-objects.png',
+		parts : {
+			main : [ 130, 95, 40, 35 ]
 		},
 		hitBehaviour: {}
 	}
@@ -172,7 +179,7 @@ function monsterHitsSkierBehaviour(monster, skier) {
 function drawScene (images) {
 	var skier;
 	var infoBox;
-	var staticObjects = new EventedArray();
+	var staticObjects = new SpriteArray();
 	var monsters = [];
 	var jumps = [];
 	var thickSnowPatches = [];
@@ -248,6 +255,7 @@ function drawScene (images) {
 			var newSprite = new Sprite(sprite);
 			newSprite.setSpeed(skier.getSpeed());
 			newSprite.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
+			newSprite.trackSpriteToMoveAround(skier);
 
 			if (sprite.hitBehaviour.monster) {
 				monsters.each(function (monster) {
@@ -303,23 +311,22 @@ function drawScene (images) {
 		if (!monstersComeOut && distanceTravelledInMetres >= 200) {
 			monstersComeOut = true;
 		}
-
+ 
 		if (monstersComeOut && Number.random(400) === 1) {
 			spawnMonster();
 		}
 
 		skier.cycle();
 		
+		staticObjects.cull();
+
 		staticObjects.each(function (staticObject, i) {
-			if (staticObject.isAbove(0)) {
-				staticObject.deleteOnNextCycle();
-				return (delete staticObjects[i]);
-			}
-
-			staticObject.moveAwayFromSprite(skier);
-
 			staticObject.cycle();
 			staticObject.draw(dContext, 'main');
+
+			if (staticObject.isAbove(0)) {
+				staticObject.deleteOnNextCycle();
+			}
 		});
 
 		infoBox.setLines([
