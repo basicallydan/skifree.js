@@ -21,11 +21,12 @@ var Sprite = require('./Sprite');
 
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
-		var standardSpeed = 3;
+		var standardSpeed = 5;
 
 		that.isMoving = true;
 		that.hasBeenHit = false;
 		that.isJumping = false;
+		that.setSpeed(standardSpeed);
 
 		that.reset = function () {
 			obstaclesHit = [];
@@ -35,6 +36,29 @@ var Sprite = require('./Sprite');
 			canSpeedBoost = true;
 		};
 
+		function getDirection() {
+			var xDiff = that.movingToward[0] - that.mapPosition[0];
+			var yDiff = that.movingToward[1] - that.mapPosition[1];
+			if (yDiff <= 0) {
+				if (xDiff > 0) {
+					return 'east';
+				} else {
+					return 'west';
+				}
+			}
+
+			if (directions.esEast(xDiff)) {
+				return 'esEast';
+			} else if (directions.sEast(xDiff)) {
+				return 'sEast';
+			} else if (directions.wsWest(xDiff)) {
+				return 'wsWest';
+			} else if (directions.sWest(xDiff)) {
+				return 'sWest';
+			}
+			return 'south';
+		}
+
 		function getBeingEatenSprite() {
 			return 'blank';
 		}
@@ -43,16 +67,21 @@ var Sprite = require('./Sprite');
 			return 'jumping';
 		}
 
-		that.setPositionTarget = function (cx, cy) {
+		that.setMapPositionTarget = function (x, y) {
 			if (that.hasBeenHit) return;
 
-			if (cy > that.screenY) {
+			if (y > that.mapPosition[1]) {
 				that.isMoving = true;
 			} else {
 				that.isMoving = false;
+				// y = that.mapPosition[1];
 			}
 
-			that.movingToward = [ cx, cy ];
+			if (Math.abs(that.mapPosition[0] - x) <= 75) {
+				x = that.mapPosition[0];
+			}
+
+			that.movingToward = [ x, y ];
 		};
 
 		that.getPixelsTravelledDownMountain = function () {
@@ -67,6 +96,8 @@ var Sprite = require('./Sprite');
 			if (that.isMoving) {
 				pixelsTravelled += that.speed;
 			}
+
+			sup.cycle();
 			
 			that.checkHittableObjects();
 		};
@@ -84,27 +115,8 @@ var Sprite = require('./Sprite');
 				if (that.hasBeenHit) {
 					return 'hit';
 				}
-				
-				var xDiff = that.movingToward[0] - that.screenX;
-				var yDiff = that.movingToward[1] - that.screenY;
-				if (yDiff < 0) {
-					if (xDiff > 0) {
-						return 'east';
-					} else {
-						return 'west';
-					}
-				}
 
-				if (directions.esEast(xDiff)) {
-					return 'esEast';
-				} else if (directions.sEast(xDiff)) {
-					return 'sEast';
-				} else if (directions.wsWest(xDiff)) {
-					return 'wsWest';
-				} else if (directions.sWest(xDiff)) {
-					return 'sWest';
-				}
-				return 'south';
+				return getDirection();
 			};
 
 			return sup.draw(dContext, spritePartToUse());
@@ -115,7 +127,7 @@ var Sprite = require('./Sprite');
 				return false;
 			}
 
-			if (!obs.occupiesZIndex(that.screenZ)) {
+			if (!obs.occupiesZIndex(that.canvasZ)) {
 				return false;
 			}
 
@@ -143,7 +155,7 @@ var Sprite = require('./Sprite');
 		that.hasHitObstacle = function (obs) {
 			that.isMoving = false;
 			that.hasBeenHit = true;
-			that.screenZ = 0;
+			that.canvasZ = 0;
 			that.isJumping = false;
 
 			obstaclesHit.push(obs.id);
@@ -163,15 +175,15 @@ var Sprite = require('./Sprite');
 			that.isMoving = true;
 			that.hasBeenHit = false;
 			that.isJumping = true;
-			that.screenZ = 1;
-			that.incrementSpeedBy(1);
+			that.canvasZ = 1;
+			// that.incrementSpeedBy(1);
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
 			cancelableStateTimeout = setTimeout(function() {
-				that.screenZ = 0;
+				that.canvasZ = 0;
 				that.isJumping = false;
-				that.incrementSpeedBy(-1);
+				// that.incrementSpeedBy(-1);
 			}, 1000);
 		};
 

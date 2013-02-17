@@ -6,7 +6,7 @@ var Sprite = require('./Sprite');
 		var super_draw = that.superior('draw');
 		var spriteVersion = 1;
 		var eatingStage = 0;
-		var standardSpeed = 1;
+		var standardSpeed = 4;
 
 		that.isEating = false;
 		that.isFull = false;
@@ -14,7 +14,7 @@ var Sprite = require('./Sprite');
 
 		that.draw = function(dContext) {
 			var spritePartToUse = function () {
-				var xDiff = that.movingToward[0] - that.screenX;
+				var xDiff = that.movingToward[0] - that.canvasX;
 
 				if (that.isEating) {
 					return 'eating' + eatingStage;

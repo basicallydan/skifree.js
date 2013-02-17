@@ -6,12 +6,15 @@
 		var that = this;
 		var trackedSpriteToMoveAround;
 		var trackedSpriteToMoveToward;
+		that.mapPosition = [0, 0, 0];
 		that.id = GUID();
-		that.screenX = 0;
-		that.screenY = 0;
-		that.screenZ = 0;
+		that.canvasX = 0;
+		that.canvasY = 0;
+		that.canvasZ = 0;
 		that.height = 0;
-		that.speed = 3;
+		that.speed = 0;
+		that.speedX = that.speed;
+		that.speedY = that.speed;
 		that.data = data || { parts : {} };
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
@@ -20,6 +23,7 @@
 		that.maxHeight = (function () {
 			return Object.values(that.data.parts).map(function (p) { return p[3]; }).max();
 		}());
+		that.isMoving = true;
 
 		if (!that.data.parts) {
 			that.data.parts = {};
@@ -34,11 +38,11 @@
 		}
 
 		function incrementX(amount) {
-			that.screenX += amount.toNumber();
+			that.canvasX += amount.toNumber();
 		}
 
 		function incrementY(amount) {
-			that.screenY += amount.toNumber();
+			that.canvasY += amount.toNumber();
 		}
 
 		function getHitBox(forZIndex) {
@@ -50,63 +54,83 @@
 		}
 
 		function move() {
+			if (!that.isMoving) {
+				return;
+			}
+
+			var currentX = that.mapPosition[0];
+			var currentY = that.mapPosition[1];
+
 			if (typeof that.movingToward[0] !== 'undefined') {
-				if (that.screenX > that.movingToward[0]) {
-					that.screenX -= Math.min(that.speed, Math.abs(that.screenX - that.movingToward[0]));
-				} else if (that.screenX < that.movingToward[0]) {
-					that.screenX += Math.min(that.speed, Math.abs(that.screenX - that.movingToward[0]));
+				if (currentX > that.movingToward[0]) {
+					currentX -= Math.min(that.speedX, Math.abs(currentX - that.movingToward[0]));
+				} else if (currentX < that.movingToward[0]) {
+					currentX += Math.min(that.speedX, Math.abs(currentX - that.movingToward[0]));
 				}
 			}
 			
 			if (typeof that.movingToward[1] !== 'undefined') {
-				if (that.screenY > that.movingToward[1]) {
-					that.screenY -= Math.min(that.speed, Math.abs(that.screenY - that.movingToward[1]));
-				} else if (that.screenY < that.movingToward[1]) {
-					that.screenY += Math.min(that.speed, Math.abs(that.screenY - that.movingToward[1]));
+				if (currentY > that.movingToward[1]) {
+					currentY -= Math.min(that.speedY, Math.abs(currentY - that.movingToward[1]));
+				} else if (currentY < that.movingToward[1]) {
+					currentY += Math.min(that.speedY, Math.abs(currentY - that.movingToward[1]));
 				}
 			}
+
+			that.setMapPosition(currentX, currentY);
 		}
 
 		function moveAwayFromSprite(otherSprite) {
 			var opposite = otherSprite.getMovingTowardOpposite();
 			that.setSpeed(otherSprite.getSpeed());
 
-			var moveTowardX = that.getXPosition() + opposite[0];
-			var moveTowardY = that.getYPosition() + opposite[1];
+			var moveTowardX = that.getCanvasPositionX() + opposite[0];
+			var moveTowardY = that.getCanvasPositionY() + opposite[1];
 
-			that.setPositionTarget(moveTowardX, moveTowardY);
+			that.setMapPositionTarget(moveTowardX, moveTowardY);
 		}
 
 		this.draw = function draw (dCtx, spriteFrame) {
 			var fr = that.data.parts[spriteFrame];
 			that.height = fr[3];
 			that.width = fr[2];
-			dCtx.drawImage(dCtx.getLoadedImage(that.data.$imageFile), fr[0], fr[1], fr[2], fr[3], that.screenX, that.screenY, fr[2], fr[3]);
+
+			var newCanvasPosition = dCtx.mapPositionToCanvasPosition(that.mapPosition);
+			that.setCanvasPosition(newCanvasPosition[0], newCanvasPosition[1]);
+
+			dCtx.drawImage(dCtx.getLoadedImage(that.data.$imageFile), fr[0], fr[1], fr[2], fr[3], that.canvasX, that.canvasY, fr[2], fr[3]);
 		};
 
-		this.setPosition = function setPosition (cx, cy) {
+		this.setMapPosition = function (x, y, z) {
+			if (typeof z === 'undefined') {
+				z = that.mapPosition[2];
+			}
+			that.mapPosition = [x, y, z];
+		};
+
+		this.setCanvasPosition = function setCanvasPosition (cx, cy) {
 			if (cx) {
 				if (Object.isString(cx) && (cx.first() === '+' || cx.first() === '-')) incrementX(cx);
-				else that.screenX = cx;
+				else that.canvasX = cx;
 			}
 			
 			if (cy) {
 				if (Object.isString(cy) && (cy.first() === '+' || cy.first() === '-')) incrementY(cy);
-				else that.screenY = cy;
+				else that.canvasY = cy;
 			}
 		};
 
-		this.getXPosition = function getXPosition () {
-			return that.screenX;
+		this.getCanvasPositionX = function getCanvasPositionX () {
+			return that.canvasX;
 		};
 
-		this.getYPosition = function getYPosition () {
-			return that.screenY;
+		this.getCanvasPositionY = function getCanvasPositionY () {
+			return that.canvasY;
 		};
 
 		this.getLeftHitBoxEdge = function getLeftHitBoxEdge(zIndex) {
 			zIndex = zIndex || 0;
-			var lhbe = this.getXPosition();
+			var lhbe = this.getCanvasPositionX();
 			if (getHitBox(zIndex)) {
 				lhbe += getHitBox(zIndex)[0];
 			}
@@ -115,7 +139,7 @@
 
 		this.getTopHitBoxEdge = function getTopHitBoxEdge(zIndex) {
 			zIndex = zIndex || 0;
-			var thbe = this.getYPosition();
+			var thbe = this.getCanvasPositionY();
 			if (getHitBox(zIndex)) {
 				thbe += getHitBox(zIndex)[1];
 			}
@@ -126,28 +150,30 @@
 			zIndex = zIndex || 0;
 
 			if (getHitBox(zIndex)) {
-				return that.screenX + getHitBox(zIndex)[2];
+				return that.canvasX + getHitBox(zIndex)[2];
 			}
 
-			return that.screenX + that.width;
+			return that.canvasX + that.width;
 		};
 
 		this.getBottomHitBoxEdge = function getBottomHitBoxEdge(zIndex) {
 			zIndex = zIndex || 0;
 
 			if (getHitBox(zIndex)) {
-				return that.screenY + getHitBox(zIndex)[3];
+				return that.canvasY + getHitBox(zIndex)[3];
 			}
 
-			return that.screenY + that.height;
+			return that.canvasY + that.height;
 		};
 
 		this.getPositionInFrontOf = function getPositionInFrontOf () {
-			return [that.screenX, that.screenY + that.height];
+			return [that.canvasX, that.canvasY + that.height];
 		};
 
 		this.setSpeed = function (s) {
 			that.speed = s;
+			that.speedX = s;
+			that.speedY = s;
 		};
 
 		this.incrementSpeedBy = function (s) {
@@ -175,8 +201,8 @@
 				return [0, 0];
 			}
 
-			var dx = (that.movingToward[0] - that.getXPosition());
-			var dy = (that.movingToward[1] - that.getYPosition());
+			var dx = (that.movingToward[0] - that.mapPosition[0]);
+			var dy = (that.movingToward[1] - that.mapPosition[1]);
 
 			var oppositeX = (Math.abs(dx) > 75 ? 0 - dx : 0);
 			var oppositeY = -dy;
@@ -206,14 +232,13 @@
 			}
 
 			if (trackedSpriteToMoveToward) {
-				that.setSpeed(4 - trackedSpriteToMoveToward.getSpeed());
-				that.setPositionTarget(trackedSpriteToMoveToward.getXPosition(), trackedSpriteToMoveToward.getYPosition(), true);
+				that.setMapPositionTarget(trackedSpriteToMoveToward.mapPosition[0], trackedSpriteToMoveToward.mapPosition[1], true);
 			}
 
 			move();
 		};
 
-		this.setPositionTarget = function (cx, cy, override) {
+		this.setMapPositionTarget = function (cx, cy, override) {
 			if (override) {
 				that.movingWithConviction = false;
 			}
@@ -225,8 +250,8 @@
 			}
 		};
 
-		this.setPositionTargetWithConviction = function (cx, cy) {
-			that.setPositionTarget(cx, cy);
+		this.setMapPositionTargetWithConviction = function (cx, cy) {
+			that.setMapPositionTarget(cx, cy);
 			that.movingWithConviction = true;
 		};
 
@@ -266,30 +291,30 @@
 			var horizontalIntersect = false;
 
 			// Test that THIS has a bottom edge inside of the other object
-			if (other.getTopHitBoxEdge(that.screenZ) <= that.getBottomHitBoxEdge(that.screenZ) && other.getBottomHitBoxEdge(that.screenZ) >= that.getBottomHitBoxEdge(that.screenZ)) {
+			if (other.getTopHitBoxEdge(that.canvasZ) <= that.getBottomHitBoxEdge(that.canvasZ) && other.getBottomHitBoxEdge(that.canvasZ) >= that.getBottomHitBoxEdge(that.canvasZ)) {
 				verticalIntersect = true;
 			}
 
 			// Test that THIS has a top edge inside of the other object
-			if (other.getTopHitBoxEdge(that.screenZ) <= that.getTopHitBoxEdge(that.screenZ) && other.getBottomHitBoxEdge(that.screenZ) >= that.getTopHitBoxEdge(that.screenZ)) {
+			if (other.getTopHitBoxEdge(that.canvasZ) <= that.getTopHitBoxEdge(that.canvasZ) && other.getBottomHitBoxEdge(that.canvasZ) >= that.getTopHitBoxEdge(that.canvasZ)) {
 				verticalIntersect = true;
 			}
 
 			// Test that THIS has a right edge inside of the other object
-			if (other.getLeftHitBoxEdge(that.screenZ) <= that.getRightHitBoxEdge(that.screenZ) && other.getRightHitBoxEdge(that.screenZ) >= that.getRightHitBoxEdge(that.screenZ)) {
+			if (other.getLeftHitBoxEdge(that.canvasZ) <= that.getRightHitBoxEdge(that.canvasZ) && other.getRightHitBoxEdge(that.canvasZ) >= that.getRightHitBoxEdge(that.canvasZ)) {
 				horizontalIntersect = true;
 			}
 
 			// Test that THIS has a left edge inside of the other object
-			if (other.getLeftHitBoxEdge(that.screenZ) <= that.getLeftHitBoxEdge(that.screenZ) && other.getRightHitBoxEdge(that.screenZ) >= that.getLeftHitBoxEdge(that.screenZ)) {
+			if (other.getLeftHitBoxEdge(that.canvasZ) <= that.getLeftHitBoxEdge(that.canvasZ) && other.getRightHitBoxEdge(that.canvasZ) >= that.getLeftHitBoxEdge(that.canvasZ)) {
 				horizontalIntersect = true;
 			}
 
 			return verticalIntersect && horizontalIntersect;
 		};
 
-		this.isAbove = function (cy) {
-			return (that.screenY + that.height) < cy;
+		this.isAboveOnCanvas = function (cy) {
+			return (that.canvasY + that.height) < cy;
 		};
 
 		return that;

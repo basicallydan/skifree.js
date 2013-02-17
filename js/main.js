@@ -33,7 +33,7 @@ function loadImages (sources, next) {
 		var im = new Image();
 		im.onload = finish;
 		im.src = src;
-		images[src] = im;
+		dContext.storeLoadedImage(src, im);
 	});
 }
 
@@ -44,7 +44,7 @@ function monsterHitsSkierBehaviour(monster, skier) {
 		monster.isEating = false;
 		skier.isBeingEaten = false;
 		monster.setSpeed(skier.getSpeed());
-		monster.setPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+		monster.setMapPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 	});
 }
 
@@ -58,12 +58,6 @@ function startGame (images) {
 	var mouseX = getCentreOfViewport();
 	var mouseY = mainCanvas.height;
 	var paused = false;
-
-	dContext.getLoadedImage = function (imgPath) {
-		if (images[imgPath]) {
-			return images[imgPath];
-		}
-	};
 
 	function resetGame () {
 		pixelsPerMetre = 18;
@@ -84,9 +78,9 @@ function startGame (images) {
 	function randomlyGenerateObject(sprite, dropRate) {
 		if (Number.random(100) <= dropRate && skier.isMoving) {
 			var newSprite = new Sprite(sprite);
-			newSprite.setSpeed(skier.getSpeed());
-			newSprite.setPosition(getRandomlyInTheCentre(200), getBelowViewport());
-			newSprite.trackSpriteToMoveAround(skier);
+			newSprite.setSpeed(0);
+			var randomPosition = getRandomMapPositionBelowViewport();
+			newSprite.setMapPosition(randomPosition[0], randomPosition[1]);
 
 			if (sprite.hitBehaviour.monster) {
 				monsters.each(function (monster) {
@@ -104,7 +98,8 @@ function startGame (images) {
 
 	function spawnMonster () {
 		var newMonster = new Monster(sprites.monster);
-		newMonster.setPosition(getRandomlyInTheCentre(), getAboveViewport());
+		var randomPosition = getRandomMapPositionAboveViewport();
+		newMonster.setMapPosition(randomPosition[0], randomPosition[1]);
 		newMonster.follow(skier);
 		newMonster.onHitting(skier, monsterHitsSkierBehaviour);
 
@@ -124,7 +119,8 @@ function startGame (images) {
 	}
 
 	skier = new Skier(sprites.skier);
-	skier.setPosition(mouseX, getMiddleOfViewport() - skier.getMaxHeight());
+	skier.setMapPosition(0, 0);
+	dContext.followSprite(skier);
 
 	infoBox = new InfoBox({
 		initialLines : [
@@ -147,13 +143,14 @@ function startGame (images) {
 		mainCanvas.width = mainCanvas.width;
 
 		if (!skier.isJumping) {
-			skier.setPositionTarget(mouseX, mouseY);
+			var mouseCanvasPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
+			skier.setMapPositionTarget(mouseCanvasPosition[0], mouseCanvasPosition[1]);
 		}
 
 		skier.draw(dContext);
 
 		monsters.each(function (monster, i) {
-			if (monster.isAbove(getAboveViewport() - 100) || monster.deleted) {
+			if (monster.isAboveOnCanvas(getAboveViewport() - 100) || monster.deleted) {
 				return (delete monsters[i]);
 			}
 
@@ -163,17 +160,17 @@ function startGame (images) {
 				monster.follow(skier);
 			} else if (skier.isBeingEaten && !monster.isEating) {
 				monster.stopFollowing();
-				monster.setPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+				monster.setMapPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
 			}
 
 			monster.cycle();
 			monster.draw(dContext);
 		});
 
-		randomlyGenerateObject(sprites.smallTree, 10);
-		randomlyGenerateObject(sprites.tallTree, 5);
-		randomlyGenerateObject(sprites.jump, 5);
-		randomlyGenerateObject(sprites.thickSnow, 5);
+		randomlyGenerateObject(sprites.smallTree, 3);
+		randomlyGenerateObject(sprites.tallTree, 1);
+		randomlyGenerateObject(sprites.jump, 1);
+		randomlyGenerateObject(sprites.thickSnow, 1);
 
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 
@@ -181,7 +178,7 @@ function startGame (images) {
 			monstersComeOut = true;
 		}
  
-		if (monstersComeOut && Number.random(400) === 1) {
+		if (monstersComeOut && Number.random(600) === 1) {
 			spawnMonster();
 		}
 
@@ -193,7 +190,7 @@ function startGame (images) {
 			staticObject.cycle();
 			staticObject.draw(dContext, 'main');
 
-			if (staticObject.isAbove(0)) {
+			if (staticObject.isAboveOnCanvas(0)) {
 				staticObject.deleteOnNextCycle();
 			}
 		});
@@ -205,7 +202,8 @@ function startGame (images) {
 			'Skiers left: ' + livesLeft,
 			'High Score: ' + highScore,
 			'Created by Dan Hough (@basicallydan)',
-			'Current Speed: ' + skier.getSpeed()
+			'Current Speed: ' + skier.getSpeed(),
+			'Skier Position: ' + skier.mapPosition[0] + ', ' + skier.mapPosition[1]
 		]);
 
 		infoBox.draw(dContext);
@@ -293,6 +291,18 @@ function getRandomlyInTheCentre(buffer) {
 	return Number.random(min, max);
 }
 
+function getRandomMapPositionBelowViewport() {
+	var xCanvas = getRandomlyInTheCentre();
+	var yCanvas = getBelowViewport();
+	return dContext.canvasPositionToMapPosition([ xCanvas, yCanvas ]);
+}
+
+function getRandomMapPositionAboveViewport() {
+	var xCanvas = getRandomlyInTheCentre();
+	var yCanvas = getAboveViewport();
+	return dContext.canvasPositionToMapPosition([ xCanvas, yCanvas ]);
+}
+
 function getCentreOfViewport() {
 	return (mainCanvas.width / 2).floor();
 }
@@ -304,6 +314,10 @@ function getMiddleOfViewport() {
 
 function getBelowViewport() {
 	return mainCanvas.height + (mainCanvas.height / 4).floor();
+}
+
+function getTopOfViewport() {
+	return dContext.canvasPositionToMapPosition([ 0, 0 ])[1];
 }
 
 function getAboveViewport() {

@@ -10,50 +10,67 @@ describe('Sprite', function() {
 
 			sprite.setSpeed(5);
 
-			assert.equal(5, sprite.getSpeed());
+			sprite.getSpeed().should.equal(5);
 		});
 	});
 
-	describe('#setPosition()', function() {
+	describe('#setCanvasPosition()', function() {
 		it('should set the correct position', function() {
 			var sprite = new Sprite();
 
-			sprite.setPosition(5, 10);
+			sprite.setMapPosition(5, 10);
 
-			assert.equal(5, sprite.getXPosition());
-			assert.equal(10, sprite.getYPosition());
+			sprite.mapPosition[0].should.equal(5);
+			sprite.mapPosition[1].should.equal(10);
 		});
 	});
 
-	describe('#moveToward()', function() {
+	describe('#cycle()', function() {
 		it('should move the sprite along at the given speed', function() {
 			var sprite = new Sprite();
 
 			sprite.setSpeed(3);
 
-			sprite.setPosition(5, 10);
+			sprite.setMapPosition(5, 10);
 
-			sprite.setPositionTarget(10, 18);
+			sprite.setMapPositionTarget(10, 18);
 
 			sprite.cycle();
 
-			assert.equal(8, sprite.getXPosition());
-			assert.equal(13, sprite.getYPosition());
+			sprite.mapPosition[0].should.equal(8);
+			sprite.mapPosition[1].should.equal(13);
 		});
 
-		it('should be able to decrease in one dimension and increase in another', function() {
+		it('should not move the sprite along if it is not moving', function() {
 			var sprite = new Sprite();
 
 			sprite.setSpeed(3);
 
-			sprite.setPosition(5, 10);
+			sprite.isMoving = false;
 
-			sprite.setPositionTarget(1, 18);
+			sprite.setMapPosition(5, 10);
+
+			sprite.setMapPositionTarget(10, 18);
 
 			sprite.cycle();
 
-			assert.equal(2, sprite.getXPosition());
-			assert.equal(13, sprite.getYPosition());
+			sprite.mapPosition[0].should.equal(5);
+			sprite.mapPosition[1].should.equal(10);
+		});
+
+		it('should allow the sprite to move in in opposite directions on either axis', function() {
+			var sprite = new Sprite();
+
+			sprite.setSpeed(3);
+
+			sprite.setMapPosition(5, 10);
+
+			sprite.setMapPositionTarget(1, 18);
+
+			sprite.cycle();
+
+			sprite.mapPosition[0].should.equal(2);
+			sprite.mapPosition[1].should.equal(13);
 		});
 
 		it('should be able to decrease in both dimensions', function() {
@@ -61,14 +78,14 @@ describe('Sprite', function() {
 
 			sprite.setSpeed(3);
 
-			sprite.setPosition(5, 10);
+			sprite.setMapPosition(5, 10);
 
-			sprite.setPositionTarget(1, 1);
+			sprite.setMapPositionTarget(1, 1);
 
 			sprite.cycle();
 
-			assert.equal(2, sprite.getXPosition());
-			assert.equal(7, sprite.getYPosition());
+			sprite.mapPosition[0].should.equal(2);
+			sprite.mapPosition[1].should.equal(7);
 		});
 
 		it('should move the sprite to the target position if it is nearer than the speed', function() {
@@ -76,14 +93,14 @@ describe('Sprite', function() {
 
 			sprite.setSpeed(3);
 
-			sprite.setPosition(5, 10);
+			sprite.setMapPosition(5, 10);
 
-			sprite.setPositionTarget(7, 11);
+			sprite.setMapPositionTarget(7, 11);
 
 			sprite.cycle();
 
-			assert.equal(7, sprite.getXPosition());
-			assert.equal(11, sprite.getYPosition());
+			assert.equal(7, sprite.mapPosition[0]);
+			assert.equal(11, sprite.mapPosition[1]);
 		});
 
 		it('should move up if the y-difference is absolutely greater than the y-position', function() {
@@ -91,14 +108,14 @@ describe('Sprite', function() {
 
 			sprite.setSpeed(3);
 
-			sprite.setPosition(6, 20);
+			sprite.setMapPosition(6, 20);
 
-			sprite.setPositionTarget(-50, -10);
+			sprite.setMapPositionTarget(-50, -10);
 
 			sprite.cycle();
 
-			sprite.getXPosition().should.equal(3);
-			sprite.getYPosition().should.equal(17);
+			sprite.mapPosition[0].should.equal(3);
+			sprite.mapPosition[1].should.equal(17);
 		});
 	});
 
@@ -107,11 +124,11 @@ describe('Sprite', function() {
 			var object1 = new Sprite();
 			var object2 = new Sprite();
 
-			object1.setPosition(1, 1);
+			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(15, 15);
+			object2.setCanvasPosition(15, 15);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
@@ -122,11 +139,11 @@ describe('Sprite', function() {
 			var object1 = new Sprite();
 			var object2 = new Sprite();
 
-			object1.setPosition(1, 1);
+			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(3, 15);
+			object2.setCanvasPosition(3, 15);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
@@ -138,11 +155,11 @@ describe('Sprite', function() {
 			var object1 = new Sprite();
 			var object2 = new Sprite();
 
-			object1.setPosition(1, 1);
+			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(15, 2);
+			object2.setCanvasPosition(15, 2);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
@@ -154,11 +171,11 @@ describe('Sprite', function() {
 			var object1 = new Sprite();
 			var object2 = new Sprite();
 
-			object1.setPosition(1, 1);
+			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(3, 3);
+			object2.setCanvasPosition(3, 3);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
@@ -188,19 +205,19 @@ describe('Sprite', function() {
 				}
 			});
 
-			object1.setPosition(0, 0);
+			object1.setCanvasPosition(0, 0);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(0, 9);
+			object2.setCanvasPosition(0, 9);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
-			object3.setPosition(20, 0);
+			object3.setCanvasPosition(20, 0);
 			object3.setHeight(10);
 			object3.setWidth(10);
 
-			object4.setPosition(20, 9);
+			object4.setCanvasPosition(20, 9);
 			object4.setHeight(10);
 			object4.setWidth(10);
 
@@ -218,11 +235,11 @@ describe('Sprite', function() {
 			var object2 = new Sprite();
 			var testString = 'not hit';
 			
-			object1.setPosition(1, 1);
+			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(3, 3);
+			object2.setCanvasPosition(3, 3);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
@@ -240,11 +257,11 @@ describe('Sprite', function() {
 			var object2 = new Sprite();
 			var testString = 'not hit';
 
-			object1.setPosition(1, 1);
+			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
 
-			object2.setPosition(3, 3);
+			object2.setCanvasPosition(3, 3);
 			object2.setHeight(10);
 			object2.setWidth(10);
 
@@ -256,6 +273,30 @@ describe('Sprite', function() {
 			object1.cycle();
 
 			testString.should.equal('not hit');
+		});
+	});
+
+	describe('#follow()', function () {
+		it('should move toward the a stationary sprite it is following', function () {
+			var hunter = new Sprite();
+			hunter.isMoving = true;
+			hunter.setSpeed(1);
+			hunter.setMapPosition(5, 20);
+
+			var prey = new Sprite();
+			prey.isMoving = false;
+			prey.setMapPosition(10, 20);
+
+			hunter.follow(prey);
+
+			hunter.cycle();
+			prey.cycle();
+
+			hunter.mapPosition[0].should.equal(6);
+			hunter.mapPosition[1].should.equal(20);
+
+			prey.mapPosition[0].should.equal(10);
+			prey.mapPosition[1].should.equal(20);
 		});
 	});
 });

@@ -8,10 +8,9 @@ describe('Skier', function() {
 	describe('#getMovingTowardOpposite()', function() {
 		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going right', function() {
 			var skier = new Skier();
-			skier.setPosition(10, 30);
-			skier.setPositionTarget(100, 36);
-
-			skier.cycle();
+			skier.setSpeed(3);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(100, 36);
 
 			skier.getMovingTowardOpposite()[0].should.equal(-90);
 			skier.getMovingTowardOpposite()[1].should.equal(-6);
@@ -19,10 +18,9 @@ describe('Skier', function() {
 
 		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going left', function() {
 			var skier = new Skier();
-			skier.setPosition(10, 30);
-			skier.setPositionTarget(-100, 36);
-			
-			skier.cycle();
+			skier.setSpeed(3);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(-100, 36);
 
 			skier.getMovingTowardOpposite()[0].should.equal(110);
 			skier.getMovingTowardOpposite()[1].should.equal(-6);
@@ -32,7 +30,7 @@ describe('Skier', function() {
 	describe('#hits()', function() {
 		it('should still hit taller objects if jumping', function() {
 			var skier = new Skier();
-			skier.setPosition(10, 30);
+			skier.setMapPosition(10, 30);
 			skier.hasHitJump();
 			
 			var tallSprite = new Sprite({
@@ -41,14 +39,14 @@ describe('Skier', function() {
 
 			tallSprite.setHeight(10);
 			tallSprite.setWidth(10);
-			tallSprite.setPosition(10, 30);
+			tallSprite.setMapPosition(10, 30);
 
 			skier.hits(tallSprite).should.equal(true);
 		});
 
 		it('should still hit taller objects with a high-up z-index if jumping', function() {
 			var skier = new Skier();
-			skier.setPosition(30, 25);
+			skier.setMapPosition(30, 25);
 			skier.setHeight(10);
 			skier.setWidth(10);
 			skier.hasHitJump();
@@ -63,14 +61,14 @@ describe('Skier', function() {
 
 			tallSprite.setHeight(20);
 			tallSprite.setWidth(10);
-			tallSprite.setPosition(30, 30);
+			tallSprite.setMapPosition(30, 30);
 
 			skier.hits(tallSprite).should.equal(true);
 		});
 
 		it('should not hit shorter objects if jumping', function() {
 			var skier = new Skier();
-			skier.setPosition(10, 30);
+			skier.setMapPosition(10, 30);
 			skier.hasHitJump();
 
 			var shortSprite = new Sprite({
@@ -79,7 +77,7 @@ describe('Skier', function() {
 
 			shortSprite.setHeight(10);
 			shortSprite.setWidth(10);
-			shortSprite.setPosition(10, 30);
+			shortSprite.setMapPosition(10, 30);
 
 			skier.hits(shortSprite).should.equal(false);
 		});
