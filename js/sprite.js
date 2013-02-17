@@ -13,8 +13,6 @@
 		that.canvasZ = 0;
 		that.height = 0;
 		that.speed = 0;
-		that.speedX = that.speed;
-		that.speedY = that.speed;
 		that.data = data || { parts : {} };
 		that.movingToward = [ 0, 0 ];
 		that.metresDownTheMountain = 0;
@@ -63,17 +61,17 @@
 
 			if (typeof that.movingToward[0] !== 'undefined') {
 				if (currentX > that.movingToward[0]) {
-					currentX -= Math.min(that.speedX, Math.abs(currentX - that.movingToward[0]));
+					currentX -= Math.min(that.getSpeedX(), Math.abs(currentX - that.movingToward[0]));
 				} else if (currentX < that.movingToward[0]) {
-					currentX += Math.min(that.speedX, Math.abs(currentX - that.movingToward[0]));
+					currentX += Math.min(that.getSpeedX(), Math.abs(currentX - that.movingToward[0]));
 				}
 			}
 			
 			if (typeof that.movingToward[1] !== 'undefined') {
 				if (currentY > that.movingToward[1]) {
-					currentY -= Math.min(that.speedY, Math.abs(currentY - that.movingToward[1]));
+					currentY -= Math.min(that.getSpeedY(), Math.abs(currentY - that.movingToward[1]));
 				} else if (currentY < that.movingToward[1]) {
-					currentY += Math.min(that.speedY, Math.abs(currentY - that.movingToward[1]));
+					currentY += Math.min(that.getSpeedY(), Math.abs(currentY - that.movingToward[1]));
 				}
 			}
 
@@ -187,6 +185,14 @@
 		};
 
 		that.getSpeed = function getSpeed () {
+			return that.speed;
+		};
+
+		that.getSpeedX = function () {
+			return that.speed;
+		};
+
+		that.getSpeedY = function () {
 			return that.speed;
 		};
 

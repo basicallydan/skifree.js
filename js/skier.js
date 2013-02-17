@@ -6,6 +6,8 @@ var Sprite = require('./Sprite');
 		var sup = {
 			draw: that.superior('draw'),
 			cycle: that.superior('cycle'),
+			getSpeedX: that.superior('getSpeedX'),
+			getSpeedY: that.superior('getSpeedY'),
 			hits: that.superior('hits')
 		};
 		var directions = {
@@ -150,6 +152,30 @@ var Sprite = require('./Sprite');
 					}, 10000);
 				}, 2000);
 			}
+		};
+
+		that.getSpeedX = function () {
+			if (getDirection() === 'esEast' || getDirection() === 'wsWest') {
+				return that.getSpeed() * 0.5;
+			}
+
+			if (getDirection() === 'sEast' || getDirection() === 'sWest') {
+				return that.getSpeed() * 0.33;
+			}
+
+			return 0;
+		};
+
+		that.getSpeedY = function () {
+			if (getDirection() === 'esEast' || getDirection() === 'wsWest') {
+				return that.getSpeed() * 0.6;
+			}
+
+			if (getDirection() === 'sEast' || getDirection() === 'sWest') {
+				return that.getSpeed() * 0.85;
+			}
+
+			return that.getSpeed();
 		};
 
 		that.hasHitObstacle = function (obs) {

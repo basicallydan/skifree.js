@@ -142,9 +142,12 @@ function startGame (images) {
 
 		mainCanvas.width = mainCanvas.width;
 
+		var mouseCanvasPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
+
 		if (!skier.isJumping) {
-			var mouseCanvasPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
 			skier.setMapPositionTarget(mouseCanvasPosition[0], mouseCanvasPosition[1]);
+		} else {
+			skier.setMapPositionTarget(undefined, mouseCanvasPosition[1]);
 		}
 
 		skier.draw(dContext);
@@ -203,7 +206,7 @@ function startGame (images) {
 			'High Score: ' + highScore,
 			'Created by Dan Hough (@basicallydan)',
 			'Current Speed: ' + skier.getSpeed(),
-			'Skier Position: ' + skier.mapPosition[0] + ', ' + skier.mapPosition[1]
+			'Skier Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1)
 		]);
 
 		infoBox.draw(dContext);
@@ -229,22 +232,22 @@ function startGame (images) {
 			skier.speedBoost();
 		}
 		//W Key
-		if (e.Keycode === 87 || e.keyCode === 119) {
+		if (e.Keycode === 87 || e.keyCode === 119 || e.keyCode === 38) {
 			mouseX = 0;
 			mouseY = 0;
 		}
 		// A Key
-		if (e.keyCode === 65 || e.keyCode === 97) {
+		if (e.keyCode === 65 || e.keyCode === 97 || e.keyCode === 37) {
 			mouseX = 0;
 			mouseY = mainCanvas.height;
 		}
 		// S Key
-		if (e.keyCode === 83 || e.keyCode === 115) {
+		if (e.keyCode === 83 || e.keyCode === 115 || e.keyCode === 40) {
 			mouseX = mainCanvas.width / 2;
 			mouseY = mainCanvas.height;
 		}
 		// D Key
-		if (e.keyCode === 68 || e.keyCode === 100) {
+		if (e.keyCode === 68 || e.keyCode === 100 || e.keyCode === 39) {
 			mouseX = mainCanvas.width;
 			mouseY = mainCanvas.height;
 		}
