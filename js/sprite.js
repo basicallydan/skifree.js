@@ -250,13 +250,21 @@
 			move();
 		};
 
-		this.setMapPositionTarget = function (cx, cy, override) {
+		this.setMapPositionTarget = function (x, y, override) {
 			if (override) {
 				that.movingWithConviction = false;
 			}
 
 			if (!that.movingWithConviction) {
-				that.movingToward = [ cx, cy ];
+				if (typeof x === 'undefined') {
+					x = that.movingToward[0];
+				}
+
+				if (typeof y === 'undefined') {
+					y = that.movingToward[1];
+				}
+
+				that.movingToward = [ x, y ];
 
 				that.movingWithConviction = false;
 			}
@@ -327,6 +335,10 @@
 
 		this.isAboveOnCanvas = function (cy) {
 			return (that.canvasY + that.height) < cy;
+		};
+
+		this.isBelowOnCanvas = function (cy) {
+			return (that.canvasY) > cy;
 		};
 
 		return that;

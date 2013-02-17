@@ -74,6 +74,14 @@
 				main : [ 130, 95, 40, 35 ]
 			},
 			hitBehaviour: {}
+		},
+		'snowboarder' : {
+			$imageFile : 'sprite-characters.png',
+			parts : {
+				sEast : [ 73, 229, 20, 29 ],
+				sWest : [ 95, 228, 26, 30 ]
+			},
+			hitBehaviour: {}
 		}
 	};
 
@@ -128,6 +136,12 @@
 	}
 
 	sprites.thickSnow.hitBehaviour.skier = thickSnowHitsSkierBehaviour;
+
+	function snowboarderHitsSkierBehaviour(snowboarder, skier) {
+		skier.hasHitObstacle(snowboarder);
+	}
+
+	sprites.snowboarder.hitBehaviour.skier = snowboarderHitsSkierBehaviour;
 
 	global.spriteInfo = sprites;
 })( this );

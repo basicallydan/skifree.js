@@ -44,7 +44,7 @@ function monsterHitsSkierBehaviour(monster, skier) {
 		monster.isEating = false;
 		skier.isBeingEaten = false;
 		monster.setSpeed(skier.getSpeed());
-		monster.setMapPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+		monster.setMapPositionTargetWithConviction(dContext.getRandomlyInTheCentreOfCanvas(), dContext.getAboveViewport());
 	});
 }
 
@@ -53,9 +53,10 @@ function startGame (images) {
 	var infoBox;
 	var staticObjects = new SpriteArray();
 	var monsters = [];
+	var snowboarders = [];
 	var jumps = [];
 	var thickSnowPatches = [];
-	var mouseX = getCentreOfViewport();
+	var mouseX = dContext.getCentreOfViewport();
 	var mouseY = mainCanvas.height;
 	var paused = false;
 
@@ -79,7 +80,7 @@ function startGame (images) {
 		if (Number.random(100) <= dropRate && skier.isMoving) {
 			var newSprite = new Sprite(sprite);
 			newSprite.setSpeed(0);
-			var randomPosition = getRandomMapPositionBelowViewport();
+			var randomPosition = dContext.getRandomMapPositionBelowViewport();
 			newSprite.setMapPosition(randomPosition[0], randomPosition[1]);
 
 			if (sprite.hitBehaviour.monster) {
@@ -98,7 +99,7 @@ function startGame (images) {
 
 	function spawnMonster () {
 		var newMonster = new Monster(sprites.monster);
-		var randomPosition = getRandomMapPositionAboveViewport();
+		var randomPosition = dContext.getRandomMapPositionAboveViewport();
 		newMonster.setMapPosition(randomPosition[0], randomPosition[1]);
 		newMonster.follow(skier);
 		newMonster.onHitting(skier, monsterHitsSkierBehaviour);
@@ -116,6 +117,17 @@ function startGame (images) {
 		});
 
 		monsters.push(newMonster);
+	}
+
+	function spawnBoarder () {
+		var newBoarder = new Snowboarder(sprites.snowboarder);
+		var randomPositionAbove = dContext.getRandomMapPositionAboveViewport();
+		var randomPositionBelow = dContext.getRandomMapPositionBelowViewport();
+		newBoarder.setMapPosition(randomPositionAbove[0], randomPositionAbove[1]);
+		newBoarder.setMapPositionTarget(randomPositionBelow[0], randomPositionBelow[1]);
+		newBoarder.onHitting(skier, sprites.snowboarder.hitBehaviour.skier);
+
+		snowboarders.push(newBoarder);
 	}
 
 	skier = new Skier(sprites.skier);
@@ -153,7 +165,7 @@ function startGame (images) {
 		skier.draw(dContext);
 
 		monsters.each(function (monster, i) {
-			if (monster.isAboveOnCanvas(getAboveViewport() - 100) || monster.deleted) {
+			if (monster.isAboveOnCanvas(dContext.getAboveViewport() - 100) || monster.deleted) {
 				return (delete monsters[i]);
 			}
 
@@ -163,11 +175,21 @@ function startGame (images) {
 				monster.follow(skier);
 			} else if (skier.isBeingEaten && !monster.isEating) {
 				monster.stopFollowing();
-				monster.setMapPositionTargetWithConviction(getRandomlyInTheCentre(), getAboveViewport());
+				monster.setMapPositionTargetWithConviction(dContext.getRandomlyInTheCentreOfCanvas(), dContext.getAboveViewport());
 			}
 
 			monster.cycle();
 			monster.draw(dContext);
+		});
+
+		snowboarders.each(function (snowboarder, i) {
+			if (snowboarder.isBelowOnCanvas(dContext.getBelowViewport() + 499)) {
+				console.log('Deleting snowboarder');
+				return (delete snowboarders[i]);
+			}
+
+			snowboarder.cycle(dContext);
+			snowboarder.draw(dContext);
 		});
 
 		randomlyGenerateObject(sprites.smallTree, 3);
@@ -181,8 +203,12 @@ function startGame (images) {
 			monstersComeOut = true;
 		}
  
-		if (monstersComeOut && Number.random(600) === 1) {
+		if (monstersComeOut && Number.random(1300) === 1) {
 			spawnMonster();
+		}
+ 
+		if (Number.random(1000) === 1) {
+			spawnBoarder();
 		}
 
 		skier.cycle();
@@ -255,6 +281,10 @@ function startGame (images) {
 		if (e.keyCode === 77 || e.keyCode === 109) {
 			spawnMonster();
 		}
+		// B key
+		if (e.keyCode === 66 || e.keyCode === 98) {
+			spawnBoarder();
+		}
 	})
 	.hammer({})
 	.bind('hold', function (e) {
@@ -279,52 +309,6 @@ function startGame (images) {
 function resizeCanvas() {
 	mainCanvas.width = window.innerWidth;
 	mainCanvas.height = window.innerHeight;
-}
-
-// X-pos canvas functions
-function getRandomlyInTheCentre(buffer) {
-	var min = 0;
-	var max = mainCanvas.width;
-
-	if (buffer) {
-		min -= buffer;
-		max += buffer;
-	}
-
-	return Number.random(min, max);
-}
-
-function getRandomMapPositionBelowViewport() {
-	var xCanvas = getRandomlyInTheCentre();
-	var yCanvas = getBelowViewport();
-	return dContext.canvasPositionToMapPosition([ xCanvas, yCanvas ]);
-}
-
-function getRandomMapPositionAboveViewport() {
-	var xCanvas = getRandomlyInTheCentre();
-	var yCanvas = getAboveViewport();
-	return dContext.canvasPositionToMapPosition([ xCanvas, yCanvas ]);
-}
-
-function getCentreOfViewport() {
-	return (mainCanvas.width / 2).floor();
-}
-
-// Y-pos canvas functions
-function getMiddleOfViewport() {
-	return (mainCanvas.height / 2).floor();
-}
-
-function getBelowViewport() {
-	return mainCanvas.height + (mainCanvas.height / 4).floor();
-}
-
-function getTopOfViewport() {
-	return dContext.canvasPositionToMapPosition([ 0, 0 ])[1];
-}
-
-function getAboveViewport() {
-	return 0 - (mainCanvas.height / 4).floor();
 }
 
 function isMobileDevice() {

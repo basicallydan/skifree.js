@@ -40,3 +40,58 @@ CanvasRenderingContext2D.prototype.canvasPositionToMapPosition = function (posit
 	var mapDifferenceY = centralCanvasPosition[1] - position[1];
 	return [ centralMapPosition[0] - mapDifferenceX, centralMapPosition[1] - mapDifferenceY ];
 };
+
+CanvasRenderingContext2D.prototype.getCentreOfViewport = function () {
+	return (this.canvas.width / 2).floor();
+};
+
+// Y-pos canvas functions
+CanvasRenderingContext2D.prototype.getMiddleOfViewport = function () {
+	return (this.canvas.height / 2).floor();
+};
+
+CanvasRenderingContext2D.prototype.getBelowViewport = function () {
+	return this.canvas.height.floor();
+};
+
+CanvasRenderingContext2D.prototype.getMapBelowViewport = function () {
+	var below = this.getBelowViewport();
+	return this.canvasPositionToMapPosition([ 0, below ])[1];
+};
+
+CanvasRenderingContext2D.prototype.getRandomlyInTheCentreOfCanvas = function (buffer) {
+	var min = 0;
+	var max = this.canvas.width;
+
+	if (buffer) {
+		min -= buffer;
+		max += buffer;
+	}
+
+	return Number.random(min, max);
+};
+
+CanvasRenderingContext2D.prototype.getRandomlyInTheCentreOfMap = function (buffer) {
+	var random = this.getRandomlyInTheCentreOfCanvas(buffer);
+	return this.canvasPositionToMapPosition([ random, 0 ])[0];
+};
+
+CanvasRenderingContext2D.prototype.getRandomMapPositionBelowViewport = function () {
+	var xCanvas = this.getRandomlyInTheCentreOfCanvas();
+	var yCanvas = this.getBelowViewport();
+	return this.canvasPositionToMapPosition([ xCanvas, yCanvas ]);
+};
+
+CanvasRenderingContext2D.prototype.getRandomMapPositionAboveViewport = function () {
+	var xCanvas = this.getRandomlyInTheCentreOfCanvas();
+	var yCanvas = this.getAboveViewport();
+	return this.canvasPositionToMapPosition([ xCanvas, yCanvas ]);
+};
+
+CanvasRenderingContext2D.prototype.getTopOfViewport = function () {
+	return this.canvasPositionToMapPosition([ 0, 0 ])[1];
+};
+
+CanvasRenderingContext2D.prototype.getAboveViewport = function () {
+	return 0 - (this.canvas.height / 4).floor();
+};
