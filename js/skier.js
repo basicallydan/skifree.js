@@ -127,7 +127,7 @@ var Sprite = require('./Sprite');
 				return false;
 			}
 
-			if (!obs.occupiesZIndex(that.canvasZ)) {
+			if (!obs.occupiesZIndex(that.mapPosition[2])) {
 				return false;
 			}
 
@@ -175,15 +175,13 @@ var Sprite = require('./Sprite');
 			that.isMoving = true;
 			that.hasBeenHit = false;
 			that.isJumping = true;
-			that.canvasZ = 1;
-			// that.incrementSpeedBy(1);
+			that.setMapPosition(undefined, undefined, 1);
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
 			cancelableStateTimeout = setTimeout(function() {
-				that.canvasZ = 0;
+				that.setMapPosition(undefined, undefined, 0);
 				that.isJumping = false;
-				// that.incrementSpeedBy(-1);
 			}, 1000);
 		};
 

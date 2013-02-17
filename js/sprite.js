@@ -102,6 +102,12 @@
 		};
 
 		this.setMapPosition = function (x, y, z) {
+			if (typeof x === 'undefined') {
+				x = that.mapPosition[0];
+			}
+			if (typeof y === 'undefined') {
+				y = that.mapPosition[1];
+			}
 			if (typeof z === 'undefined') {
 				z = that.mapPosition[2];
 			}
@@ -291,22 +297,22 @@
 			var horizontalIntersect = false;
 
 			// Test that THIS has a bottom edge inside of the other object
-			if (other.getTopHitBoxEdge(that.canvasZ) <= that.getBottomHitBoxEdge(that.canvasZ) && other.getBottomHitBoxEdge(that.canvasZ) >= that.getBottomHitBoxEdge(that.canvasZ)) {
+			if (other.getTopHitBoxEdge(that.mapPosition[2]) <= that.getBottomHitBoxEdge(that.mapPosition[2]) && other.getBottomHitBoxEdge(that.mapPosition[2]) >= that.getBottomHitBoxEdge(that.mapPosition[2])) {
 				verticalIntersect = true;
 			}
 
 			// Test that THIS has a top edge inside of the other object
-			if (other.getTopHitBoxEdge(that.canvasZ) <= that.getTopHitBoxEdge(that.canvasZ) && other.getBottomHitBoxEdge(that.canvasZ) >= that.getTopHitBoxEdge(that.canvasZ)) {
+			if (other.getTopHitBoxEdge(that.mapPosition[2]) <= that.getTopHitBoxEdge(that.mapPosition[2]) && other.getBottomHitBoxEdge(that.mapPosition[2]) >= that.getTopHitBoxEdge(that.mapPosition[2])) {
 				verticalIntersect = true;
 			}
 
 			// Test that THIS has a right edge inside of the other object
-			if (other.getLeftHitBoxEdge(that.canvasZ) <= that.getRightHitBoxEdge(that.canvasZ) && other.getRightHitBoxEdge(that.canvasZ) >= that.getRightHitBoxEdge(that.canvasZ)) {
+			if (other.getLeftHitBoxEdge(that.mapPosition[2]) <= that.getRightHitBoxEdge(that.mapPosition[2]) && other.getRightHitBoxEdge(that.mapPosition[2]) >= that.getRightHitBoxEdge(that.mapPosition[2])) {
 				horizontalIntersect = true;
 			}
 
 			// Test that THIS has a left edge inside of the other object
-			if (other.getLeftHitBoxEdge(that.canvasZ) <= that.getLeftHitBoxEdge(that.canvasZ) && other.getRightHitBoxEdge(that.canvasZ) >= that.getLeftHitBoxEdge(that.canvasZ)) {
+			if (other.getLeftHitBoxEdge(that.mapPosition[2]) <= that.getLeftHitBoxEdge(that.mapPosition[2]) && other.getRightHitBoxEdge(that.mapPosition[2]) >= that.getLeftHitBoxEdge(that.mapPosition[2])) {
 				horizontalIntersect = true;
 			}
 
