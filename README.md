@@ -19,12 +19,12 @@ I just started work this Christmas 2012 so I've not done a whole lot yet.
 * Rainbow jump platforms & jumping - though a couple of improvements could be made
 * LocalStorage high-score (thanks, [@ddoolin](https://github.com/ddoolin)!)
 * Custom-sized Hitboxes
+* Big trees & crashing into them both whilst skiing and jumping
 
 ## So, what's left to do?
 
 This is what I'm gonna do, probably in this order. Who the hell knows. There are other features to the original game but I'm not going to add them to the list until I've gotten through this one.
 
-* Big trees & crashing into them both whilst skiing and jumping
 * Rocks
 * Snowboarders
 
