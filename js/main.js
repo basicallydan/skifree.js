@@ -229,9 +229,9 @@ function startGame (images) {
 			'Skiers left: ' + livesLeft,
 			'High Score: ' + highScore,
 			'Created by Dan Hough (@basicallydan)',
-			'Current Speed: ' + skier.getSpeed(),
+			'Current Speed: ' + skier.getSpeed()/*,
 			'Skier Map Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1),
-			'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)
+			'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)*/
 		]);
 
 		infoBox.draw(dContext);
