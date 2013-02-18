@@ -82,4 +82,118 @@ describe('Skier', function() {
 			skier.hits(shortSprite).should.equal(false);
 		});
 	});
+
+	describe('#getSpeedX()', function() {
+		it('should ease on the x-axis when the skier turns south-east', function () {
+			var skier = new Skier();
+			skier.setTurnEaseCycles(5);
+			skier.setSpeed(4);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(10, 30);
+			skier.getSpeedX().should.equal(0);
+			skier.setMapPositionTarget(150, 35);
+			skier.getSpeedX().should.equal(4 * (0.33 / 5));
+			skier.getSpeedX().should.equal(4 * (0.33 / 5) * 2);
+			skier.getSpeedX().should.equal(4 * (0.33 / 5) * 3);
+			skier.getSpeedX().should.equal(4 * (0.33 / 5) * 4);
+			skier.getSpeedX().should.equal(4 * 0.33);
+		});
+
+		it('should ease on the x-axis when the skier turns east-south-east', function () {
+			var skier = new Skier();
+			skier.setTurnEaseCycles(5);
+			skier.setSpeed(4);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(10, 30);
+			skier.getSpeedX().should.equal(0);
+			skier.setMapPositionTarget(450, 35);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5));
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 2);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 3);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 4);
+			skier.getSpeedX().should.equal(4 * 0.5);
+		});
+
+		it('should ease on the x-axis back down when the skier turns from east-south-east to south', function () {
+			var skier = new Skier();
+			skier.setTurnEaseCycles(5);
+			skier.setSpeed(4);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(10, 30);
+			skier.getSpeedX().should.equal(0);
+			skier.setMapPositionTarget(450, 35);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5));
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 2);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 3);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 4);
+			skier.getSpeedX().should.equal(4 * 0.5);
+			skier.setMapPositionTarget(10, 35);
+			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 4);
+		});
+	});
+
+	describe('#getSpeedY()', function() {
+		it('should ease on the y-axis when the skier turns from east (stationary) to south-east', function () {
+			var skier = new Skier();
+			skier.setTurnEaseCycles(5);
+			skier.setSpeed(4);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(15, 30);
+			skier.getSpeedY().should.equal(0);
+			skier.setMapPositionTarget(150, 35);
+			skier.getSpeedY().should.equal(4 * (0.85 / 5));
+			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 2);
+			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 3);
+			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 4);
+			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 5);
+		});
+
+		it('should ease on the y-axis when the skier turns from east (stationary) to east-south-east from', function () {
+			var skier = new Skier();
+			skier.setTurnEaseCycles(5);
+			skier.setSpeed(4);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(10, 30);
+			skier.getSpeedY().should.equal(0);
+			skier.setMapPositionTarget(450, 35);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5));
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 2);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 3);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 4);
+			skier.getSpeedY().should.equal(4 * 0.6);
+		});
+
+		it('should ease on the y-axis when the skier turns from east (stationary) to east-south-east to south', function () {
+			var skier = new Skier();
+			skier.setTurnEaseCycles(5);
+			skier.setSpeed(4);
+			skier.setMapPosition(10, 30);
+			skier.setMapPositionTarget(10, 30);
+			skier.getSpeedY().should.equal(0);
+			skier.setMapPositionTarget(450, 35);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5));
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 2);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 3);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 4);
+			skier.getSpeedY().should.equal(4 * 0.6);
+			skier.setMapPositionTarget(10, 45);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 6);
+			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 7);
+		});
+	});
+
+	describe('#setMapPositionTarget()', function() {
+		it('should not allow setting the map position target whilst jumping', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setSpeed(4);
+			skier.setSpeedY(4);
+			skier.setMapPositionTarget(10, 70);
+			skier.getSpeedY().should.equal(4);
+			skier.hasHitJump();
+			skier.cycle();
+			skier.setMapPositionTarget(80, -40);
+			skier.getSpeedY().should.equal(6);
+		});
+	});
 });

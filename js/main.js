@@ -151,16 +151,12 @@ function startGame (images) {
 	});
 
 	setInterval(function () {
-		var skierOpposite = skier.getMovingTowardOpposite();
-
+		// Clear canvas
 		mainCanvas.width = mainCanvas.width;
-
-		var mouseCanvasPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
+		var mouseMapPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
 
 		if (!skier.isJumping) {
-			skier.setMapPositionTarget(mouseCanvasPosition[0], mouseCanvasPosition[1]);
-		} else {
-			skier.setMapPositionTarget(undefined, mouseCanvasPosition[1]);
+			skier.setMapPositionTarget(mouseMapPosition[0], mouseMapPosition[1]);
 		}
 
 		skier.draw(dContext);
@@ -234,7 +230,8 @@ function startGame (images) {
 			'High Score: ' + highScore,
 			'Created by Dan Hough (@basicallydan)',
 			'Current Speed: ' + skier.getSpeed(),
-			'Skier Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1)
+			'Skier Map Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1),
+			'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)
 		]);
 
 		infoBox.draw(dContext);

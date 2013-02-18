@@ -108,6 +108,8 @@
 			}
 			if (typeof z === 'undefined') {
 				z = that.mapPosition[2];
+			} else {
+				that.zIndexesOccupied = [ z ];
 			}
 			that.mapPosition = [x, y, z];
 		};

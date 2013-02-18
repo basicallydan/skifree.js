@@ -24,6 +24,11 @@ var Sprite = require('./Sprite');
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
 		var standardSpeed = 5;
+		var turnEaseCycles = 100;
+		var speedX = 0;
+		var speedXFactor = 0;
+		var speedY = 0;
+		var speedYFactor = 1;
 
 		that.isMoving = true;
 		that.hasBeenHit = false;
@@ -37,6 +42,31 @@ var Sprite = require('./Sprite');
 			that.hasBeenHit = false;
 			canSpeedBoost = true;
 		};
+
+		function setNormal() {
+			that.setSpeed(standardSpeed);
+			that.isMoving = true;
+			that.hasBeenHit = false;
+			that.isJumping = false;
+			that.setMapPosition(undefined, undefined, 0);
+		}
+
+		function setCrashed() {
+			that.isMoving = false;
+			that.hasBeenHit = true;
+			that.isJumping = false;
+			that.setMapPosition(undefined, undefined, 0);
+		}
+
+		function setJumping() {
+			var currentSpeed = that.getSpeed();
+			that.setSpeed(currentSpeed + 2);
+			that.setSpeedY(currentSpeed + 2);
+			that.isMoving = true;
+			that.hasBeenHit = false;
+			that.isJumping = true;
+			that.setMapPosition(undefined, undefined, 1);
+		}
 
 		function getDirection() {
 			var xDiff = that.movingToward[0] - that.mapPosition[0];
@@ -86,6 +116,10 @@ var Sprite = require('./Sprite');
 			that.movingToward = [ x, y ];
 		};
 
+		that.setTurnEaseCycles = function (c) {
+			turnEaseCycles = c;
+		};
+
 		that.getPixelsTravelledDownMountain = function () {
 			return pixelsTravelled;
 		};
@@ -97,6 +131,10 @@ var Sprite = require('./Sprite');
 		that.cycle = function () {
 			if (that.isMoving) {
 				pixelsTravelled += that.speed;
+			}
+
+			if (that.isJumping) {
+				that.setMapPositionTarget(undefined, that.mapPosition[1] + that.getSpeed());
 			}
 
 			sup.cycle();
@@ -154,35 +192,85 @@ var Sprite = require('./Sprite');
 			}
 		};
 
+		function easeSpeedToTargetUsingFactor(sp, targetSpeed, f) {
+			if (f === 0 || f === 1) {
+				return targetSpeed;
+			}
+
+			if (sp < targetSpeed) {
+				sp += that.getSpeed() * (f / turnEaseCycles);
+			}
+
+			if (sp > targetSpeed) {
+				sp -= that.getSpeed() * (f / turnEaseCycles);
+			}
+
+			return sp;
+		}
+
 		that.getSpeedX = function () {
 			if (getDirection() === 'esEast' || getDirection() === 'wsWest') {
-				return that.getSpeed() * 0.5;
+				speedXFactor = 0.5;
+				speedX = easeSpeedToTargetUsingFactor(speedX, that.getSpeed() * speedXFactor, speedXFactor);
+
+				return speedX;
 			}
 
 			if (getDirection() === 'sEast' || getDirection() === 'sWest') {
-				return that.getSpeed() * 0.33;
+				speedXFactor = 0.33;
+				speedX = easeSpeedToTargetUsingFactor(speedX, that.getSpeed() * speedXFactor, speedXFactor);
+
+				return speedX;
 			}
 
-			return 0;
+			// So it must be south
+
+			speedX = easeSpeedToTargetUsingFactor(speedX, 0, speedXFactor);
+
+			return speedX;
+		};
+
+		that.setSpeedY = function(sy) {
+			speedY = sy;
 		};
 
 		that.getSpeedY = function () {
+			var targetSpeed;
+
+			if (that.isJumping) {
+				return speedY;
+			}
+
 			if (getDirection() === 'esEast' || getDirection() === 'wsWest') {
-				return that.getSpeed() * 0.6;
+				speedYFactor = 0.6;
+				speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed() * 0.6, 0.6);
+
+				return speedY;
 			}
 
 			if (getDirection() === 'sEast' || getDirection() === 'sWest') {
-				return that.getSpeed() * 0.85;
+				speedYFactor = 0.85;
+				speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed() * 0.85, 0.85);
+
+				return speedY;
 			}
 
-			return that.getSpeed();
+			if (getDirection() === 'east' || getDirection() === 'west') {
+				speedYFactor = 1;
+				speedY = 0;
+
+				return speedY;
+			}
+
+			// So it must be south
+
+			speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed(), speedYFactor);
+
+			return speedY;
 		};
 
 		that.hasHitObstacle = function (obs) {
-			that.isMoving = false;
-			that.hasBeenHit = true;
-			that.canvasZ = 0;
-			that.isJumping = false;
+			setCrashed();
 
 			obstaclesHit.push(obs.id);
 
@@ -192,22 +280,18 @@ var Sprite = require('./Sprite');
 				clearTimeout(cancelableStateTimeout);
 			}
 			cancelableStateTimeout = setTimeout(function() {
-				that.isMoving = true;
-				that.hasBeenHit = false;
+				setNormal();
 			}, 1500);
 		};
 
 		that.hasHitJump = function () {
-			that.isMoving = true;
-			that.hasBeenHit = false;
-			that.isJumping = true;
-			that.setMapPosition(undefined, undefined, 1);
+			setJumping();
+
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
 			}
 			cancelableStateTimeout = setTimeout(function() {
-				that.setMapPosition(undefined, undefined, 0);
-				that.isJumping = false;
+				setNormal();
 			}, 1000);
 		};
 
@@ -223,6 +307,7 @@ var Sprite = require('./Sprite');
 			obstaclesHit = [];
 			pixelsTravelled = 0;
 			that.isMoving = true;
+			that.isJumping = false;
 			that.hasBeenHit = false;
 			canSpeedBoost = true;
 		};

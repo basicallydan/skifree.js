@@ -14,6 +14,9 @@
 				hit : [ 0, 78, 31, 31 ],
 				jumping : [ 84, 0, 32, 34 ]
 			},
+			hitBoxes: {
+				0: [ 7, 20, 27, 34 ]
+			},
 			id : 'player',
 			hitBehaviour: {}
 		},
