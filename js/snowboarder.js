@@ -48,10 +48,10 @@ var Sprite = require('./Sprite');
 		return that;
 	}
 
-	global.Snowboarder = Snowboarder;
+	global.snowboarder = Snowboarder;
 })( this );
 
 
 if (typeof module !== 'undefined') {
-	module.exports = this.Snowboarder;
+	module.exports = this.snowboarder;
 }

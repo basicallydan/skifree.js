@@ -7,6 +7,7 @@ if (isMobileDevice()) infoBoxControls = 'Tap on the piste to control the skier';
 var SpriteArray = require('spriteArray');
 var Monster = require('monster');
 var Sprite = require('sprite');
+var Snowboarder = require('snowboarder');
 var Skier = require('skier');
 var InfoBox = require('infoBox');
 var sprites = require('spriteInfo');
