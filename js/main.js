@@ -192,10 +192,11 @@ function startGame (images) {
 			snowboarder.draw(dContext);
 		});
 
-		randomlyGenerateObject(sprites.smallTree, 3);
-		randomlyGenerateObject(sprites.tallTree, 1);
+		randomlyGenerateObject(sprites.smallTree, 4);
+		randomlyGenerateObject(sprites.tallTree, 2);
 		randomlyGenerateObject(sprites.jump, 1);
 		randomlyGenerateObject(sprites.thickSnow, 1);
+		randomlyGenerateObject(sprites.rock, 1);
 
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 

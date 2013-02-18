@@ -46,6 +46,13 @@
 			},
 			hitBehaviour: {}
 		},
+		'rock' : {
+			$imageFile : 'skifree-objects.png',
+			parts : {
+				main : [ 30, 52, 23, 11 ]
+			},
+			hitBehaviour: {}
+		},
 		'monster' : {
 			$imageFile : 'sprite-characters.png',
 			parts : {
@@ -109,6 +116,12 @@
 	sprites.smallTree.hitBehaviour.skier = treeHitsSkierBehaviour;
 	sprites.tallTree.hitBehaviour.skier = treeHitsSkierBehaviour;
 
+	function rockHitsSkierBehaviour(rock, skier) {
+		skier.hasHitObstacle(rock);
+	}
+
+	sprites.rock.hitBehaviour.skier = rockHitsSkierBehaviour;
+
 	function skierHitsJumpBehaviour(skier, jump) {
 		skier.hasHitJump(jump);
 	}
@@ -119,7 +132,8 @@
 
 	sprites.jump.hitBehaviour.skier = jumpHitsSkierBehaviour;
 
-	function skierHitsThickSnowBehaviour(skier, thickSnow) {
+// Really not a fan of this behaviour.
+/*	function skierHitsThickSnowBehaviour(skier, thickSnow) {
 		// Need to implement this properly
 		skier.setSpeed(2);
 		setTimeout(function() {
@@ -133,9 +147,9 @@
 		setTimeout(function() {
 			skier.resetSpeed();
 		}, 300);
-	}
+	}*/
 
-	sprites.thickSnow.hitBehaviour.skier = thickSnowHitsSkierBehaviour;
+	// sprites.thickSnow.hitBehaviour.skier = thickSnowHitsSkierBehaviour;
 
 	function snowboarderHitsSkierBehaviour(snowboarder, skier) {
 		skier.hasHitObstacle(snowboarder);
