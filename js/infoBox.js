@@ -17,6 +17,7 @@
 		};
 
 		that.draw = function (dContext) {
+			dContext.font = '11px monospace';
 			var yOffset = 0;
 			that.lines.each(function (line) {
 				var fontSize = +dContext.font.slice(0,2);
@@ -36,6 +37,7 @@
 				}
 
 				yOffset += textHeight;
+
 
 				dContext.fillText(line, xPos, yPos);
 			});

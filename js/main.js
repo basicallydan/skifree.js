@@ -2,8 +2,8 @@ var mainCanvas = document.getElementById('skifree-canvas');
 var dContext = mainCanvas.getContext('2d');
 var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var global = this;
-var infoBoxControls = 'Use the mouse to control the skier';
-if (isMobileDevice()) infoBoxControls = 'Tap on the piste to control the skier';
+var infoBoxControls = 'Use the mouse or WASD to control the skier';
+if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the skier';
 var SpriteArray = require('spriteArray');
 var Monster = require('monster');
 var Sprite = require('sprite');
@@ -58,7 +58,7 @@ function startGame (images) {
 	var jumps = [];
 	var thickSnowPatches = [];
 	var mouseX = dContext.getCentreOfViewport();
-	var mouseY = mainCanvas.height;
+	var mouseY = 0;
 	var paused = false;
 
 	function resetGame () {
@@ -78,7 +78,8 @@ function startGame (images) {
 	}
 
 	function randomlyGenerateObject(sprite, dropRate) {
-		if (Number.random(100) <= dropRate && skier.isMoving) {
+		var rateModifier = Math.max(800 - mainCanvas.width, 0);
+		if (Number.random(100 + rateModifier) <= dropRate && skier.isMoving) {
 			var newSprite = new Sprite(sprite);
 			newSprite.setSpeed(0);
 			var randomPosition = dContext.getRandomMapPositionBelowViewport();
@@ -133,6 +134,7 @@ function startGame (images) {
 
 	skier = new Skier(sprites.skier);
 	skier.setMapPosition(0, 0);
+	skier.setMapPositionTarget(0, -10);
 	dContext.followSprite(skier);
 
 	infoBox = new InfoBox({
@@ -150,14 +152,24 @@ function startGame (images) {
 		}
 	});
 
+	var intervalNum = 0;
+
 	setInterval(function () {
 		// Clear canvas
 		mainCanvas.width = mainCanvas.width;
 		var mouseMapPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
 
 		if (!skier.isJumping) {
+			if (intervalNum === 0) {
+				console.log('Skier targets: ' + skier.movingToward[0] + ', ' + skier.movingToward[1]);
+			}
 			skier.setMapPositionTarget(mouseMapPosition[0], mouseMapPosition[1]);
+			if (intervalNum === 0) {
+				console.log('Skier targets: ' + skier.movingToward[0] + ', ' + skier.movingToward[1]);
+			}
 		}
+
+		intervalNum++;
 
 		skier.draw(dContext);
 
@@ -197,17 +209,18 @@ function startGame (images) {
 
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 
-		if (!monstersComeOut && distanceTravelledInMetres >= 200) {
+		if (!monstersComeOut && distanceTravelledInMetres >= 1000) {
 			monstersComeOut = true;
 		}
  
-		if (monstersComeOut && Number.random(1300) === 1) {
+		if (monstersComeOut && Number.random(1600) === 1) {
 			spawnMonster();
 		}
  
-		if (Number.random(1000) === 1) {
+		if (Number.random(1300) === 1) {
 			spawnBoarder();
 		}
+
 
 		skier.cycle();
 		
