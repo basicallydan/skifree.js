@@ -78,10 +78,10 @@
 			},
 			hitBehaviour: {}
 		},
-		'signFreeStyle' : {
+		'signStart' : {
 			$imageFile : 'skifree-objects.png',
 			parts : {
-				main : [ 130, 95, 40, 35 ]
+				main : [ 260, 103, 42, 27 ]
 			},
 			hitBehaviour: {}
 		},

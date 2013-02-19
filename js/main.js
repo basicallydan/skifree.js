@@ -51,6 +51,7 @@ function monsterHitsSkierBehaviour(monster, skier) {
 
 function startGame (images) {
 	var skier;
+	var startSign;
 	var infoBox;
 	var staticObjects = new SpriteArray();
 	var monsters = [];
@@ -69,6 +70,7 @@ function startGame (images) {
 		highScore = localStorage.getItem('highScore');
 		monsters = [];
 		skier.reset();
+		skier.setMapPosition(0, 0, 0);
 	}
 
 	function detectEnd () {
@@ -132,6 +134,9 @@ function startGame (images) {
 		snowboarders.push(newBoarder);
 	}
 
+	startSign = new Sprite(sprites.signStart);
+	startSign.setMapPosition(-50, 0);
+
 	skier = new Skier(sprites.skier);
 	skier.setMapPosition(0, 0);
 	skier.setMapPositionTarget(0, -10);
@@ -171,6 +176,7 @@ function startGame (images) {
 
 		intervalNum++;
 
+		startSign.draw(dContext, 'main');
 		skier.draw(dContext);
 
 		monsters.each(function (monster, i) {
@@ -264,7 +270,7 @@ function startGame (images) {
 		mouseX = e.pageX;
 		mouseY = e.pageY;
 	})
-	.bind('keypress', function (e) {
+	.bind('keydown', function (e) {
 		// F Key
 		if (e.keyCode === 102) {
 			skier.speedBoost();
