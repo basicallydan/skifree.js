@@ -188,7 +188,7 @@ function startNeverEndingGame (images) {
 	})
 	.bind('keydown', function (e) {
 		// F Key
-		if (e.keyCode === 102) {
+		if (e.keyCode === 70 || e.keyCode === 102) {
 			skier.speedBoost();
 		}
 		//W Key
