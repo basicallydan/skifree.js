@@ -41,6 +41,7 @@ var Sprite = require('./Sprite');
 			that.isMoving = true;
 			that.hasBeenHit = false;
 			canSpeedBoost = true;
+			setNormal();
 		};
 
 		function setNormal() {

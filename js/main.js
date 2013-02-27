@@ -10,6 +10,7 @@ var Sprite = require('sprite');
 var Snowboarder = require('snowboarder');
 var Skier = require('skier');
 var InfoBox = require('infoBox');
+var Game = require('game');
 var sprites = require('spriteInfo');
 
 var pixelsPerMetre = 18;
@@ -45,38 +46,36 @@ function monsterHitsSkierBehaviour(monster, skier) {
 		monster.isEating = false;
 		skier.isBeingEaten = false;
 		monster.setSpeed(skier.getSpeed());
+		monster.stopFollowing();
 		monster.setMapPositionTargetWithConviction(dContext.getRandomlyInTheCentreOfCanvas(), dContext.getAboveViewport());
 	});
 }
 
-function startGame (images) {
+function startNeverEndingGame (images) {
 	var skier;
 	var startSign;
 	var infoBox;
-	var staticObjects = new SpriteArray();
-	var monsters = [];
-	var snowboarders = [];
-	var jumps = [];
-	var thickSnowPatches = [];
-	var mouseX = dContext.getCentreOfViewport();
-	var mouseY = 0;
-	var paused = false;
+	var game;
 
 	function resetGame () {
-		pixelsPerMetre = 18;
 		monstersComeOut = false;
 		distanceTravelledInMetres = 0;
 		livesLeft = 5;
 		highScore = localStorage.getItem('highScore');
-		monsters = [];
-		skier.reset();
-		skier.setMapPosition(0, 0, 0);
+		game.reset();
+		game.addStaticObject(startSign);
 	}
 
 	function detectEnd () {
-		paused = true;
-		highScore = localStorage.setItem('highScore', distanceTravelledInMetres);
-		console.log('Game over!');
+		if (!game.isPaused()) {
+			highScore = localStorage.setItem('highScore', distanceTravelledInMetres);
+			infoBox.setLines([
+				'Game over!',
+				'Hit space to restart'
+			]);
+			game.pause();
+			game.cycle();
+		}
 	}
 
 	function randomlyGenerateObject(sprite, dropRate) {
@@ -87,17 +86,17 @@ function startGame (images) {
 			var randomPosition = dContext.getRandomMapPositionBelowViewport();
 			newSprite.setMapPosition(randomPosition[0], randomPosition[1]);
 
-			if (sprite.hitBehaviour.monster) {
+/*			if (sprite.hitBehaviour.monster) {
 				monsters.each(function (monster) {
 					newSprite.onHitting(monster, sprite.hitBehaviour.monster);
 				});
-			}
+			}*/
 
 			if (sprite.hitBehaviour.skier) {
 				newSprite.onHitting(skier, sprite.hitBehaviour.skier);
 			}
 
-			staticObjects.push(newSprite);
+			game.addStaticObject(newSprite);
 		}
 	}
 
@@ -108,19 +107,7 @@ function startGame (images) {
 		newMonster.follow(skier);
 		newMonster.onHitting(skier, monsterHitsSkierBehaviour);
 
-		staticObjects.each(function (obj) {
-			if (obj.data.hitBehaviour.monster) {
-				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
-			}
-		});
-
-		staticObjects.onPush(function (obj) {
-			if (obj.data.hitBehaviour.monster) {
-				obj.onHitting(newMonster, obj.data.hitBehaviour.monster);
-			}
-		});
-
-		monsters.push(newMonster);
+		game.addMovingObject(newMonster, 'monster');
 	}
 
 	function spawnBoarder () {
@@ -131,15 +118,18 @@ function startGame (images) {
 		newBoarder.setMapPositionTarget(randomPositionBelow[0], randomPositionBelow[1]);
 		newBoarder.onHitting(skier, sprites.snowboarder.hitBehaviour.skier);
 
-		snowboarders.push(newBoarder);
+		game.addMovingObject(newBoarder);
 	}
-
-	startSign = new Sprite(sprites.signStart);
-	startSign.setMapPosition(-50, 0);
 
 	skier = new Skier(sprites.skier);
 	skier.setMapPosition(0, 0);
 	skier.setMapPositionTarget(0, -10);
+
+	game = new Game(mainCanvas, skier);
+
+	startSign = new Sprite(sprites.signStart);
+	game.addStaticObject(startSign);
+	startSign.setMapPosition(-50, 0);
 	dContext.followSprite(skier);
 
 	infoBox = new InfoBox({
@@ -157,118 +147,44 @@ function startGame (images) {
 		}
 	});
 
-	var intervalNum = 0;
-
-	setInterval(function () {
-		// Clear canvas
-		mainCanvas.width = mainCanvas.width;
-		var mouseMapPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
-
-		if (!skier.isJumping) {
-			if (intervalNum === 0) {
-				console.log('Skier targets: ' + skier.movingToward[0] + ', ' + skier.movingToward[1]);
-			}
-			skier.setMapPositionTarget(mouseMapPosition[0], mouseMapPosition[1]);
-			if (intervalNum === 0) {
-				console.log('Skier targets: ' + skier.movingToward[0] + ', ' + skier.movingToward[1]);
-			}
-		}
-
-		intervalNum++;
-
-		startSign.draw(dContext, 'main');
-		skier.draw(dContext);
-
-		monsters.each(function (monster, i) {
-			if (monster.isAboveOnCanvas(dContext.getAboveViewport() - 100) || monster.deleted) {
-				return (delete monsters[i]);
-			}
-
-			if (monster.isFull) {
-				monster.stopFollowing();
-			} else if (!skier.isBeingEaten) {
-				monster.follow(skier);
-			} else if (skier.isBeingEaten && !monster.isEating) {
-				monster.stopFollowing();
-				monster.setMapPositionTargetWithConviction(dContext.getRandomlyInTheCentreOfCanvas(), dContext.getAboveViewport());
-			}
-
-			monster.cycle();
-			monster.draw(dContext);
-		});
-
-		snowboarders.each(function (snowboarder, i) {
-			if (snowboarder.isBelowOnCanvas(dContext.getBelowViewport() + 499)) {
-				console.log('Deleting snowboarder');
-				return (delete snowboarders[i]);
-			}
-
-			snowboarder.cycle(dContext);
-			snowboarder.draw(dContext);
-		});
-
+	game.beforeCycle(function () {
 		randomlyGenerateObject(sprites.smallTree, 4);
 		randomlyGenerateObject(sprites.tallTree, 2);
 		randomlyGenerateObject(sprites.jump, 1);
 		randomlyGenerateObject(sprites.thickSnow, 1);
 		randomlyGenerateObject(sprites.rock, 1);
-
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
-
-		if (!monstersComeOut && distanceTravelledInMetres >= 1000) {
-			monstersComeOut = true;
+		if (!game.isPaused()) {
+			infoBox.setLines([
+				'SkiFree.js',
+				infoBoxControls,
+				'Travelled ' + distanceTravelledInMetres + 'm',
+				'Skiers left: ' + livesLeft,
+				'High Score: ' + highScore,
+				'Created by Dan Hough (@basicallydan)',
+				'Current Speed: ' + skier.getSpeed()/*,
+				'Skier Map Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1),
+				'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)*/
+			]);
 		}
- 
-		if (monstersComeOut && Number.random(1600) === 1) {
-			spawnMonster();
-		}
- 
-		if (Number.random(1300) === 1) {
-			spawnBoarder();
-		}
+	});
 
-
-		skier.cycle();
-		
-		staticObjects.cull();
-
-		staticObjects.each(function (staticObject, i) {
-			staticObject.cycle();
-			staticObject.draw(dContext, 'main');
-
-			if (staticObject.isAboveOnCanvas(0)) {
-				staticObject.deleteOnNextCycle();
-			}
-		});
-
-		infoBox.setLines([
-			'SkiFree.js',
-			infoBoxControls,
-			'Travelled ' + distanceTravelledInMetres + 'm',
-			'Skiers left: ' + livesLeft,
-			'High Score: ' + highScore,
-			'Created by Dan Hough (@basicallydan)',
-			'Current Speed: ' + skier.getSpeed()/*,
-			'Skier Map Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1),
-			'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)*/
-		]);
-
-		infoBox.draw(dContext);
-
+	game.afterCycle(function() {
 		if (livesLeft === 0) {
 			detectEnd();
-			resetGame();
 		}
-	}, 10);
+	});
+
+	game.addUIElement(infoBox);
 	
 	$(mainCanvas)
 	.mousemove(function (e) {
-		mouseX = e.pageX;
-		mouseY = e.pageY;
+		game.setMouseX(e.pageX);
+		game.setMouseY(e.pageY);
 	})
 	.bind('click', function (e) {
-		mouseX = e.pageX;
-		mouseY = e.pageY;
+		game.setMouseX(e.pageX);
+		game.setMouseY(e.pageY);
 	})
 	.bind('keydown', function (e) {
 		// F Key
@@ -277,23 +193,23 @@ function startGame (images) {
 		}
 		//W Key
 		if (e.Keycode === 87 || e.keyCode === 119 || e.keyCode === 38) {
-			mouseX = 0;
-			mouseY = 0;
+			game.setMouseX(0);
+			game.setMouseY(0);
 		}
 		// A Key
 		if (e.keyCode === 65 || e.keyCode === 97 || e.keyCode === 37) {
-			mouseX = 0;
-			mouseY = mainCanvas.height;
+			game.setMouseX(0);
+			game.setMouseY(mainCanvas.height);
 		}
 		// S Key
 		if (e.keyCode === 83 || e.keyCode === 115 || e.keyCode === 40) {
-			mouseX = mainCanvas.width / 2;
-			mouseY = mainCanvas.height;
+			game.setMouseX(mainCanvas.width / 2);
+			game.setMouseY(mainCanvas.height);
 		}
 		// D Key
 		if (e.keyCode === 68 || e.keyCode === 100 || e.keyCode === 39) {
-			mouseX = mainCanvas.width;
-			mouseY = mainCanvas.height;
+			game.setMouseX(mainCanvas.width);
+			game.setMouseY(mainCanvas.height);
 		}
 		// M key
 		if (e.keyCode === 77 || e.keyCode === 109) {
@@ -303,25 +219,32 @@ function startGame (images) {
 		if (e.keyCode === 66 || e.keyCode === 98) {
 			spawnBoarder();
 		}
+
+		// Space bar
+		if (e.keyCode === 32) {
+			resetGame();
+		}
 	})
 	.hammer({})
 	.bind('hold', function (e) {
-		mouseX = e.position[0].x;
-		mouseY = e.position[0].y;
+		game.setMouseX(e.position[0].x);
+		game.setMouseY(e.position[0].y);
 	})
 	.bind('tap', function (e) {
-		mouseX = e.position[0].x;
-		mouseY = e.position[0].y;
+		game.setMouseX(e.position[0].x);
+		game.setMouseY(e.position[0].y);
 	})
 	.bind('drag', function (e) {
-		mouseX = e.position.x;
-		mouseY = e.position.y;
+		game.setMouseX(e.position.x);
+		game.setMouseY(e.position.y);
 	})
 	.bind('doubletap', function (e) {
 		skier.speedBoost();
 	})
 	// Focus on the canvas so we can listen for key events immediately
 	.focus();
+
+	game.start();
 }
 
 function resizeCanvas() {
@@ -349,4 +272,4 @@ window.addEventListener('resize', resizeCanvas, false);
 
 resizeCanvas();
 
-loadImages(imageSources, startGame);
+loadImages(imageSources, startNeverEndingGame);

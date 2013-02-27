@@ -7,8 +7,12 @@
 
 	SpriteArray.prototype = Object.create(Array.prototype);
 
-	SpriteArray.prototype.onPush = function(f) {
+	SpriteArray.prototype.onPush = function(f, retroactive) {
 		this.pushHandlers.push(f);
+
+		if (retroactive) {
+			this.each(f);
+		}
 	};
 
 	SpriteArray.prototype.push = function(obj) {
