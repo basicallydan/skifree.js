@@ -47,7 +47,8 @@ function monsterHitsSkierBehaviour(monster, skier) {
 		skier.isBeingEaten = false;
 		monster.setSpeed(skier.getSpeed());
 		monster.stopFollowing();
-		monster.setMapPositionTargetWithConviction(dContext.getRandomlyInTheCentreOfCanvas(), dContext.getAboveViewport());
+		var randomPositionAbove = dContext.getRandomMapPositionAboveViewport();
+		monster.setMapPositionTarget(randomPositionAbove[0], randomPositionAbove[1]);
 	});
 }
 

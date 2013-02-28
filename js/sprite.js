@@ -4,7 +4,6 @@
 		var hittableObjects = {};
 		var zIndexesOccupied = [ 0 ];
 		var that = this;
-		var trackedSpriteToMoveAround;
 		var trackedSpriteToMoveToward;
 		that.mapPosition = [0, 0, 0];
 		that.id = GUID();
@@ -78,17 +77,7 @@
 			that.setMapPosition(currentX, currentY);
 		}
 
-		function moveAwayFromSprite(otherSprite) {
-			var opposite = otherSprite.getMovingTowardOpposite();
-			that.setSpeed(otherSprite.getSpeed());
-
-			var moveTowardX = that.getCanvasPositionX() + opposite[0];
-			var moveTowardY = that.getCanvasPositionY() + opposite[1];
-
-			that.setMapPositionTarget(moveTowardX, moveTowardY);
-		}
-
-		this.draw = function draw (dCtx, spriteFrame) {
+		this.draw = function (dCtx, spriteFrame) {
 			var fr = that.data.parts[spriteFrame];
 			that.height = fr[3];
 			that.width = fr[2];
@@ -114,7 +103,7 @@
 			that.mapPosition = [x, y, z];
 		};
 
-		this.setCanvasPosition = function setCanvasPosition (cx, cy) {
+		this.setCanvasPosition = function (cx, cy) {
 			if (cx) {
 				if (Object.isString(cx) && (cx.first() === '+' || cx.first() === '-')) incrementX(cx);
 				else that.canvasX = cx;
@@ -126,15 +115,15 @@
 			}
 		};
 
-		this.getCanvasPositionX = function getCanvasPositionX () {
+		this.getCanvasPositionX = function () {
 			return that.canvasX;
 		};
 
-		this.getCanvasPositionY = function getCanvasPositionY () {
+		this.getCanvasPositionY = function  () {
 			return that.canvasY;
 		};
 
-		this.getLeftHitBoxEdge = function getLeftHitBoxEdge(zIndex) {
+		this.getLeftHitBoxEdge = function (zIndex) {
 			zIndex = zIndex || 0;
 			var lhbe = this.getCanvasPositionX();
 			if (getHitBox(zIndex)) {
@@ -143,7 +132,7 @@
 			return lhbe;
 		};
 
-		this.getTopHitBoxEdge = function getTopHitBoxEdge(zIndex) {
+		this.getTopHitBoxEdge = function (zIndex) {
 			zIndex = zIndex || 0;
 			var thbe = this.getCanvasPositionY();
 			if (getHitBox(zIndex)) {
@@ -152,7 +141,7 @@
 			return thbe;
 		};
 
-		this.getRightHitBoxEdge = function getRightHitBoxEdge(zIndex) {
+		this.getRightHitBoxEdge = function (zIndex) {
 			zIndex = zIndex || 0;
 
 			if (getHitBox(zIndex)) {
@@ -162,7 +151,7 @@
 			return that.canvasX + that.width;
 		};
 
-		this.getBottomHitBoxEdge = function getBottomHitBoxEdge(zIndex) {
+		this.getBottomHitBoxEdge = function (zIndex) {
 			zIndex = zIndex || 0;
 
 			if (getHitBox(zIndex)) {
@@ -172,7 +161,7 @@
 			return that.canvasY + that.height;
 		};
 
-		this.getPositionInFrontOf = function getPositionInFrontOf () {
+		this.getPositionInFrontOf = function  () {
 			return [that.canvasX, that.canvasY + that.height];
 		};
 
@@ -198,15 +187,15 @@
 			return that.speed;
 		};
 
-		this.setHeight = function setHeight (h) {
+		this.setHeight = function (h) {
 			that.height = h;
 		};
 
-		this.setWidth = function setHeight (w) {
+		this.setWidth = function (w) {
 			that.width = w;
 		};
 
-		this.getMaxHeight = function getMaxHeight() {
+		this.getMaxHeight = function () {
 			return that.maxHeight;
 		};
 
@@ -241,10 +230,6 @@
 		this.cycle = function () {
 			that.checkHittableObjects();
 
-			if (trackedSpriteToMoveAround) {
-				moveAwayFromSprite(trackedSpriteToMoveAround);
-			}
-
 			if (trackedSpriteToMoveToward) {
 				that.setMapPositionTarget(trackedSpriteToMoveToward.mapPosition[0], trackedSpriteToMoveToward.mapPosition[1], true);
 			}
@@ -275,10 +260,6 @@
 		this.setMapPositionTargetWithConviction = function (cx, cy) {
 			that.setMapPositionTarget(cx, cy);
 			that.movingWithConviction = true;
-		};
-
-		this.trackSpriteToMoveAround = function (otherSprite) {
-			trackedSpriteToMoveAround = otherSprite;
 		};
 
 		this.follow = function (sprite) {
