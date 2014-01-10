@@ -1,4 +1,8 @@
 var Sprite = require('./Sprite');
+navigator.vibrate = navigator.vibrate ||
+  navigator.webkitVibrate ||
+  navigator.mozVibrate ||
+  navigator.msVibrate;
 
 (function(global) {
 	function Skier(data) {
@@ -272,6 +276,10 @@ var Sprite = require('./Sprite');
 
 		that.hasHitObstacle = function (obs) {
 			setCrashed();
+
+			if (navigator.vibrate) {
+				navigator.vibrate(500);
+			}
 
 			obstaclesHit.push(obs.id);
 
