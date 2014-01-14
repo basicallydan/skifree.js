@@ -46,6 +46,7 @@ Some features which weren't in the original which I'd like to give a go:
 
 ## This is pretty frickin' sweet but it's clearly not finished. I can totally improve it. Let me improve it, dammit.
 
+* We are #seekingcontributors
 * Make a pull request with your awesome additions.
 * Maybe raise an issue?
 
