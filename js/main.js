@@ -101,6 +101,13 @@ function startNeverEndingGame (images) {
 		}
 	}
 
+	function randomlySpawnNPC(spawnFunction, dropRate) {
+		var rateModifier = Math.max(800 - mainCanvas.width, 0);
+		if (Number.random(1000 + rateModifier) <= dropRate) {
+			spawnFunction();
+		}
+	}
+
 	function spawnMonster () {
 		var newMonster = new Monster(sprites.monster);
 		var randomPosition = dContext.getRandomMapPositionAboveViewport();
@@ -154,6 +161,7 @@ function startNeverEndingGame (images) {
 		randomlyGenerateObject(sprites.jump, 1);
 		randomlyGenerateObject(sprites.thickSnow, 1);
 		randomlyGenerateObject(sprites.rock, 1);
+		randomlySpawnNPC(spawnBoarder, 0.01);
 		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 		if (!game.isPaused()) {
 			infoBox.setLines([
