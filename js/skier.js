@@ -22,6 +22,7 @@ navigator.vibrate = navigator.vibrate ||
 		};
 
 		var cancelableStateTimeout;
+		var cancelableStateInterval;
 
 		var canSpeedBoost = true;
 
@@ -33,10 +34,12 @@ navigator.vibrate = navigator.vibrate ||
 		var speedXFactor = 0;
 		var speedY = 0;
 		var speedYFactor = 1;
+		var trickStep = 0; // There are three of these
 
 		that.isMoving = true;
 		that.hasBeenHit = false;
 		that.isJumping = false;
+		that.isPerformingTrick = false;
 		that.setSpeed(standardSpeed);
 
 		that.reset = function () {
@@ -53,6 +56,10 @@ navigator.vibrate = navigator.vibrate ||
 			that.isMoving = true;
 			that.hasBeenHit = false;
 			that.isJumping = false;
+			that.isPerformingTrick = false;
+			if (cancelableStateInterval) {
+				clearInterval(cancelableStateInterval);
+			}
 			that.setMapPosition(undefined, undefined, 0);
 		}
 
@@ -60,6 +67,10 @@ navigator.vibrate = navigator.vibrate ||
 			that.isMoving = false;
 			that.hasBeenHit = true;
 			that.isJumping = false;
+			that.isPerformingTrick = false;
+			if (cancelableStateInterval) {
+				clearInterval(cancelableStateInterval);
+			}
 			that.setMapPosition(undefined, undefined, 0);
 		}
 
@@ -102,6 +113,17 @@ navigator.vibrate = navigator.vibrate ||
 
 		function getJumpingSprite() {
 			return 'jumping';
+		}
+
+		function getTrickSprite() {
+			console.log('Trick step is', trickStep);
+			if (trickStep === 0) {
+				return 'jumping';
+			} else if (trickStep === 1) {
+				return 'somersault1';
+			} else {
+				return 'somersault2';
+			}
 		}
 
 		that.setMapPositionTarget = function (x, y) {
@@ -154,6 +176,9 @@ navigator.vibrate = navigator.vibrate ||
 				}
 
 				if (that.isJumping) {
+					if (that.isPerformingTrick) {
+						return getTrickSprite();
+					}
 					return getJumpingSprite();
 				}
 
@@ -194,6 +219,19 @@ navigator.vibrate = navigator.vibrate ||
 						canSpeedBoost = true;
 					}, 10000);
 				}, 2000);
+			}
+		};
+
+		that.attemptTrick = function () {
+			if (that.isJumping) {
+				that.isPerformingTrick = true;
+				cancelableStateInterval = setInterval(function () {
+					if (trickStep >= 2) {
+						trickStep = 0;
+					} else {
+						trickStep += 1;
+					}
+				}, 300);
 			}
 		};
 

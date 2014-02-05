@@ -2,8 +2,8 @@ var mainCanvas = document.getElementById('skifree-canvas');
 var dContext = mainCanvas.getContext('2d');
 var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var global = this;
-var infoBoxControls = 'Use the mouse or WASD to control the skier';
-if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the skier';
+var infoBoxControls = 'Use the mouse or WASD to control the player';
+if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the player';
 var SpriteArray = require('spriteArray');
 var Monster = require('monster');
 var Sprite = require('sprite');
@@ -53,7 +53,7 @@ function monsterHitsSkierBehaviour(monster, skier) {
 }
 
 function startNeverEndingGame (images) {
-	var skier;
+	var player;
 	var startSign;
 	var infoBox;
 	var game;
@@ -81,7 +81,7 @@ function startNeverEndingGame (images) {
 
 	function randomlyGenerateObject(sprite, dropRate) {
 		var rateModifier = Math.max(800 - mainCanvas.width, 0);
-		if (Number.random(100 + rateModifier) <= dropRate && skier.isMoving) {
+		if (Number.random(100 + rateModifier) <= dropRate && player.isMoving) {
 			var newSprite = new Sprite(sprite);
 			newSprite.setSpeed(0);
 			var randomPosition = dContext.getRandomMapPositionBelowViewport();
@@ -94,7 +94,7 @@ function startNeverEndingGame (images) {
 			}*/
 
 			if (sprite.hitBehaviour.skier) {
-				newSprite.onHitting(skier, sprite.hitBehaviour.skier);
+				newSprite.onHitting(player, sprite.hitBehaviour.skier);
 			}
 
 			game.addStaticObject(newSprite);
@@ -112,8 +112,8 @@ function startNeverEndingGame (images) {
 		var newMonster = new Monster(sprites.monster);
 		var randomPosition = dContext.getRandomMapPositionAboveViewport();
 		newMonster.setMapPosition(randomPosition[0], randomPosition[1]);
-		newMonster.follow(skier);
-		newMonster.onHitting(skier, monsterHitsSkierBehaviour);
+		newMonster.follow(player);
+		newMonster.onHitting(player, monsterHitsSkierBehaviour);
 
 		game.addMovingObject(newMonster, 'monster');
 	}
@@ -124,21 +124,21 @@ function startNeverEndingGame (images) {
 		var randomPositionBelow = dContext.getRandomMapPositionBelowViewport();
 		newBoarder.setMapPosition(randomPositionAbove[0], randomPositionAbove[1]);
 		newBoarder.setMapPositionTarget(randomPositionBelow[0], randomPositionBelow[1]);
-		newBoarder.onHitting(skier, sprites.snowboarder.hitBehaviour.skier);
+		newBoarder.onHitting(player, sprites.snowboarder.hitBehaviour.skier);
 
 		game.addMovingObject(newBoarder);
 	}
 
-	skier = new Skier(sprites.skier);
-	skier.setMapPosition(0, 0);
-	skier.setMapPositionTarget(0, -10);
+	player = new Skier(sprites.skier);
+	player.setMapPosition(0, 0);
+	player.setMapPositionTarget(0, -10);
 
-	game = new Game(mainCanvas, skier);
+	game = new Game(mainCanvas, player);
 
 	startSign = new Sprite(sprites.signStart);
 	game.addStaticObject(startSign);
 	startSign.setMapPosition(-50, 0);
-	dContext.followSprite(skier);
+	dContext.followSprite(player);
 
 	infoBox = new InfoBox({
 		initialLines : [
@@ -162,7 +162,7 @@ function startNeverEndingGame (images) {
 		randomlyGenerateObject(sprites.thickSnow, 1);
 		randomlyGenerateObject(sprites.rock, 1);
 		randomlySpawnNPC(spawnBoarder, 0.01);
-		distanceTravelledInMetres = parseFloat(skier.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
+		distanceTravelledInMetres = parseFloat(player.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 		if (!game.isPaused()) {
 			infoBox.setLines([
 				'SkiFree.js',
@@ -171,8 +171,8 @@ function startNeverEndingGame (images) {
 				'Skiers left: ' + livesLeft,
 				'High Score: ' + highScore,
 				'Created by Dan Hough (@basicallydan)',
-				'Current Speed: ' + skier.getSpeed()/*,
-				'Skier Map Position: ' + skier.mapPosition[0].toFixed(1) + ', ' + skier.mapPosition[1].toFixed(1),
+				'Current Speed: ' + player.getSpeed()/*,
+				'Skier Map Position: ' + player.mapPosition[0].toFixed(1) + ', ' + player.mapPosition[1].toFixed(1),
 				'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)*/
 			]);
 		}
@@ -196,9 +196,14 @@ function startNeverEndingGame (images) {
 		game.setMouseY(e.pageY);
 	})
 	.bind('keydown', function (e) {
+		console.log(e.keyCode);
 		// F Key
 		if (e.keyCode === 70 || e.keyCode === 102) {
-			skier.speedBoost();
+			player.speedBoost();
+		}
+		// T Key
+		if (e.keyCode === 84) {
+			player.attemptTrick();
 		}
 		//W Key
 		if (e.Keycode === 87 || e.keyCode === 119 || e.keyCode === 38) {
@@ -248,7 +253,7 @@ function startNeverEndingGame (images) {
 		game.setMouseY(e.position.y);
 	})
 	.bind('doubletap', function (e) {
-		skier.speedBoost();
+		player.speedBoost();
 	})
 	// Focus on the canvas so we can listen for key events immediately
 	.focus();
