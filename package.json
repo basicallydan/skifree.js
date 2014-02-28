@@ -1,14 +1,17 @@
 {
-	"name": "SkiFree.js",
-	"version": "0.0.1",
-	"author": "Dan Hough <daniel.hough@gmail.com>",
-	"description": "A browser-based SkiFree port",
-	"scripts": {
-		"test": "mocha"
-	},
-	"devDependencies": {
-		"sugar":"1.3.x",
-		"mocha":"1.8.x",
-		"should": "1.2.x"
-	}
+  "name": "SkiFree.js",
+  "version": "0.0.2",
+  "author": "Dan Hough <daniel.hough@gmail.com>",
+  "description": "A browser-based SkiFree port",
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "sugar": "1.3.x",
+    "mocha": "1.8.x",
+    "should": "1.2.x"
+  },
+  "dependencies": {
+    "eventedloop": "~1.0.1"
+  }
 }

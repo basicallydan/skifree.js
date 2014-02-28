@@ -1,4 +1,5 @@
-var SpriteArray = require('spriteArray');
+var SpriteArray = require('./lib/spriteArray');
+var EventedLoop = require('eventedloop');
 
 (function (global) {
 	function Game (mainCanvas, player) {
@@ -12,7 +13,7 @@ var SpriteArray = require('spriteArray');
 		var that = this;
 		var beforeCycleCallbacks = [];
 		var afterCycleCallbacks = [];
-		var gameLoop;
+		var gameLoop = new EventedLoop();
 
 		this.addStaticObject = function (sprite) {
 			staticObjects.push(sprite);
@@ -62,7 +63,6 @@ var SpriteArray = require('spriteArray');
 			});
 
 			// Clear canvas
-			mainCanvas.width = mainCanvas.width;
 			var mouseMapPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
 
 			if (!player.isJumping) {
@@ -77,13 +77,10 @@ var SpriteArray = require('spriteArray');
 
 			intervalNum++;
 
-			player.draw(dContext);
-
 			player.cycle();
 
 			movingObjects.each(function (movingObject, i) {
 				movingObject.cycle(dContext);
-				movingObject.draw(dContext);
 			});
 			
 			staticObjects.cull();
@@ -91,17 +88,11 @@ var SpriteArray = require('spriteArray');
 				if (staticObject.cycle) {
 					staticObject.cycle();
 				}
-				if (staticObject.draw) {
-					staticObject.draw(dContext, 'main');
-				}
 			});
 
 			uiElements.each(function (uiElement, i) {
 				if (uiElement.cycle) {
 					uiElement.cycle();
-				}
-				if (uiElement.draw) {
-					uiElement.draw(dContext, 'main');
 				}
 			});
 
@@ -110,15 +101,38 @@ var SpriteArray = require('spriteArray');
 			});
 		};
 
+		that.draw = function () {
+			// Clear canvas
+			mainCanvas.width = mainCanvas.width;
+
+			player.draw(dContext);
+
+			player.cycle();
+
+			movingObjects.each(function (movingObject, i) {
+				movingObject.draw(dContext);
+			});
+			
+			staticObjects.each(function (staticObject, i) {
+				if (staticObject.draw) {
+					staticObject.draw(dContext, 'main');
+				}
+			});
+
+			uiElements.each(function (uiElement, i) {
+				if (uiElement.draw) {
+					uiElement.draw(dContext, 'main');
+				}
+			});
+		};
+
 		this.start = function () {
-			gameLoop = setInterval(that.cycle, 10);
+			gameLoop.start();
 		};
 
 		this.pause = function () {
-			if (gameLoop) {
-				paused = true;
-				clearInterval(gameLoop);
-			}
+			paused = true;
+			gameLoop.stop();
 		};
 
 		this.isPaused = function () {
@@ -131,14 +145,13 @@ var SpriteArray = require('spriteArray');
 			movingObjects = new SpriteArray();
 			mouseX = dContext.getCentreOfViewport();
 			mouseY = 0;
-			if (gameLoop) {
-				clearInterval(gameLoop);
-			}
-			gameLoop = undefined;
 			player.reset();
 			player.setMapPosition(0, 0, 0);
-			that.start();
-		};
+			this.start();
+		}.bind(this);
+
+		gameLoop.on('20', this.cycle);
+		gameLoop.on('20', this.draw);
 	}
 
 	global.game = Game;

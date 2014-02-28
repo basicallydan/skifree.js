@@ -1,4 +1,4 @@
-var Sprite = require('./Sprite');
+var Sprite = require('./sprite');
 navigator.vibrate = navigator.vibrate ||
   navigator.webkitVibrate ||
   navigator.mozVibrate ||
