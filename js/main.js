@@ -4,6 +4,7 @@ var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var global = this;
 var infoBoxControls = 'Use the mouse or WASD to control the player';
 if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the player';
+var Hammer = require('hammerjs');
 var SpriteArray = require('./lib/spriteArray');
 var Monster = require('./monster');
 var Sprite = require('./sprite');
@@ -239,24 +240,21 @@ function startNeverEndingGame (images) {
 			resetGame();
 		}
 	})
-	.hammer({})
-	.bind('hold', function (e) {
+	.focus();
+	// Focus on the canvas so we can listen for key events immediately
+
+	var hammertime = Hammer(mainCanvas).on('hold', function (e) {
 		game.setMouseX(e.position[0].x);
 		game.setMouseY(e.position[0].y);
-	})
-	.bind('tap', function (e) {
+	}).on('tap', function (e) {
 		game.setMouseX(e.position[0].x);
 		game.setMouseY(e.position[0].y);
-	})
-	.bind('drag', function (e) {
+	}).on('drag', function (e) {
 		game.setMouseX(e.position.x);
 		game.setMouseY(e.position.y);
-	})
-	.bind('doubletap', function (e) {
+	}).on('doubletap', function (e) {
 		player.speedBoost();
-	})
-	// Focus on the canvas so we can listen for key events immediately
-	.focus();
+	});
 
 	game.start();
 }

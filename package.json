@@ -12,6 +12,7 @@
     "should": "1.2.x"
   },
   "dependencies": {
-    "eventedloop": "~1.0.1"
+    "eventedloop": "~1.0.1",
+    "hammerjs": "git://github.com/EightMedia/hammer.js"
   }
 }
