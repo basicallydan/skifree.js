@@ -339,6 +339,39 @@
 		return that;
 	}
 
+	Sprite.createObjects = function createObjects(spriteInfoArray, opts) {
+		if (!Array.isArray(spriteInfoArray)) spriteInfoArray = [ spriteInfoArray ];
+		opts = Object.merge(opts, {
+			rateModifier: 0,
+			dropRate: 1,
+			position: [0, 0]
+		}, false, false);
+
+		function createOne (spriteInfo) {
+			var position = opts.position;
+			if (Number.random(100 + opts.rateModifier) <= spriteInfo.dropRate) {
+				var sprite = new Sprite(spriteInfo.sprite);
+				sprite.setSpeed(0);
+
+				if (Object.isFunction(position)) {
+					position = position();
+				}
+
+				sprite.setMapPosition(position[0], position[1]);
+
+				if (spriteInfo.sprite.hitBehaviour && spriteInfo.sprite.hitBehaviour.skier && opts.player) {
+					sprite.onHitting(opts.player, spriteInfo.sprite.hitBehaviour.skier);
+				}
+
+				return sprite;
+			}
+		}
+
+		var objects = spriteInfoArray.map(createOne).remove(undefined);
+
+		return objects;
+	};
+
 	global.sprite = Sprite;
 })( this );
 

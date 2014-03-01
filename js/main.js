@@ -80,28 +80,6 @@ function startNeverEndingGame (images) {
 		}
 	}
 
-	function randomlyGenerateObject(sprite, dropRate) {
-		var rateModifier = Math.max(800 - mainCanvas.width, 0);
-		if (Number.random(100 + rateModifier) <= dropRate && player.isMoving) {
-			var newSprite = new Sprite(sprite);
-			newSprite.setSpeed(0);
-			var randomPosition = dContext.getRandomMapPositionBelowViewport();
-			newSprite.setMapPosition(randomPosition[0], randomPosition[1]);
-
-/*			if (sprite.hitBehaviour.monster) {
-				monsters.each(function (monster) {
-					newSprite.onHitting(monster, sprite.hitBehaviour.monster);
-				});
-			}*/
-
-			if (sprite.hitBehaviour.skier) {
-				newSprite.onHitting(player, sprite.hitBehaviour.skier);
-			}
-
-			game.addStaticObject(newSprite);
-		}
-	}
-
 	function randomlySpawnNPC(spawnFunction, dropRate) {
 		var rateModifier = Math.max(800 - mainCanvas.width, 0);
 		if (Number.random(1000 + rateModifier) <= dropRate) {
@@ -157,11 +135,25 @@ function startNeverEndingGame (images) {
 	});
 
 	game.beforeCycle(function () {
-		randomlyGenerateObject(sprites.smallTree, 4);
-		randomlyGenerateObject(sprites.tallTree, 2);
-		randomlyGenerateObject(sprites.jump, 1);
-		randomlyGenerateObject(sprites.thickSnow, 1);
-		randomlyGenerateObject(sprites.rock, 1);
+		var newObjects = [];
+		if (player.isMoving) {
+			newObjects = Sprite.createObjects([
+				{ sprite: sprites.smallTree, dropRate: 4 },
+				{ sprite: sprites.tallTree, dropRate: 2 },
+				{ sprite: sprites.jump, dropRate: 1 },
+				{ sprite: sprites.thickSnow, dropRate: 1 },
+				{ sprite: sprites.rock, dropRate: 1 },
+			], {
+				rateModifier: Math.max(800 - mainCanvas.width, 0),
+				position: function () {
+					return dContext.getRandomMapPositionBelowViewport();
+				},
+				player: player
+			});
+		}
+		
+		game.addStaticObjects(newObjects);
+
 		randomlySpawnNPC(spawnBoarder, 0.01);
 		distanceTravelledInMetres = parseFloat(player.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 		if (!game.isPaused()) {

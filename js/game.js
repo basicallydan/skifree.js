@@ -19,6 +19,10 @@ var EventedLoop = require('eventedloop');
 			staticObjects.push(sprite);
 		};
 
+		this.addStaticObjects = function (sprites) {
+			sprites.forEach(this.addStaticObject.bind(this));
+		};
+
 		this.addMovingObject = function (movingObject, movingObjectType) {
 			if (movingObjectType) {
 				staticObjects.onPush(function (obj) {
