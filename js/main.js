@@ -13,6 +13,7 @@ var Skier = require('./skier');
 var InfoBox = require('./infoBox');
 var Game = require('./game');
 var sprites = require('./spriteInfo');
+var Mousetrap = require('br-mousetrap');
 
 var pixelsPerMetre = 18;
 var monstersComeOut = false;
@@ -151,7 +152,7 @@ function startNeverEndingGame (images) {
 				player: player
 			});
 		}
-		
+
 		game.addStaticObjects(newObjects);
 
 		randomlySpawnNPC(spawnBoarder, 0.01);
@@ -188,52 +189,29 @@ function startNeverEndingGame (images) {
 		game.setMouseX(e.pageX);
 		game.setMouseY(e.pageY);
 	})
-	.bind('keydown', function (e) {
-		console.log(e.keyCode);
-		// F Key
-		if (e.keyCode === 70 || e.keyCode === 102) {
-			player.speedBoost();
-		}
-		// T Key
-		if (e.keyCode === 84) {
-			player.attemptTrick();
-		}
-		//W Key
-		if (e.Keycode === 87 || e.keyCode === 119 || e.keyCode === 38) {
-			game.setMouseX(0);
-			game.setMouseY(0);
-		}
-		// A Key
-		if (e.keyCode === 65 || e.keyCode === 97 || e.keyCode === 37) {
-			game.setMouseX(0);
-			game.setMouseY(mainCanvas.height);
-		}
-		// S Key
-		if (e.keyCode === 83 || e.keyCode === 115 || e.keyCode === 40) {
-			game.setMouseX(mainCanvas.width / 2);
-			game.setMouseY(mainCanvas.height);
-		}
-		// D Key
-		if (e.keyCode === 68 || e.keyCode === 100 || e.keyCode === 39) {
-			game.setMouseX(mainCanvas.width);
-			game.setMouseY(mainCanvas.height);
-		}
-		// M key
-		if (e.keyCode === 77 || e.keyCode === 109) {
-			spawnMonster();
-		}
-		// B key
-		if (e.keyCode === 66 || e.keyCode === 98) {
-			spawnBoarder();
-		}
+	.focus(); // So we can listen to events immediately
 
-		// Space bar
-		if (e.keyCode === 32) {
-			resetGame();
-		}
-	})
-	.focus();
-	// Focus on the canvas so we can listen for key events immediately
+	Mousetrap.bind('f', player.speedBoost);
+	Mousetrap.bind('t', player.attemptTrick);
+	Mousetrap.bind(['w', 'up'], function () {
+		game.setMouseX(0);
+		game.setMouseY(0);
+	});
+	Mousetrap.bind(['a', 'left'], function () {
+		game.setMouseX(0);
+		game.setMouseY(mainCanvas.height);
+	});
+	Mousetrap.bind(['s', 'down'], function () {
+		game.setMouseX(mainCanvas.width / 2);
+		game.setMouseY(mainCanvas.height);
+	});
+	Mousetrap.bind(['d', 'right'], function () {
+		game.setMouseX(mainCanvas.width);
+		game.setMouseY(mainCanvas.height);
+	});
+	Mousetrap.bind('m', spawnMonster);
+	Mousetrap.bind('b', spawnBoarder);
+	Mousetrap.bind('space', resetGame);
 
 	var hammertime = Hammer(mainCanvas).on('hold', function (e) {
 		game.setMouseX(e.position[0].x);

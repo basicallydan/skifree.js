@@ -362,6 +362,10 @@ navigator.vibrate = navigator.vibrate ||
 		return that;
 	}
 
+	Skier.prototype.walkLeft = function () {
+
+	};
+
 	global.skier = Skier;
 })(this);
 
