@@ -1,4 +1,4 @@
-var Sprite = require(__dirname + '/../js/sprite');
+var Sprite = require(__dirname + '/../js/lib/sprite');
 var assert = require('assert');
 var should = require('should');
 var sugar = require('sugar');
@@ -297,6 +297,74 @@ describe('Sprite', function() {
 
 			prey.mapPosition[0].should.equal(10);
 			prey.mapPosition[1].should.equal(20);
+		});
+	});
+
+	describe('#setDirection()', function () {
+		it('should move down by the speed if the direction is 180 degrees', function () {
+			var sprite = new Sprite();
+			sprite.isMoving = true;
+			sprite.setSpeed(1);
+			sprite.setDirection(180);
+			sprite.setMapPosition(10, 20);
+			sprite.cycle();
+			sprite.mapPosition[0].should.equal(10);
+			sprite.mapPosition[1].should.equal(21);
+		});
+
+		it('should move right by the speed if the direction is 90 degrees', function () {
+			var sprite = new Sprite();
+			sprite.isMoving = true;
+			sprite.setSpeed(1);
+			sprite.setDirection(90);
+			sprite.setMapPosition(10, 20);
+			sprite.cycle();
+			sprite.mapPosition[0].should.equal(11);
+			sprite.mapPosition[1].should.equal(20);
+		});
+
+		it('should move left by the speed if the direction is 270 degrees', function () {
+			var sprite = new Sprite();
+			sprite.isMoving = true;
+			sprite.setSpeed(1);
+			sprite.setDirection(270);
+			sprite.setMapPosition(10, 20);
+			sprite.cycle();
+			sprite.mapPosition[0].should.equal(9);
+			sprite.mapPosition[1].should.equal(20);
+		});
+
+		it('should move right and down by half by the speed if the direction is 135 degrees', function () {
+			var sprite = new Sprite();
+			sprite.isMoving = true;
+			sprite.setSpeed(1);
+			sprite.setDirection(135);
+			sprite.setMapPosition(10, 20);
+			sprite.cycle();
+			sprite.mapPosition[0].should.equal(10.5);
+			sprite.mapPosition[1].should.equal(20.5);
+		});
+
+		it('should move left and down by half by the speed if the direction is 225 degrees', function () {
+			var sprite = new Sprite();
+			sprite.isMoving = true;
+			sprite.setSpeed(1);
+			sprite.setDirection(225);
+			sprite.setMapPosition(10, 20);
+			sprite.cycle();
+			sprite.mapPosition[0].should.equal(9.5);
+			sprite.mapPosition[1].should.equal(20.5);
+		});
+
+		it('should move up by half by the speed if the direction is 0 degrees', function () {
+			var sprite = new Sprite();
+			sprite.isMoving = true;
+			sprite.setSpeed(1);
+			sprite.setDirection(0);
+			sprite.setMapPosition(10, 20);
+			sprite.cycle();
+			sprite.mapPosition[0].should.equal(10);
+			sprite.mapPosition[1].should.equal(19);
 		});
 	});
 });

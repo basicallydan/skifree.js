@@ -192,13 +192,15 @@ function startNeverEndingGame (images) {
 	game.addUIElement(infoBox);
 	
 	$(mainCanvas)
-	.mousemove(function (e) {
-		game.setMouseX(e.pageX);
-		game.setMouseY(e.pageY);
-	})
+	// .mousemove(function (e) {
+	// 	game.setMouseX(e.pageX);
+	// 	game.setMouseY(e.pageY);
+	// 	player.resetDirection();
+	// })
 	.bind('click', function (e) {
 		game.setMouseX(e.pageX);
 		game.setMouseY(e.pageY);
+		player.resetDirection();
 	})
 	.focus(); // So we can listen to events immediately
 
@@ -207,18 +209,19 @@ function startNeverEndingGame (images) {
 	Mousetrap.bind(['w', 'up'], function () {
 		game.setMouseX(0);
 		game.setMouseY(0);
+		player.stopMoving();
 	});
 	Mousetrap.bind(['a', 'left'], function () {
-		game.setMouseX(0);
-		game.setMouseY(mainCanvas.height);
+		player.setDirection(225);
+		player.startMoving();
 	});
 	Mousetrap.bind(['s', 'down'], function () {
-		game.setMouseX(mainCanvas.width / 2);
-		game.setMouseY(mainCanvas.height);
+		player.setDirection(180);
+		player.startMoving();
 	});
 	Mousetrap.bind(['d', 'right'], function () {
-		game.setMouseX(mainCanvas.width);
-		game.setMouseY(mainCanvas.height);
+		player.setDirection(135);
+		player.startMoving();
 	});
 	Mousetrap.bind('m', spawnMonster);
 	Mousetrap.bind('b', spawnBoarder);
@@ -237,6 +240,7 @@ function startNeverEndingGame (images) {
 		player.speedBoost();
 	});
 
+	player.stopMoving();
 	game.start();
 }
 

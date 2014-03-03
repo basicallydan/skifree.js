@@ -51,6 +51,11 @@
 			}
 		}
 
+		function roundHalf(num) {
+			num = Math.round(num*2)/2;
+			return num;
+		}
+
 		function move() {
 			if (!that.isMoving) {
 				return;
@@ -59,8 +64,12 @@
 			var currentX = that.mapPosition[0];
 			var currentY = that.mapPosition[1];
 
-			if (direction && typeof that.movingToward[0] === 'undefined' && typeof that.movingToward[1] === 'undefined') {
-				// We need to move based on direction here
+			if (typeof direction !== 'undefined') {
+				// For this we need to modify the direction so it relates to the horizontal
+				var d = direction - 90;
+				if (d < 0) d = 360 + d;
+				currentX += roundHalf(that.speed * Math.cos(d * (Math.PI / 180)));
+				currentY += roundHalf(that.speed * Math.sin(d * (Math.PI / 180)));
 			} else {
 				if (typeof that.movingToward[0] !== 'undefined') {
 					if (currentX > that.movingToward[0]) {
@@ -260,6 +269,8 @@
 
 				that.movingWithConviction = false;
 			}
+
+			// that.resetDirection();
 		};
 
 		this.setDirection = function (angle) {
@@ -267,15 +278,30 @@
 				angle = 360 - angle;
 			}
 			direction = angle;
+			that.movingToward = undefined;
+		};
+
+		this.startMoving = function () {
+			that.isMoving = true;
+		};
+
+		this.stopMoving = function () {
+			that.isMoving = false;
+		};
+
+		this.resetDirection = function () {
+			direction = undefined;
 		};
 
 		this.setMapPositionTargetWithConviction = function (cx, cy) {
 			that.setMapPositionTarget(cx, cy);
 			that.movingWithConviction = true;
+			// that.resetDirection();
 		};
 
 		this.follow = function (sprite) {
 			trackedSpriteToMoveToward = sprite;
+			// that.resetDirection();
 		};
 
 		this.stopFollowing = function () {

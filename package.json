@@ -14,7 +14,6 @@
   "dependencies": {
     "eventedloop": "~1.0.1",
     "hammerjs": "git://github.com/EightMedia/hammer.js",
-    "br-mousetrap": "~1.1.3",
-    "sugar": "~1.4.1"
+    "br-mousetrap": "~1.1.3"
   }
 }

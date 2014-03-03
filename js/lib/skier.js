@@ -1,8 +1,14 @@
 var Sprite = require('./sprite');
-navigator.vibrate = navigator.vibrate ||
-  navigator.webkitVibrate ||
-  navigator.mozVibrate ||
-  navigator.msVibrate;
+if (typeof navigator !== 'undefined') {
+	navigator.vibrate = navigator.vibrate ||
+		navigator.webkitVibrate ||
+		navigator.mozVibrate ||
+		navigator.msVibrate;
+} else {
+	navigator = {
+		vibrate: false
+	};
+}
 
 (function(global) {
 	function Skier(data) {
@@ -129,18 +135,13 @@ navigator.vibrate = navigator.vibrate ||
 		that.setMapPositionTarget = function (x, y) {
 			if (that.hasBeenHit) return;
 
-			if (y > that.mapPosition[1]) {
-				that.isMoving = true;
-			} else {
-				that.isMoving = false;
-				// y = that.mapPosition[1];
-			}
-
 			if (Math.abs(that.mapPosition[0] - x) <= 75) {
 				x = that.mapPosition[0];
 			}
 
 			that.movingToward = [ x, y ];
+
+			// that.resetDirection();
 		};
 
 		that.setTurnEaseCycles = function (c) {
