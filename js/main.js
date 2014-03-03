@@ -3,6 +3,10 @@ require('./lib/canvasRenderingContext2DExtensions');
 require('./lib/extenders');
 require('./lib/plugins');
 
+// External dependencies
+var Hammer = require('hammerjs');
+var Mousetrap = require('br-mousetrap');
+
 // Method modules
 var isMobileDevice = require('./lib/isMobileDevice');
 
@@ -22,9 +26,7 @@ var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var global = this;
 var infoBoxControls = 'Use the mouse or WASD to control the player';
 if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the player';
-var Hammer = require('hammerjs');
 var sprites = require('./spriteInfo');
-var Mousetrap = require('br-mousetrap');
 
 var pixelsPerMetre = 18;
 var monstersComeOut = false;
@@ -262,3 +264,5 @@ window.addEventListener('resize', resizeCanvas, false);
 resizeCanvas();
 
 loadImages(imageSources, startNeverEndingGame);
+
+this.exports = window;
