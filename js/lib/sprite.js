@@ -5,7 +5,7 @@
 		var zIndexesOccupied = [ 0 ];
 		var that = this;
 		var trackedSpriteToMoveToward;
-		var direction;
+		that.direction = undefined;
 		that.mapPosition = [0, 0, 0];
 		that.id = GUID();
 		that.canvasX = 0;
@@ -64,9 +64,9 @@
 			var currentX = that.mapPosition[0];
 			var currentY = that.mapPosition[1];
 
-			if (typeof direction !== 'undefined') {
-				// For this we need to modify the direction so it relates to the horizontal
-				var d = direction - 90;
+			if (typeof that.direction !== 'undefined') {
+				// For this we need to modify the that.direction so it relates to the horizontal
+				var d = that.direction - 90;
 				if (d < 0) d = 360 + d;
 				currentX += roundHalf(that.speed * Math.cos(d * (Math.PI / 180)));
 				currentY += roundHalf(that.speed * Math.sin(d * (Math.PI / 180)));
@@ -277,20 +277,12 @@
 			if (angle >= 360) {
 				angle = 360 - angle;
 			}
-			direction = angle;
+			that.direction = angle;
 			that.movingToward = undefined;
 		};
 
-		this.startMoving = function () {
-			that.isMoving = true;
-		};
-
-		this.stopMoving = function () {
-			that.isMoving = false;
-		};
-
 		this.resetDirection = function () {
-			direction = undefined;
+			that.direction = undefined;
 		};
 
 		this.setMapPositionTargetWithConviction = function (cx, cy) {

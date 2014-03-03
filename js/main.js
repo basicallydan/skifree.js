@@ -192,36 +192,42 @@ function startNeverEndingGame (images) {
 	game.addUIElement(infoBox);
 	
 	$(mainCanvas)
-	// .mousemove(function (e) {
-	// 	game.setMouseX(e.pageX);
-	// 	game.setMouseY(e.pageY);
-	// 	player.resetDirection();
-	// })
+	.mousemove(function (e) {
+		game.setMouseX(e.pageX);
+		game.setMouseY(e.pageY);
+		player.resetDirection();
+		player.startMovingIfPossible();
+	})
 	.bind('click', function (e) {
 		game.setMouseX(e.pageX);
 		game.setMouseY(e.pageY);
 		player.resetDirection();
+		player.startMovingIfPossible();
 	})
 	.focus(); // So we can listen to events immediately
 
 	Mousetrap.bind('f', player.speedBoost);
 	Mousetrap.bind('t', player.attemptTrick);
 	Mousetrap.bind(['w', 'up'], function () {
-		game.setMouseX(0);
-		game.setMouseY(0);
-		player.stopMoving();
+		player.stop();
 	});
 	Mousetrap.bind(['a', 'left'], function () {
-		player.setDirection(225);
-		player.startMoving();
+		if (player.direction === 270) {
+			player.stepWest();
+		} else {
+			player.turnWest();
+		}
 	});
 	Mousetrap.bind(['s', 'down'], function () {
 		player.setDirection(180);
-		player.startMoving();
+		player.startMovingIfPossible();
 	});
 	Mousetrap.bind(['d', 'right'], function () {
-		player.setDirection(135);
-		player.startMoving();
+		if (player.direction === 90) {
+			player.stepEast();
+		} else {
+			player.turnEast();
+		}
 	});
 	Mousetrap.bind('m', spawnMonster);
 	Mousetrap.bind('b', spawnBoarder);
@@ -240,7 +246,9 @@ function startNeverEndingGame (images) {
 		player.speedBoost();
 	});
 
-	player.stopMoving();
+	player.isMoving = false;
+	player.setDirection(270);
+
 	game.start();
 }
 

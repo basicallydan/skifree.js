@@ -70,13 +70,7 @@ var EventedLoop = require('eventedloop');
 			var mouseMapPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
 
 			if (!player.isJumping) {
-				if (intervalNum === 0) {
-					console.log('Skier targets: ' + player.movingToward[0] + ', ' + player.movingToward[1]);
-				}
 				player.setMapPositionTarget(mouseMapPosition[0], mouseMapPosition[1]);
-				if (intervalNum === 0) {
-					console.log('Skier targets: ' + player.movingToward[0] + ', ' + player.movingToward[1]);
-				}
 			}
 
 			intervalNum++;

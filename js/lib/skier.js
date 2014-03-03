@@ -12,6 +12,15 @@ if (typeof navigator !== 'undefined') {
 
 (function(global) {
 	function Skier(data) {
+		var discreteDirections = {
+			'west': 270,
+			'wsWest': 240,
+			'sWest': 195,
+			'south': 180,
+			'sEast': 165,
+			'esEast': 120,
+			'east': 90
+		};
 		var that = new Sprite(data);
 		var sup = {
 			draw: that.superior('draw'),
@@ -90,27 +99,59 @@ if (typeof navigator !== 'undefined') {
 			that.setMapPosition(undefined, undefined, 1);
 		}
 
-		function getDirection() {
-			var xDiff = that.movingToward[0] - that.mapPosition[0];
-			var yDiff = that.movingToward[1] - that.mapPosition[1];
-			if (yDiff <= 0) {
-				if (xDiff > 0) {
+		function getDiscreteDirection() {
+			if (that.direction) {
+				if (that.direction <= 90) {
 					return 'east';
-				} else {
+				} else if (that.direction > 90 && that.direction < 150) {
+					return 'esEast';
+				} else if (that.direction >= 150 && that.direction < 180) {
+					return 'sEast';
+				} else if (that.direction === 180) {
+					return 'south';
+				} else if (that.direction > 180 && that.direction <= 210) {
+					return 'sWest';
+				} else if (that.direction > 210 && that.direction < 270) {
+					return 'wsWest';
+				} else if (that.direction >= 270) {
 					return 'west';
+				} else {
+					return 'south';
+				}
+			} else {
+				var xDiff = that.movingToward[0] - that.mapPosition[0];
+				var yDiff = that.movingToward[1] - that.mapPosition[1];
+				if (yDiff <= 0) {
+					if (xDiff > 0) {
+						return 'east';
+					} else {
+						return 'west';
+					}
+				}
+
+				if (directions.esEast(xDiff)) {
+					return 'esEast';
+				} else if (directions.sEast(xDiff)) {
+					return 'sEast';
+				} else if (directions.wsWest(xDiff)) {
+					return 'wsWest';
+				} else if (directions.sWest(xDiff)) {
+					return 'sWest';
 				}
 			}
-
-			if (directions.esEast(xDiff)) {
-				return 'esEast';
-			} else if (directions.sEast(xDiff)) {
-				return 'sEast';
-			} else if (directions.wsWest(xDiff)) {
-				return 'wsWest';
-			} else if (directions.sWest(xDiff)) {
-				return 'sWest';
-			}
 			return 'south';
+		}
+
+		function setDiscreteDirection(d) {
+			if (discreteDirections[d]) {
+				that.setDirection(discreteDirections[d]);
+			}
+
+			if (d === 'west' || d === 'east') {
+				that.isMoving = false;
+			} else {
+				that.isMoving = true;
+			}
 		}
 
 		function getBeingEatenSprite() {
@@ -132,6 +173,78 @@ if (typeof navigator !== 'undefined') {
 			}
 		}
 
+		that.stop = function () {
+			if (that.direction > 180) {
+				setDiscreteDirection('west');
+			} else {
+				setDiscreteDirection('east');
+			}
+		};
+
+		that.turnEast = function () {
+			var discreteDirection = getDiscreteDirection();
+
+			switch (discreteDirection) {
+				case 'west':
+					setDiscreteDirection('wsWest');
+					break;
+				case 'wsWest':
+					setDiscreteDirection('sWest');
+					break;
+				case 'sWest':
+					setDiscreteDirection('south');
+					break;
+				case 'south':
+					setDiscreteDirection('sEast');
+					break;
+				case 'sEast':
+					setDiscreteDirection('esEast');
+					break;
+				case 'esEast':
+					setDiscreteDirection('east');
+					break;
+				default:
+					setDiscreteDirection('south');
+					break;
+			}
+		};
+
+		that.turnWest = function () {
+			var discreteDirection = getDiscreteDirection();
+
+			switch (discreteDirection) {
+				case 'east':
+					setDiscreteDirection('esEast');
+					break;
+				case 'esEast':
+					setDiscreteDirection('sEast');
+					break;
+				case 'sEast':
+					setDiscreteDirection('south');
+					break;
+				case 'south':
+					setDiscreteDirection('sWest');
+					break;
+				case 'sWest':
+					setDiscreteDirection('wsWest');
+					break;
+				case 'wsWest':
+					setDiscreteDirection('west');
+					break;
+				default:
+					setDiscreteDirection('south');
+					break;
+			}
+		};
+
+		that.stepWest = function () {
+			that.mapPosition[0] -= that.speed * 2;
+		};
+
+		that.stepEast = function () {
+			that.mapPosition[0] += that.speed * 2;
+		};
+
 		that.setMapPositionTarget = function (x, y) {
 			if (that.hasBeenHit) return;
 
@@ -142,6 +255,12 @@ if (typeof navigator !== 'undefined') {
 			that.movingToward = [ x, y ];
 
 			// that.resetDirection();
+		};
+
+		that.startMovingIfPossible = function () {
+			if (!that.hasBeenHit && !that.isBeingEaten) {
+				that.isMoving = true;
+			}
 		};
 
 		that.setTurnEaseCycles = function (c) {
@@ -187,7 +306,7 @@ if (typeof navigator !== 'undefined') {
 					return 'hit';
 				}
 
-				return getDirection();
+				return getDiscreteDirection();
 			};
 
 			return sup.draw(dContext, spritePartToUse());
@@ -253,14 +372,14 @@ if (typeof navigator !== 'undefined') {
 		}
 
 		that.getSpeedX = function () {
-			if (getDirection() === 'esEast' || getDirection() === 'wsWest') {
+			if (getDiscreteDirection() === 'esEast' || getDiscreteDirection() === 'wsWest') {
 				speedXFactor = 0.5;
 				speedX = easeSpeedToTargetUsingFactor(speedX, that.getSpeed() * speedXFactor, speedXFactor);
 
 				return speedX;
 			}
 
-			if (getDirection() === 'sEast' || getDirection() === 'sWest') {
+			if (getDiscreteDirection() === 'sEast' || getDiscreteDirection() === 'sWest') {
 				speedXFactor = 0.33;
 				speedX = easeSpeedToTargetUsingFactor(speedX, that.getSpeed() * speedXFactor, speedXFactor);
 
@@ -285,21 +404,21 @@ if (typeof navigator !== 'undefined') {
 				return speedY;
 			}
 
-			if (getDirection() === 'esEast' || getDirection() === 'wsWest') {
+			if (getDiscreteDirection() === 'esEast' || getDiscreteDirection() === 'wsWest') {
 				speedYFactor = 0.6;
 				speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed() * 0.6, 0.6);
 
 				return speedY;
 			}
 
-			if (getDirection() === 'sEast' || getDirection() === 'sWest') {
+			if (getDiscreteDirection() === 'sEast' || getDiscreteDirection() === 'sWest') {
 				speedYFactor = 0.85;
 				speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed() * 0.85, 0.85);
 
 				return speedY;
 			}
 
-			if (getDirection() === 'east' || getDirection() === 'west') {
+			if (getDiscreteDirection() === 'east' || getDiscreteDirection() === 'west') {
 				speedYFactor = 1;
 				speedY = 0;
 
@@ -362,10 +481,6 @@ if (typeof navigator !== 'undefined') {
 
 		return that;
 	}
-
-	Skier.prototype.walkLeft = function () {
-
-	};
 
 	global.skier = Skier;
 })(this);

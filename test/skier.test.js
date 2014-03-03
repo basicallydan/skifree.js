@@ -196,4 +196,162 @@ describe('Skier', function() {
 			skier.getSpeedY().should.equal(6);
 		});
 	});
+
+	describe('#turnEast()', function() {
+		it('should go one discrete direction from stopping west', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(270);
+			skier.turnEast();
+			skier.direction.should.equal(240);
+		});
+		
+		it('should go two discrete directions from stopping west', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(270);
+			skier.turnEast();
+			skier.turnEast();
+			skier.direction.should.equal(195);
+		});
+
+		it('should go three discrete directions from stopping west', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(270);
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.direction.should.equal(180);
+		});
+
+		it('should go four discrete directions from stopping west', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(270);
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.direction.should.equal(165);
+		});
+
+		it('should go five discrete directions from stopping west', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(270);
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.direction.should.equal(120);
+		});
+
+		it('should go six discrete directions from stopping west', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(270);
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.turnEast();
+			skier.direction.should.equal(90);
+		});
+
+		it('should go to next discrete direction from arbitrary direction', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(255);
+			skier.turnEast();
+			skier.direction.should.equal(195);
+		});
+	});
+
+	describe('#turnWest()', function() {
+		it('should go one discrete directions from stopping east', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(90);
+			skier.turnWest();
+			skier.direction.should.equal(120);
+		});
+
+		it('should go two discrete directions from stopping east', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(90);
+			skier.turnWest();
+			skier.turnWest();
+			skier.direction.should.equal(165);
+		});
+
+		it('should go three discrete directions from stopping east', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(90);
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.direction.should.equal(180);
+		});
+		
+		it('should go four discrete directions from stopping east', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(90);
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.direction.should.equal(195);
+		});
+
+		it('should go five discrete direction from stopping east', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(90);
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.direction.should.equal(240);
+		});
+
+		it('should go six discrete direction from stopping east', function () {
+			var skier = new Skier();
+			skier.setMapPosition(10, 30);
+			skier.setDirection(90);
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.turnWest();
+			skier.direction.should.equal(270);
+		});
+	});
+
+	describe('#stepWest()',  function() {
+		it('should go twice the speed steps to the west', function () {
+			var skier = new Skier();
+			skier.setSpeed(3);
+			skier.setMapPosition(10, 30);
+			skier.stepWest();
+			skier.mapPosition[0].should.equal(4);
+		});
+	});
+
+	describe('#stepEast()',  function() {
+		it('should go twice the speed steps to the east', function () {
+			var skier = new Skier();
+			skier.setSpeed(3);
+			skier.setMapPosition(10, 30);
+			skier.stepEast();
+			skier.mapPosition[0].should.equal(16);
+		});
+	});
 });
