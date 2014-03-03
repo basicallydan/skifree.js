@@ -1,3 +1,21 @@
+// Global dependencies which return no modules
+require('./lib/canvasRenderingContext2DExtensions');
+require('./lib/extenders');
+require('./lib/plugins');
+
+// Method modules
+var isMobileDevice = require('./lib/isMobileDevice');
+
+// Game Objects
+var SpriteArray = require('./lib/spriteArray');
+var Monster = require('./lib/monster');
+var Sprite = require('./lib/sprite');
+var Snowboarder = require('./lib/snowboarder');
+var Skier = require('./lib/skier');
+var InfoBox = require('./lib/infoBox');
+var Game = require('./lib/game');
+
+// Local variables for starting the game
 var mainCanvas = document.getElementById('skifree-canvas');
 var dContext = mainCanvas.getContext('2d');
 var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
@@ -5,13 +23,6 @@ var global = this;
 var infoBoxControls = 'Use the mouse or WASD to control the player';
 if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the player';
 var Hammer = require('hammerjs');
-var SpriteArray = require('./lib/spriteArray');
-var Monster = require('./monster');
-var Sprite = require('./sprite');
-var Snowboarder = require('./snowboarder');
-var Skier = require('./skier');
-var InfoBox = require('./infoBox');
-var Game = require('./game');
 var sprites = require('./spriteInfo');
 var Mousetrap = require('br-mousetrap');
 
@@ -232,22 +243,6 @@ function startNeverEndingGame (images) {
 function resizeCanvas() {
 	mainCanvas.width = window.innerWidth;
 	mainCanvas.height = window.innerHeight;
-}
-
-function isMobileDevice() {
-	if(navigator.userAgent.match(/Android/i) ||
-		navigator.userAgent.match(/webOS/i) ||
-		navigator.userAgent.match(/iPhone/i) ||
-		navigator.userAgent.match(/iPad/i) ||
-		navigator.userAgent.match(/iPod/i) ||
-		navigator.userAgent.match(/BlackBerry/i) ||
-		navigator.userAgent.match(/Windows Phone/i)
-	) {
-		return true;
-	}
-	else {
-		return false;
-	}
 }
 
 window.addEventListener('resize', resizeCanvas, false);

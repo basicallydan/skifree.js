@@ -1,5 +1,5 @@
 (function (global) {
-	var GUID = require('./lib/guid');
+	var GUID = require('./guid');
 	function Sprite (data) {
 		var hittableObjects = {};
 		var zIndexesOccupied = [ 0 ];

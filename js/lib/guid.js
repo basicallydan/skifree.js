@@ -1,3 +1,4 @@
+// Creates a random ID string
 (function(global) {
     function guid ()
     {

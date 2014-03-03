@@ -1,4 +1,4 @@
-var SpriteArray = require('./lib/spriteArray');
+var SpriteArray = require('./spriteArray');
 var EventedLoop = require('eventedloop');
 
 (function (global) {
