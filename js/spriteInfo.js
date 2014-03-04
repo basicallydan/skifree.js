@@ -94,6 +94,13 @@
 				sWest : [ 95, 228, 26, 30 ]
 			},
 			hitBehaviour: {}
+		},
+		'emptyChairLift': {
+			$imageFile : 'skifree-objects.png',
+			parts: {
+				main : [ 92, 136, 26, 30 ]
+			},
+			zIndexesOccupied : [1],
 		}
 	};
 
