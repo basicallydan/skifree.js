@@ -276,6 +276,9 @@ if (typeof navigator !== 'undefined') {
 		};
 
 		that.cycle = function () {
+			if ( that.getSpeedX() <= 0 && that.getSpeedY() <= 0 ) {
+						that.isMoving = false;
+			}
 			if (that.isMoving) {
 				pixelsTravelled += that.speed;
 			}

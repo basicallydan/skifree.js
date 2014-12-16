@@ -235,15 +235,18 @@ function startNeverEndingGame (images) {
 	Mousetrap.bind('b', spawnBoarder);
 	Mousetrap.bind('space', resetGame);
 
-	var hammertime = Hammer(mainCanvas).on('hold', function (e) {
-		game.setMouseX(e.position[0].x);
-		game.setMouseY(e.position[0].y);
+	var hammertime = Hammer(mainCanvas).on('press', function (e) {
+		e.preventDefault();
+		game.setMouseX(e.center.x);
+		game.setMouseY(e.center.y);
 	}).on('tap', function (e) {
-		game.setMouseX(e.position[0].x);
-		game.setMouseY(e.position[0].y);
-	}).on('drag', function (e) {
-		game.setMouseX(e.position.x);
-		game.setMouseY(e.position.y);
+		game.setMouseX(e.center.x);
+		game.setMouseY(e.center.y);
+	}).on('pan', function (e) {
+		game.setMouseX(e.center.x);
+		game.setMouseY(e.center.y);
+		player.resetDirection();
+		player.startMovingIfPossible();
 	}).on('doubletap', function (e) {
 		player.speedBoost();
 	});
