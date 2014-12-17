@@ -55,6 +55,7 @@ if (typeof navigator !== 'undefined') {
 		that.hasBeenHit = false;
 		that.isJumping = false;
 		that.isPerformingTrick = false;
+		that.onHitObstacleCb = function() {};
 		that.setSpeed(standardSpeed);
 
 		that.reset = function () {
@@ -445,6 +446,7 @@ if (typeof navigator !== 'undefined') {
 			obstaclesHit.push(obs.id);
 
 			that.resetSpeed();
+			that.onHitObstacleCb(obs);
 
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
@@ -482,6 +484,9 @@ if (typeof navigator !== 'undefined') {
 			canSpeedBoost = true;
 		};
 
+		that.setHitObstacleCb = function (fn) {
+			that.onHitObstacleCb = fn || function() {};
+		};
 		return that;
 	}
 
