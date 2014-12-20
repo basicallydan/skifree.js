@@ -33,7 +33,7 @@ var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
 var livesLeft = 5;
 var highScore = 0;
-var looseLifeOnObstacleHit = false;
+var loseLifeOnObstacleHit = false;
 var dropRates = {smallTree: 4, tallTree: 2, jump: 1, thickSnow: 1, rock: 1};
 if (localStorage.getItem('highScore')) highScore = localStorage.getItem('highScore');
 
@@ -127,7 +127,7 @@ function startNeverEndingGame (images) {
 	player = new Skier(sprites.skier);
 	player.setMapPosition(0, 0);
 	player.setMapPositionTarget(0, -10);
-	if ( looseLifeOnObstacleHit ) {
+	if ( loseLifeOnObstacleHit ) {
 		player.setHitObstacleCb(function() {
 			livesLeft -= 1;
 		});

@@ -3,6 +3,21 @@
   "version": "0.0.2",
   "author": "Dan Hough <daniel.hough@gmail.com>",
   "description": "A browser-based SkiFree port",
+  "contributors": [
+    {
+      "name": "Daniel Hough",
+      "email": "daniel.hough@gmail.com",
+      "url": "https://danhough.com"
+    },
+    {
+      "name": "tomgrim",
+      "url": "https://github.com/tomgrim"
+    },
+    {
+      "name": "andersevenrud",
+      "url": "https://github.com/andersevenrud"
+    }
+  ],
   "scripts": {
     "test": "mocha"
   },
