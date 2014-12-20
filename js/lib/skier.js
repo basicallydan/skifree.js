@@ -44,6 +44,7 @@ if (typeof navigator !== 'undefined') {
 		var obstaclesHit = [];
 		var pixelsTravelled = 0;
 		var standardSpeed = 5;
+		var boostMultiplier = 2;
 		var turnEaseCycles = 70;
 		var speedX = 0;
 		var speedXFactor = 0;
@@ -55,6 +56,7 @@ if (typeof navigator !== 'undefined') {
 		that.hasBeenHit = false;
 		that.isJumping = false;
 		that.isPerformingTrick = false;
+		that.onHitObstacleCb = function() {};
 		that.setSpeed(standardSpeed);
 
 		that.reset = function () {
@@ -276,6 +278,9 @@ if (typeof navigator !== 'undefined') {
 		};
 
 		that.cycle = function () {
+			if ( that.getSpeedX() <= 0 && that.getSpeedY() <= 0 ) {
+						that.isMoving = false;
+			}
 			if (that.isMoving) {
 				pixelsTravelled += that.speed;
 			}
@@ -332,7 +337,7 @@ if (typeof navigator !== 'undefined') {
 			var originalSpeed = that.speed;
 			if (canSpeedBoost) {
 				canSpeedBoost = false;
-				that.setSpeed(that.speed * 2);
+				that.setSpeed(that.speed * boostMultiplier);
 				setTimeout(function () {
 					that.setSpeed(originalSpeed);
 					setTimeout(function () {
@@ -442,6 +447,7 @@ if (typeof navigator !== 'undefined') {
 			obstaclesHit.push(obs.id);
 
 			that.resetSpeed();
+			that.onHitObstacleCb(obs);
 
 			if (cancelableStateTimeout) {
 				clearTimeout(cancelableStateTimeout);
@@ -479,6 +485,9 @@ if (typeof navigator !== 'undefined') {
 			canSpeedBoost = true;
 		};
 
+		that.setHitObstacleCb = function (fn) {
+			that.onHitObstacleCb = fn || function() {};
+		};
 		return that;
 	}
 

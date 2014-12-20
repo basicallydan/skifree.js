@@ -33,6 +33,8 @@ var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
 var livesLeft = 5;
 var highScore = 0;
+var loseLifeOnObstacleHit = false;
+var dropRates = {smallTree: 4, tallTree: 2, jump: 1, thickSnow: 1, rock: 1};
 if (localStorage.getItem('highScore')) highScore = localStorage.getItem('highScore');
 
 function loadImages (sources, next) {
@@ -125,6 +127,11 @@ function startNeverEndingGame (images) {
 	player = new Skier(sprites.skier);
 	player.setMapPosition(0, 0);
 	player.setMapPositionTarget(0, -10);
+	if ( loseLifeOnObstacleHit ) {
+		player.setHitObstacleCb(function() {
+			livesLeft -= 1;
+		});
+	}
 
 	game = new Game(mainCanvas, player);
 
@@ -152,11 +159,11 @@ function startNeverEndingGame (images) {
 		var newObjects = [];
 		if (player.isMoving) {
 			newObjects = Sprite.createObjects([
-				{ sprite: sprites.smallTree, dropRate: 4 },
-				{ sprite: sprites.tallTree, dropRate: 2 },
-				{ sprite: sprites.jump, dropRate: 1 },
-				{ sprite: sprites.thickSnow, dropRate: 1 },
-				{ sprite: sprites.rock, dropRate: 1 },
+				{ sprite: sprites.smallTree, dropRate: dropRates.smallTree },
+				{ sprite: sprites.tallTree, dropRate: dropRates.tallTree },
+				{ sprite: sprites.jump, dropRate: dropRates.jump },
+				{ sprite: sprites.thickSnow, dropRate: dropRates.thickSnow },
+				{ sprite: sprites.rock, dropRate: dropRates.rock },
 			], {
 				rateModifier: Math.max(800 - mainCanvas.width, 0),
 				position: function () {
@@ -235,15 +242,18 @@ function startNeverEndingGame (images) {
 	Mousetrap.bind('b', spawnBoarder);
 	Mousetrap.bind('space', resetGame);
 
-	var hammertime = Hammer(mainCanvas).on('hold', function (e) {
-		game.setMouseX(e.position[0].x);
-		game.setMouseY(e.position[0].y);
+	var hammertime = Hammer(mainCanvas).on('press', function (e) {
+		e.preventDefault();
+		game.setMouseX(e.center.x);
+		game.setMouseY(e.center.y);
 	}).on('tap', function (e) {
-		game.setMouseX(e.position[0].x);
-		game.setMouseY(e.position[0].y);
-	}).on('drag', function (e) {
-		game.setMouseX(e.position.x);
-		game.setMouseY(e.position.y);
+		game.setMouseX(e.center.x);
+		game.setMouseY(e.center.y);
+	}).on('pan', function (e) {
+		game.setMouseX(e.center.x);
+		game.setMouseY(e.center.y);
+		player.resetDirection();
+		player.startMovingIfPossible();
 	}).on('doubletap', function (e) {
 		player.speedBoost();
 	});

@@ -1,10 +1,10 @@
 # Skifree.js
 
-This is a **work in progress** JavaScript port of the popular 1991 PC game [Skifree](http://en.wikipedia.org/wiki/Skifree).
+This is a **work in progress** JavaScript port of the popular 1991 PC game [SkiFree](http://en.wikipedia.org/wiki/Skifree) by [Chris Pirih](http://ski.ihoc.net/).
 
 I just started work this Christmas 2012 so I've not done a whole lot yet.
 
-[**Play this right now if you want to**](http://basicallydan.github.com/skifree.js) (opens a demo page)
+[**Play this right now if you want to**](http://basicallydan.github.com/skifree.js) (opens a demo page).
 
 ## Features so far:
 
@@ -63,7 +63,8 @@ Thanks!
 
 * [HTML5 Boilerplate](http://html5boilerplate.com) provided a bunch of useful markup and stuff
 * [Wing Wang Wao](http://spriters-resource.com/submitter/Wing%20Wang%20Wao) of the [Spriters Resource Forum](http://spriters-resource.com) did an amazing job of providing the sprites which I have extended slightly. Thanks!
+* Thank you [Chris Pirih](http://ski.ihoc.net/) for making the original.
 
 ## License
 
-* See [license.txt](blob/master/license.txt)
+See [license.txt](blob/master/license.txt)
