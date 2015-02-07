@@ -56,6 +56,7 @@ Here's some lovely people who were kind enough to have opinions and spirit enoug
 
 * [@tomgrim1](https://github.com/tomgrim1)
 * [@ddoolin](https://github.com/ddoolin)
+* [@andersevenrud](https://github.com/andersevenrud)
 
 Thanks!
 
