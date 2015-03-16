@@ -30,7 +30,7 @@ var sprites = require('./spriteInfo');
 
 var pixelsPerMetre = 18;
 var distanceTravelledInMetres = 0;
-var monsterDistanceThreshold = 200;
+var monsterDistanceThreshold = 2000;
 var livesLeft = 5;
 var highScore = 0;
 var loseLifeOnObstacleHit = false;
@@ -107,6 +107,7 @@ function startNeverEndingGame (images) {
 		var randomPosition = dContext.getRandomMapPositionAboveViewport();
 		newMonster.setMapPosition(randomPosition[0], randomPosition[1]);
 		newMonster.follow(player);
+		newMonster.setSpeed(player.getStandardSpeed());
 		newMonster.onHitting(player, monsterHitsSkierBehaviour);
 
 		game.addMovingObject(newMonster, 'monster');
@@ -174,7 +175,7 @@ function startNeverEndingGame (images) {
 		if (!game.isPaused()) {
 			game.addStaticObjects(newObjects);
 
-			randomlySpawnNPC(spawnBoarder, 0.01);
+			randomlySpawnNPC(spawnBoarder, 0.1);
 			distanceTravelledInMetres = parseFloat(player.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 
 			if (distanceTravelledInMetres > monsterDistanceThreshold) {

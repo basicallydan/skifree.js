@@ -360,6 +360,10 @@ if (typeof navigator !== 'undefined') {
 			}
 		};
 
+		that.getStandardSpeed = function () {
+			return standardSpeed;
+		};
+
 		function easeSpeedToTargetUsingFactor(sp, targetSpeed, f) {
 			if (f === 0 || f === 1) {
 				return targetSpeed;

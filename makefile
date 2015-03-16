@@ -15,7 +15,7 @@ test:
 	npm test
 
 compile:
-	browserify js/main.js -o dist/skifree.js
-	uglifyjs dist/skifree.js -c > dist/skifree.min.js
+	browserify js/main.js -d -o dist/skifree.js
+	uglifyjs dist/skifree.js -d -c > dist/skifree.min.js
 serve:
 	ruby -rwebrick -e'WEBrick::HTTPServer.new(:Port => 3000, :DocumentRoot => Dir.pwd).start'
