@@ -2,8 +2,6 @@
 
 This is a **work in progress** JavaScript port of the popular 1991 PC game [SkiFree](http://en.wikipedia.org/wiki/Skifree) by [Chris Pirih](http://ski.ihoc.net/).
 
-I just started work this Christmas 2012 so I've not done a whole lot yet.
-
 [**Play this right now if you want to**](http://basicallydan.github.com/skifree.js) (opens a demo page).
 
 ## Features so far:
@@ -67,4 +65,4 @@ Thanks!
 
 ## License
 
-See [license.txt](blob/master/license.txt)
+See [license.md](blob/master/license.md)
