@@ -248,14 +248,14 @@ function startNeverEndingGame (images) {
 
 	var hammertime = Hammer(mainCanvas).on('press', function (e) {
 		e.preventDefault();
-		game.setMouseX(e.center.x);
-		game.setMouseY(e.center.y);
+		game.setMouseX(e.gesture.center.x);
+		game.setMouseY(e.gesture.center.y);
 	}).on('tap', function (e) {
-		game.setMouseX(e.center.x);
-		game.setMouseY(e.center.y);
+		game.setMouseX(e.gesture.center.x);
+		game.setMouseY(e.gesture.center.y);
 	}).on('pan', function (e) {
-		game.setMouseX(e.center.x);
-		game.setMouseY(e.center.y);
+		game.setMouseX(e.gesture.center.x);
+		game.setMouseY(e.gesture.center.y);
 		player.resetDirection();
 		player.startMovingIfPossible();
 	}).on('doubletap', function (e) {
