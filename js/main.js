@@ -29,8 +29,8 @@ if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the
 var sprites = require('./spriteInfo');
 
 var pixelsPerMetre = 18;
-var monstersComeOut = false;
 var distanceTravelledInMetres = 0;
+var monsterDistanceThreshold = 200;
 var livesLeft = 5;
 var highScore = 0;
 var loseLifeOnObstacleHit = false;
@@ -76,7 +76,6 @@ function startNeverEndingGame (images) {
 	var game;
 
 	function resetGame () {
-		monstersComeOut = false;
 		distanceTravelledInMetres = 0;
 		livesLeft = 5;
 		highScore = localStorage.getItem('highScore');
@@ -172,12 +171,16 @@ function startNeverEndingGame (images) {
 				player: player
 			});
 		}
-
-		game.addStaticObjects(newObjects);
-
-		randomlySpawnNPC(spawnBoarder, 0.01);
-		distanceTravelledInMetres = parseFloat(player.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
 		if (!game.isPaused()) {
+			game.addStaticObjects(newObjects);
+
+			randomlySpawnNPC(spawnBoarder, 0.01);
+			distanceTravelledInMetres = parseFloat(player.getPixelsTravelledDownMountain() / pixelsPerMetre).toFixed(1);
+
+			if (distanceTravelledInMetres > monsterDistanceThreshold) {
+				randomlySpawnNPC(spawnMonster, 0.001);
+			}
+
 			infoBox.setLines([
 				'SkiFree.js',
 				infoBoxControls,
