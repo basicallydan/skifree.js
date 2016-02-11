@@ -48,6 +48,8 @@ Some features which weren't in the original which I'd like to give a go:
 * Make a pull request with your awesome additions.
 * Maybe raise an issue?
 
+If you'd like an easy way to see how the game works, you can play the original in an Emulator: https://archive.org/details/win3_WINSKI
+
 ## Contributors
 
 Here's some lovely people who were kind enough to have opinions and spirit enough to make a pull request.
