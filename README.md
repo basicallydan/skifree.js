@@ -25,6 +25,8 @@ This is what I'm gonna do, probably in this order. Who the hell knows. There are
 
 * Rocks
 * Snowboarders
+* Dogs
+* Ski Lifts
 
 Some features which weren't in the original which I'd like to give a go:
 
