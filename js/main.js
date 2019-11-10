@@ -1,34 +1,32 @@
 // Global dependencies which return no modules
-require('./lib/canvasRenderingContext2DExtensions');
-require('./lib/extenders');
-require('./lib/plugins');
+import './lib/canvasRenderingContext2DExtensions';
+import './lib/extenders';
+import './lib/plugins';
 
 // External dependencies
-var Hammer = require('hammerjs');
-var Mousetrap = require('br-mousetrap');
+import Hammer from 'hammerjs';
+import Mousetrap from 'br-mousetrap';
 
 // Method modules
-var isMobileDevice = require('./lib/isMobileDevice');
+import isMobileDevice from './lib/isMobileDevice';
 
 // Game Objects
-var SpriteArray = require('./lib/spriteArray');
-var Monster = require('./lib/monster');
-var Sprite = require('./lib/sprite');
-var Snowboarder = require('./lib/snowboarder');
-var Skier = require('./lib/skier');
-var InfoBox = require('./lib/infoBox');
+import Monster from './lib/monster';
+import Sprite from './lib/sprite';
+import Snowboarder from './lib/snowboarder';
+import Skier from './lib/skier';
+import InfoBox from './lib/infoBox';
 import Game from './lib/game';
 
 // Local variables for starting the game
-var mainCanvas = document.getElementById('skifree-canvas');
-var dContext = mainCanvas.getContext('2d');
-var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
-var global = {};
+const mainCanvas = document.getElementById('skifree-canvas');
+const dContext = mainCanvas.getContext('2d');
+const imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
 var infoBoxControls = 'Use the mouse or WASD to control the player';
 if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the player';
-var sprites = require('./spriteInfo');
+import sprites from './spriteInfo';
 
-var pixelsPerMetre = 18;
+const pixelsPerMetre = 18;
 var distanceTravelledInMetres = 0;
 var monsterDistanceThreshold = 2000;
 var livesLeft = 5;
@@ -283,5 +281,3 @@ window.addEventListener('resize', resizeCanvas, false);
 resizeCanvas();
 
 loadImages(imageSources, startNeverEndingGame);
-
-// this.exports = window;
