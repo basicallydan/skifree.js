@@ -19,12 +19,16 @@
     }
   ],
   "scripts": {
+    "start": "webpack --watch",
+    "build": "webpack && cp dist/skifree.js dist/skifree.min.js",
     "test": "mocha"
   },
   "devDependencies": {
-    "sugar": "1.3.x",
     "mocha": "1.8.x",
-    "should": "1.2.x"
+    "should": "1.2.x",
+    "sugar": "1.3.x",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "eventedloop": "~1.0.1",
