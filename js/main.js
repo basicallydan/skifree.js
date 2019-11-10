@@ -17,13 +17,13 @@ var Sprite = require('./lib/sprite');
 var Snowboarder = require('./lib/snowboarder');
 var Skier = require('./lib/skier');
 var InfoBox = require('./lib/infoBox');
-var Game = require('./lib/game');
+import Game from './lib/game';
 
 // Local variables for starting the game
 var mainCanvas = document.getElementById('skifree-canvas');
 var dContext = mainCanvas.getContext('2d');
 var imageSources = [ 'sprite-characters.png', 'skifree-objects.png' ];
-var global = this;
+var global = {};
 var infoBoxControls = 'Use the mouse or WASD to control the player';
 if (isMobileDevice()) infoBoxControls = 'Tap or drag on the piste to control the player';
 var sprites = require('./spriteInfo');
@@ -246,19 +246,24 @@ function startNeverEndingGame (images) {
 	Mousetrap.bind('b', spawnBoarder);
 	Mousetrap.bind('space', resetGame);
 
-	var hammertime = Hammer(mainCanvas).on('press', function (e) {
+	var hammertime = new Hammer(mainCanvas)
+	
+	hammertime.on('press', function (e) {
 		e.preventDefault();
 		game.setMouseX(e.gesture.center.x);
 		game.setMouseY(e.gesture.center.y);
-	}).on('tap', function (e) {
+	});
+	hammertime.on('tap', function (e) {
 		game.setMouseX(e.gesture.center.x);
 		game.setMouseY(e.gesture.center.y);
-	}).on('pan', function (e) {
+	});
+	hammertime.on('pan', function (e) {
 		game.setMouseX(e.gesture.center.x);
 		game.setMouseY(e.gesture.center.y);
 		player.resetDirection();
 		player.startMovingIfPossible();
-	}).on('doubletap', function (e) {
+	});
+	hammertime.on('doubletap', function (e) {
 		player.speedBoost();
 	});
 
@@ -279,4 +284,4 @@ resizeCanvas();
 
 loadImages(imageSources, startNeverEndingGame);
 
-this.exports = window;
+// this.exports = window;
