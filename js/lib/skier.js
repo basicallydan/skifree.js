@@ -70,7 +70,8 @@ class Skier extends Sprite {
 	}
 
 	setNormal() {
-		this.setSpeed(standardSpeed);
+		// console.log('back to normal')
+		this.setSpeed(this.standardSpeed);
 		this.isMoving = true;
 		this.hasBeenHit = false;
 		this.isJumping = false;
@@ -86,8 +87,8 @@ class Skier extends Sprite {
 		this.hasBeenHit = true;
 		this.isJumping = false;
 		this.isPerformingTrick = false;
-		if (cancelableStateInterval) {
-			clearInterval(cancelableStateInterval);
+		if (this.cancelableStateInterval) {
+			clearInterval(this.cancelableStateInterval);
 		}
 		this.setMapPosition(undefined, undefined, 0);
 	}
@@ -147,7 +148,7 @@ class Skier extends Sprite {
 
 	setDiscreteDirection(d) {
 		if (this.discreteDirections[d]) {
-			this.setDirection(discreteDirections[d]);
+			this.setDirection(this.discreteDirections[d]);
 		}
 
 		if (d === 'west' || d === 'east') {
@@ -166,10 +167,10 @@ class Skier extends Sprite {
 	}
 
 	getTrickSprite() {
-		console.log('Trick step is', trickStep);
-		if (trickStep === 0) {
+		console.log('Trick step is', this.trickStep);
+		if (this.trickStep === 0) {
 			return 'jumping';
-		} else if (trickStep === 1) {
+		} else if (this.trickStep === 1) {
 			return 'somersault1';
 		} else {
 			return 'somersault2';
@@ -178,9 +179,9 @@ class Skier extends Sprite {
 
 	stop() {
 		if (this.direction > 180) {
-			setDiscreteDirection('west');
+			this.setDiscreteDirection('west');
 		} else {
-			setDiscreteDirection('east');
+			this.setDiscreteDirection('east');
 		}
 	}
 
@@ -189,25 +190,25 @@ class Skier extends Sprite {
 
 		switch (discreteDirection) {
 			case 'west':
-				setDiscreteDirection('wsWest');
+				this.setDiscreteDirection('wsWest');
 				break;
 			case 'wsWest':
-				setDiscreteDirection('sWest');
+				this.setDiscreteDirection('sWest');
 				break;
 			case 'sWest':
-				setDiscreteDirection('south');
+				this.setDiscreteDirection('south');
 				break;
 			case 'south':
-				setDiscreteDirection('sEast');
+				this.setDiscreteDirection('sEast');
 				break;
 			case 'sEast':
-				setDiscreteDirection('esEast');
+				this.setDiscreteDirection('esEast');
 				break;
 			case 'esEast':
-				setDiscreteDirection('east');
+				this.setDiscreteDirection('east');
 				break;
 			default:
-				setDiscreteDirection('south');
+				this.setDiscreteDirection('south');
 				break;
 		}
 	}
@@ -217,25 +218,25 @@ class Skier extends Sprite {
 
 		switch (discreteDirection) {
 			case 'east':
-				setDiscreteDirection('esEast');
+				this.setDiscreteDirection('esEast');
 				break;
 			case 'esEast':
-				setDiscreteDirection('sEast');
+				this.setDiscreteDirection('sEast');
 				break;
 			case 'sEast':
-				setDiscreteDirection('south');
+				this.setDiscreteDirection('south');
 				break;
 			case 'south':
-				setDiscreteDirection('sWest');
+				this.setDiscreteDirection('sWest');
 				break;
 			case 'sWest':
-				setDiscreteDirection('wsWest');
+				this.setDiscreteDirection('wsWest');
 				break;
 			case 'wsWest':
-				setDiscreteDirection('west');
+				this.setDiscreteDirection('west');
 				break;
 			default:
-				setDiscreteDirection('south');
+				this.setDiscreteDirection('south');
 				break;
 		}
 	}
@@ -339,9 +340,9 @@ class Skier extends Sprite {
 		if (this.canSpeedBoost) {
 			this.canSpeedBoost = false;
 			this.setSpeed(this.speed * this.boostMultiplier);
-			setTimeout(function () {
+			setTimeout(() => {
 				this.setSpeed(originalSpeed);
-				setTimeout(function () {
+				setTimeout(() => {
 					this.canSpeedBoost = true;
 				}, 10000);
 			}, 2000);
@@ -443,7 +444,7 @@ class Skier extends Sprite {
 	}
 
 	hasHitObstacle(obs) {
-		setCrashed();
+		this.setCrashed();
 
 		if (navigator.vibrate) {
 			navigator.vibrate(500);
@@ -457,19 +458,19 @@ class Skier extends Sprite {
 		if (this.cancelableStateTimeout) {
 			clearTimeout(this.cancelableStateTimeout);
 		}
-		this.cancelableStateTimeout = setTimeout(function() {
-			setNormal();
+		this.cancelableStateTimeout = setTimeout(() => {
+			this.setNormal();
 		}, 1500);
 	}
 
 	hasHitJump() {
-		setJumping();
+		this.setJumping();
 
 		if (this.cancelableStateTimeout) {
 			clearTimeout(this.cancelableStateTimeout);
 		}
-		this.cancelableStateTimeout = setTimeout(function() {
-			setNormal();
+		this.cancelableStateTimeout = setTimeout(() => {
+			this.setNormal();
 		}, 1000);
 	}
 

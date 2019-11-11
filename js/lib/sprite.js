@@ -44,8 +44,8 @@ class Sprite {
 
 	getHitBox(forZIndex) {
 		if (this.data.hitBoxes) {
-			if (data.hitBoxes[forZIndex]) {
-				return data.hitBoxes[forZIndex];
+			if (this.data.hitBoxes[forZIndex]) {
+				return this.data.hitBoxes[forZIndex];
 			}
 		}
 	}
@@ -233,7 +233,7 @@ class Sprite {
 			} else {
 				if (objectData.object.hits(this)) {
 					objectData.callbacks.each(function (callback) {
-						callback(this. objectData.object);
+						callback(this, objectData.object);
 					});
 				}
 			}
