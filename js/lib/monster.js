@@ -1,65 +1,55 @@
-var Sprite = require('./sprite');
+import Sprite from './sprite';
 
-(function(global) {
-	function Monster(data) {
-		var that = new Sprite(data);
-		var super_draw = that.superior('draw');
-		var spriteVersion = 1;
-		var eatingStage = 0;
-		var standardSpeed = 6;
-
-		that.isEating = false;
-		that.isFull = false;
-		that.setSpeed(standardSpeed);
-
-		that.draw = function(dContext) {
-			var spritePartToUse = function () {
-				var xDiff = that.movingToward[0] - that.canvasX;
-
-				if (that.isEating) {
-					return 'eating' + eatingStage;
-				}
-
-				if (spriteVersion + 0.1 > 2) {
-					spriteVersion = 0.1;
-				} else {
-					spriteVersion += 0.1;
-				}
-				if (xDiff >= 0) {
-					return 'sEast' + Math.ceil(spriteVersion);
-				} else if (xDiff < 0) {
-					return 'sWest' + Math.ceil(spriteVersion);
-				}
-			};
-
-			return super_draw(dContext, spritePartToUse());
-		};
-
-		function startEating (whenDone) {
-			eatingStage += 1;
-			that.isEating = true;
-			that.isMoving = false;
-			if (eatingStage < 6) {
-				setTimeout(function () {
-					startEating(whenDone);
-				}, 300);
-			} else {
-				eatingStage = 0;
-				that.isEating = false;
-				that.isMoving = true;
-				whenDone();
-			}
-		}
-
-		that.startEating = startEating;
-
-		return that;
+class Monster extends Sprite {
+	constructor(data) {
+		super(data);
+		this.spriteVersion = 1;
+		this.eatingStage = 0;
+		this.standardSpeed = 6;
+	
+		this.isEating = false;
+		this.isFull = false;
+		this.setSpeed(this.standardSpeed);
 	}
 
-	global.monster = Monster;
-})( this );
+	draw(dContext) {
+		var spritePartToUse = function () {
+			var xDiff = this.movingToward[0] - this.canvasX;
 
+			if (this.isEating) {
+				return 'eating' + eatingStage;
+			}
 
-if (typeof module !== 'undefined') {
-	module.exports = this.monster;
+			if (this.spriteVersion + 0.1 > 2) {
+				this.spriteVersion = 0.1;
+			} else {
+				this.spriteVersion += 0.1;
+			}
+			if (xDiff >= 0) {
+				return 'sEast' + Math.ceil(this.spriteVersion);
+			} else if (xDiff < 0) {
+				return 'sWest' + Math.ceil(this.spriteVersion);
+			}
+		};
+
+		return super.draw(dContext, spritePartToUse());
+	};
+
+	startEating (whenDone) {
+		this.eatingStage += 1;
+		this.isEating = true;
+		this.isMoving = false;
+		if (eatingStage < 6) {
+			setTimeout(function () {
+				startEating(whenDone);
+			}, 300);
+		} else {
+			eatingStage = 0;
+			this.isEating = false;
+			this.isMoving = true;
+			whenDone();
+		}
+	}
 }
+
+export default Monster;
