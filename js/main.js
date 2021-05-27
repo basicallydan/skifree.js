@@ -217,8 +217,8 @@ function startNeverEndingGame (images) {
 	})
 	.focus(); // So we can listen to events immediately
 
-	Mousetrap.bind('f', player.speedBoost);
-	Mousetrap.bind('t', player.attemptTrick);
+	Mousetrap.bind('f', function () { player.speedBoost() });
+	Mousetrap.bind('t', function () { player.attemptTrick() });
 	Mousetrap.bind(['w', 'up'], function () {
 		player.stop();
 	});

@@ -13,7 +13,7 @@ class Monster extends Sprite {
 	}
 
 	draw(dContext) {
-		var spritePartToUse = function () {
+		const spritePartToUse = () => {
 			var xDiff = this.movingToward[0] - this.canvasX;
 
 			if (this.isEating) {
@@ -35,7 +35,7 @@ class Monster extends Sprite {
 		return super.draw(dContext, spritePartToUse());
 	};
 
-	startEating (whenDone) {
+	startEating(whenDone) {
 		this.eatingStage += 1;
 		this.isEating = true;
 		this.isMoving = false;
