@@ -17,7 +17,8 @@ class Monster extends Sprite {
 			var xDiff = this.movingToward[0] - this.canvasX;
 
 			if (this.isEating) {
-				return 'eating' + eatingStage;
+				console.log('eating' + this.eatingStage);
+				return 'eating' + this.eatingStage;
 			}
 
 			if (this.spriteVersion + 0.1 > 2) {
@@ -39,12 +40,12 @@ class Monster extends Sprite {
 		this.eatingStage += 1;
 		this.isEating = true;
 		this.isMoving = false;
-		if (eatingStage < 6) {
-			setTimeout(function () {
-				startEating(whenDone);
-			}, 300);
+		if (this.eatingStage < 6) {
+			setTimeout( () => { 
+				this.startEating(whenDone); 
+				}, 300);
 		} else {
-			eatingStage = 0;
+			this.eatingStage = 0;
 			this.isEating = false;
 			this.isMoving = true;
 			whenDone();

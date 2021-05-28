@@ -144,13 +144,13 @@ class Game {
 	}
 
 	reset() {
-		paused = false;
-		staticObjects = new SpriteArray();
-		movingObjects = new SpriteArray();
-		mouseX = dContext.getCentreOfViewport();
-		mouseY = 0;
-		player.reset();
-		player.setMapPosition(0, 0, 0);
+		this.paused = false;
+		this.staticObjects = new SpriteArray();
+		this.movingObjects = new SpriteArray();
+		this.mouseX = this.dContext.getCentreOfViewport();
+		this.mouseY = 0;
+		this.player.reset();
+		this.player.setMapPosition(0, 0, 0);
 		this.start();
 	}
 }

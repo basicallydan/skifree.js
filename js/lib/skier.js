@@ -167,7 +167,6 @@ class Skier extends Sprite {
 	}
 
 	getTrickSprite() {
-		console.log('Trick step is', this.trickStep);
 		if (this.trickStep === 0) {
 			return 'jumping';
 		} else if (this.trickStep === 1) {
@@ -292,8 +291,6 @@ class Skier extends Sprite {
 		}
 
 		super.cycle();
-		
-		this.checkHittableObjects();
 	}
 
 	draw(dContext) {
