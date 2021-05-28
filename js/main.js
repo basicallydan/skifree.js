@@ -77,8 +77,8 @@ function startNeverEndingGame (images) {
 		distanceTravelledInMetres = 0;
 		livesLeft = 5;
 		highScore = localStorage.getItem('highScore');
-		game.reset();
 		game.addStaticObject(startSign);
+		game.reset();
 	}
 
 	function detectEnd () {
@@ -105,7 +105,6 @@ function startNeverEndingGame (images) {
 		var randomPosition = dContext.getRandomMapPositionAboveViewport();
 		newMonster.setMapPosition(randomPosition[0], randomPosition[1]);
 		newMonster.follow(player);
-		newMonster.setSpeed(player.getStandardSpeed());
 		newMonster.onHitting(player, monsterHitsSkierBehaviour);
 
 		game.addMovingObject(newMonster, 'monster');
@@ -217,8 +216,8 @@ function startNeverEndingGame (images) {
 	})
 	.focus(); // So we can listen to events immediately
 
-	Mousetrap.bind('f', player.speedBoost);
-	Mousetrap.bind('t', player.attemptTrick);
+	Mousetrap.bind('f', function () { player.speedBoost() });
+	Mousetrap.bind('t', function () { player.attemptTrick() });
 	Mousetrap.bind(['w', 'up'], function () {
 		player.stop();
 	});
@@ -242,7 +241,7 @@ function startNeverEndingGame (images) {
 	});
 	Mousetrap.bind('m', spawnMonster);
 	Mousetrap.bind('b', spawnBoarder);
-	Mousetrap.bind('space', resetGame);
+	Mousetrap.bind('space',  function () { resetGame() });
 
 	var hammertime = new Hammer(mainCanvas)
 	

@@ -232,7 +232,7 @@ class Sprite {
 				delete this.hittableObjects[k];
 			} else {
 				if (objectData.object.hits(this)) {
-					objectData.callbacks.each(function (callback) {
+					objectData.callbacks.each( (callback) => {
 						callback(this, objectData.object);
 					});
 				}

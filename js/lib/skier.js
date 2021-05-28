@@ -12,7 +12,7 @@ if (typeof navigator !== 'undefined') {
 
 class Skier extends Sprite {
 	constructor(data) {
-		super(data)
+		super(data);
 		this.discreteDirections = {
 			'west': 270,
 			'wsWest': 240,
@@ -77,7 +77,7 @@ class Skier extends Sprite {
 		this.isJumping = false;
 		this.isPerformingTrick = false;
 		if (this.cancelableStateInterval) {
-			this.clearInterval(this.cancelableStateInterval);
+			clearInterval(this.cancelableStateInterval);
 		}
 		this.setMapPosition(undefined, undefined, 0);
 	}
@@ -167,7 +167,6 @@ class Skier extends Sprite {
 	}
 
 	getTrickSprite() {
-		console.log('Trick step is', this.trickStep);
 		if (this.trickStep === 0) {
 			return 'jumping';
 		} else if (this.trickStep === 1) {
@@ -292,21 +291,19 @@ class Skier extends Sprite {
 		}
 
 		super.cycle();
-		
-		this.checkHittableObjects();
 	}
 
 	draw(dContext) {
 		const spritePartToUse = () => {
 			if (this.isBeingEaten) {
-				return getBeingEatenSprite();
+				return this.getBeingEatenSprite();
 			}
 
 			if (this.isJumping) {
 				if (this.isPerformingTrick) {
-					return getTrickSprite();
+					return this.getTrickSprite();
 				}
-				return getJumpingSprite();
+				return this.getJumpingSprite();
 			}
 
 			if (this.hasBeenHit) {
@@ -336,8 +333,8 @@ class Skier extends Sprite {
 	}
 
 	speedBoost() {
-		var originalSpeed = this.speed;
 		if (this.canSpeedBoost) {
+			var originalSpeed = this.getSpeed();
 			this.canSpeedBoost = false;
 			this.setSpeed(this.speed * this.boostMultiplier);
 			setTimeout(() => {
