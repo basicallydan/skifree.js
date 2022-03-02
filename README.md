@@ -2,7 +2,7 @@
 
 This is a **work in progress** JavaScript port of the popular 1991 PC game [SkiFree](http://en.wikipedia.org/wiki/Skifree) by [Chris Pirih](http://ski.ihoc.net/).
 
-[**Play this right now if you want to**](http://basicallydan.github.com/skifree.js) (opens a demo page).
+[**Play this right now if you want to**](http://basicallydan.github.io/skifree.js) (opens a demo page).
 
 ## Features so far:
 
@@ -13,7 +13,7 @@ This is a **work in progress** JavaScript port of the popular 1991 PC game [SkiF
 * MONSTAHS! GRAAAAHHH! They even eat you and then run away because they're full
 * Distance tracking so you can see how far you've gone, you absolute badass
 * Speed boost (this was a little-known feature to get away from monsters) using the F key
-* **MOBILE SUPPORT** - This is cool - try loading the [**the demo page**](http://basicallydan.github.com/skifree.js) on a mobile device and then use your finger to direct the skier around the piste. Also try double-tap ;)
+* **MOBILE SUPPORT** - This is cool - try loading the [**the demo page**](http://basicallydan.github.io/skifree.js) on a mobile device and then use your finger to direct the skier around the piste. Also try double-tap ;)
 * Rainbow jump platforms & jumping - though a couple of improvements could be made
 * LocalStorage high-score (thanks, [@ddoolin](https://github.com/ddoolin)!)
 * Custom-sized Hitboxes
