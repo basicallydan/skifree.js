@@ -1,4 +1,4 @@
-var Sprite = require('./sprite');
+import Sprite from './sprite';
 if (typeof navigator !== 'undefined') {
 	navigator.vibrate = navigator.vibrate ||
 		navigator.webkitVibrate ||
@@ -10,9 +10,10 @@ if (typeof navigator !== 'undefined') {
 	};
 }
 
-(function(global) {
-	function Skier(data) {
-		var discreteDirections = {
+class Skier extends Sprite {
+	constructor(data) {
+		super(data)
+		this.discreteDirections = {
 			'west': 270,
 			'wsWest': 240,
 			'sWest': 195,
@@ -21,483 +22,478 @@ if (typeof navigator !== 'undefined') {
 			'esEast': 120,
 			'east': 90
 		};
-		var that = new Sprite(data);
-		var sup = {
-			draw: that.superior('draw'),
-			cycle: that.superior('cycle'),
-			getSpeedX: that.superior('getSpeedX'),
-			getSpeedY: that.superior('getSpeedY'),
-			hits: that.superior('hits')
+		this.sup = {
+			draw: this.superior('draw'),
+			cycle: this.superior('cycle'),
+			getSpeedX: this.superior('getSpeedX'),
+			getSpeedY: this.superior('getSpeedY'),
+			hits: this.superior('hits')
 		};
-		var directions = {
+		this.directions = {
 			esEast: function(xDiff) { return xDiff > 300; },
 			sEast: function(xDiff) { return xDiff > 75; },
 			wsWest: function(xDiff) { return xDiff < -300; },
 			sWest: function(xDiff) { return xDiff < -75; }
 		};
-
-		var cancelableStateTimeout;
-		var cancelableStateInterval;
-
-		var canSpeedBoost = true;
-
-		var obstaclesHit = [];
-		var pixelsTravelled = 0;
-		var standardSpeed = 5;
-		var boostMultiplier = 2;
-		var turnEaseCycles = 70;
-		var speedX = 0;
-		var speedXFactor = 0;
-		var speedY = 0;
-		var speedYFactor = 1;
-		var trickStep = 0; // There are three of these
-
-		that.isMoving = true;
-		that.hasBeenHit = false;
-		that.isJumping = false;
-		that.isPerformingTrick = false;
-		that.onHitObstacleCb = function() {};
-		that.setSpeed(standardSpeed);
-
-		that.reset = function () {
-			obstaclesHit = [];
-			pixelsTravelled = 0;
-			that.isMoving = true;
-			that.hasBeenHit = false;
-			canSpeedBoost = true;
-			setNormal();
-		};
-
-		function setNormal() {
-			that.setSpeed(standardSpeed);
-			that.isMoving = true;
-			that.hasBeenHit = false;
-			that.isJumping = false;
-			that.isPerformingTrick = false;
-			if (cancelableStateInterval) {
-				clearInterval(cancelableStateInterval);
-			}
-			that.setMapPosition(undefined, undefined, 0);
-		}
-
-		function setCrashed() {
-			that.isMoving = false;
-			that.hasBeenHit = true;
-			that.isJumping = false;
-			that.isPerformingTrick = false;
-			if (cancelableStateInterval) {
-				clearInterval(cancelableStateInterval);
-			}
-			that.setMapPosition(undefined, undefined, 0);
-		}
-
-		function setJumping() {
-			var currentSpeed = that.getSpeed();
-			that.setSpeed(currentSpeed + 2);
-			that.setSpeedY(currentSpeed + 2);
-			that.isMoving = true;
-			that.hasBeenHit = false;
-			that.isJumping = true;
-			that.setMapPosition(undefined, undefined, 1);
-		}
-
-		function getDiscreteDirection() {
-			if (that.direction) {
-				if (that.direction <= 90) {
-					return 'east';
-				} else if (that.direction > 90 && that.direction < 150) {
-					return 'esEast';
-				} else if (that.direction >= 150 && that.direction < 180) {
-					return 'sEast';
-				} else if (that.direction === 180) {
-					return 'south';
-				} else if (that.direction > 180 && that.direction <= 210) {
-					return 'sWest';
-				} else if (that.direction > 210 && that.direction < 270) {
-					return 'wsWest';
-				} else if (that.direction >= 270) {
-					return 'west';
-				} else {
-					return 'south';
-				}
-			} else {
-				var xDiff = that.movingToward[0] - that.mapPosition[0];
-				var yDiff = that.movingToward[1] - that.mapPosition[1];
-				if (yDiff <= 0) {
-					if (xDiff > 0) {
-						return 'east';
-					} else {
-						return 'west';
-					}
-				}
-
-				if (directions.esEast(xDiff)) {
-					return 'esEast';
-				} else if (directions.sEast(xDiff)) {
-					return 'sEast';
-				} else if (directions.wsWest(xDiff)) {
-					return 'wsWest';
-				} else if (directions.sWest(xDiff)) {
-					return 'sWest';
-				}
-			}
-			return 'south';
-		}
-
-		function setDiscreteDirection(d) {
-			if (discreteDirections[d]) {
-				that.setDirection(discreteDirections[d]);
-			}
-
-			if (d === 'west' || d === 'east') {
-				that.isMoving = false;
-			} else {
-				that.isMoving = true;
-			}
-		}
-
-		function getBeingEatenSprite() {
-			return 'blank';
-		}
-
-		function getJumpingSprite() {
-			return 'jumping';
-		}
-
-		function getTrickSprite() {
-			console.log('Trick step is', trickStep);
-			if (trickStep === 0) {
-				return 'jumping';
-			} else if (trickStep === 1) {
-				return 'somersault1';
-			} else {
-				return 'somersault2';
-			}
-		}
-
-		that.stop = function () {
-			if (that.direction > 180) {
-				setDiscreteDirection('west');
-			} else {
-				setDiscreteDirection('east');
-			}
-		};
-
-		that.turnEast = function () {
-			var discreteDirection = getDiscreteDirection();
-
-			switch (discreteDirection) {
-				case 'west':
-					setDiscreteDirection('wsWest');
-					break;
-				case 'wsWest':
-					setDiscreteDirection('sWest');
-					break;
-				case 'sWest':
-					setDiscreteDirection('south');
-					break;
-				case 'south':
-					setDiscreteDirection('sEast');
-					break;
-				case 'sEast':
-					setDiscreteDirection('esEast');
-					break;
-				case 'esEast':
-					setDiscreteDirection('east');
-					break;
-				default:
-					setDiscreteDirection('south');
-					break;
-			}
-		};
-
-		that.turnWest = function () {
-			var discreteDirection = getDiscreteDirection();
-
-			switch (discreteDirection) {
-				case 'east':
-					setDiscreteDirection('esEast');
-					break;
-				case 'esEast':
-					setDiscreteDirection('sEast');
-					break;
-				case 'sEast':
-					setDiscreteDirection('south');
-					break;
-				case 'south':
-					setDiscreteDirection('sWest');
-					break;
-				case 'sWest':
-					setDiscreteDirection('wsWest');
-					break;
-				case 'wsWest':
-					setDiscreteDirection('west');
-					break;
-				default:
-					setDiscreteDirection('south');
-					break;
-			}
-		};
-
-		that.stepWest = function () {
-			that.mapPosition[0] -= that.speed * 2;
-		};
-
-		that.stepEast = function () {
-			that.mapPosition[0] += that.speed * 2;
-		};
-
-		that.setMapPositionTarget = function (x, y) {
-			if (that.hasBeenHit) return;
-
-			if (Math.abs(that.mapPosition[0] - x) <= 75) {
-				x = that.mapPosition[0];
-			}
-
-			that.movingToward = [ x, y ];
-
-			// that.resetDirection();
-		};
-
-		that.startMovingIfPossible = function () {
-			if (!that.hasBeenHit && !that.isBeingEaten) {
-				that.isMoving = true;
-			}
-		};
-
-		that.setTurnEaseCycles = function (c) {
-			turnEaseCycles = c;
-		};
-
-		that.getPixelsTravelledDownMountain = function () {
-			return pixelsTravelled;
-		};
-
-		that.resetSpeed = function () {
-			that.setSpeed(standardSpeed);
-		};
-
-		that.cycle = function () {
-			if ( that.getSpeedX() <= 0 && that.getSpeedY() <= 0 ) {
-						that.isMoving = false;
-			}
-			if (that.isMoving) {
-				pixelsTravelled += that.speed;
-			}
-
-			if (that.isJumping) {
-				that.setMapPositionTarget(undefined, that.mapPosition[1] + that.getSpeed());
-			}
-
-			sup.cycle();
-			
-			that.checkHittableObjects();
-		};
-
-		that.draw = function(dContext) {
-			var spritePartToUse = function () {
-				if (that.isBeingEaten) {
-					return getBeingEatenSprite();
-				}
-
-				if (that.isJumping) {
-					if (that.isPerformingTrick) {
-						return getTrickSprite();
-					}
-					return getJumpingSprite();
-				}
-
-				if (that.hasBeenHit) {
-					return 'hit';
-				}
-
-				return getDiscreteDirection();
-			};
-
-			return sup.draw(dContext, spritePartToUse());
-		};
-
-		that.hits = function (obs) {
-			if (obstaclesHit.indexOf(obs.id) !== -1) {
-				return false;
-			}
-
-			if (!obs.occupiesZIndex(that.mapPosition[2])) {
-				return false;
-			}
-
-			if (sup.hits(obs)) {
-				return true;
-			}
-
-			return false;
-		};
-
-		that.speedBoost = function () {
-			var originalSpeed = that.speed;
-			if (canSpeedBoost) {
-				canSpeedBoost = false;
-				that.setSpeed(that.speed * boostMultiplier);
-				setTimeout(function () {
-					that.setSpeed(originalSpeed);
-					setTimeout(function () {
-						canSpeedBoost = true;
-					}, 10000);
-				}, 2000);
-			}
-		};
-
-		that.attemptTrick = function () {
-			if (that.isJumping) {
-				that.isPerformingTrick = true;
-				cancelableStateInterval = setInterval(function () {
-					if (trickStep >= 2) {
-						trickStep = 0;
-					} else {
-						trickStep += 1;
-					}
-				}, 300);
-			}
-		};
-
-		that.getStandardSpeed = function () {
-			return standardSpeed;
-		};
-
-		function easeSpeedToTargetUsingFactor(sp, targetSpeed, f) {
-			if (f === 0 || f === 1) {
-				return targetSpeed;
-			}
-
-			if (sp < targetSpeed) {
-				sp += that.getSpeed() * (f / turnEaseCycles);
-			}
-
-			if (sp > targetSpeed) {
-				sp -= that.getSpeed() * (f / turnEaseCycles);
-			}
-
-			return sp;
-		}
-
-		that.getSpeedX = function () {
-			if (getDiscreteDirection() === 'esEast' || getDiscreteDirection() === 'wsWest') {
-				speedXFactor = 0.5;
-				speedX = easeSpeedToTargetUsingFactor(speedX, that.getSpeed() * speedXFactor, speedXFactor);
-
-				return speedX;
-			}
-
-			if (getDiscreteDirection() === 'sEast' || getDiscreteDirection() === 'sWest') {
-				speedXFactor = 0.33;
-				speedX = easeSpeedToTargetUsingFactor(speedX, that.getSpeed() * speedXFactor, speedXFactor);
-
-				return speedX;
-			}
-
-			// So it must be south
-
-			speedX = easeSpeedToTargetUsingFactor(speedX, 0, speedXFactor);
-
-			return speedX;
-		};
-
-		that.setSpeedY = function(sy) {
-			speedY = sy;
-		};
-
-		that.getSpeedY = function () {
-			var targetSpeed;
-
-			if (that.isJumping) {
-				return speedY;
-			}
-
-			if (getDiscreteDirection() === 'esEast' || getDiscreteDirection() === 'wsWest') {
-				speedYFactor = 0.6;
-				speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed() * 0.6, 0.6);
-
-				return speedY;
-			}
-
-			if (getDiscreteDirection() === 'sEast' || getDiscreteDirection() === 'sWest') {
-				speedYFactor = 0.85;
-				speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed() * 0.85, 0.85);
-
-				return speedY;
-			}
-
-			if (getDiscreteDirection() === 'east' || getDiscreteDirection() === 'west') {
-				speedYFactor = 1;
-				speedY = 0;
-
-				return speedY;
-			}
-
-			// So it must be south
-
-			speedY = easeSpeedToTargetUsingFactor(speedY, that.getSpeed(), speedYFactor);
-
-			return speedY;
-		};
-
-		that.hasHitObstacle = function (obs) {
-			setCrashed();
-
-			if (navigator.vibrate) {
-				navigator.vibrate(500);
-			}
-
-			obstaclesHit.push(obs.id);
-
-			that.resetSpeed();
-			that.onHitObstacleCb(obs);
-
-			if (cancelableStateTimeout) {
-				clearTimeout(cancelableStateTimeout);
-			}
-			cancelableStateTimeout = setTimeout(function() {
-				setNormal();
-			}, 1500);
-		};
-
-		that.hasHitJump = function () {
-			setJumping();
-
-			if (cancelableStateTimeout) {
-				clearTimeout(cancelableStateTimeout);
-			}
-			cancelableStateTimeout = setTimeout(function() {
-				setNormal();
-			}, 1000);
-		};
-
-		that.isEatenBy = function (monster, whenEaten) {
-			that.hasHitObstacle(monster);
-			monster.startEating(whenEaten);
-			obstaclesHit.push(monster.id);
-			that.isMoving = false;
-			that.isBeingEaten = true;
-		};
-
-		that.reset = function () {
-			obstaclesHit = [];
-			pixelsTravelled = 0;
-			that.isMoving = true;
-			that.isJumping = false;
-			that.hasBeenHit = false;
-			canSpeedBoost = true;
-		};
-
-		that.setHitObstacleCb = function (fn) {
-			that.onHitObstacleCb = fn || function() {};
-		};
-		return that;
+	
+		this.cancelableStateTimeout;
+		this.cancelableStateInterval;
+	
+		this.canSpeedBoost = true;
+	
+		this.obstaclesHit = [];
+		this.pixelsTravelled = 0;
+		this.standardSpeed = 5;
+		this.boostMultiplier = 2;
+		this.turnEaseCycles = 70;
+		this.speedX = 0;
+		this.speedXFactor = 0;
+		this.speedY = 0;
+		this.speedYFactor = 1;
+		this.trickStep = 0; // There are three of these
+	
+		this.isMoving = true;
+		this.hasBeenHit = false;
+		this.isJumping = false;
+		this.isPerformingTrick = false;
+		this.onHitObstacleCb = function() {};
+		this.setSpeed(this.standardSpeed);
 	}
 
-	global.skier = Skier;
-})(this);
+	reset() {
+		this.obstaclesHit = [];
+		this.pixelsTravelled = 0;
+		this.isMoving = true;
+		this.hasBeenHit = false;
+		this.canSpeedBoost = true;
+		this.setNormal();
+	}
 
-if (typeof module !== 'undefined') {
-	module.exports = this.skier;
+	setNormal() {
+		// console.log('back to normal')
+		this.setSpeed(this.standardSpeed);
+		this.isMoving = true;
+		this.hasBeenHit = false;
+		this.isJumping = false;
+		this.isPerformingTrick = false;
+		if (this.cancelableStateInterval) {
+			this.clearInterval(this.cancelableStateInterval);
+		}
+		this.setMapPosition(undefined, undefined, 0);
+	}
+
+	setCrashed() {
+		this.isMoving = false;
+		this.hasBeenHit = true;
+		this.isJumping = false;
+		this.isPerformingTrick = false;
+		if (this.cancelableStateInterval) {
+			clearInterval(this.cancelableStateInterval);
+		}
+		this.setMapPosition(undefined, undefined, 0);
+	}
+
+	setJumping() {
+		var currentSpeed = this.getSpeed();
+		this.setSpeed(currentSpeed + 2);
+		this.setSpeedY(currentSpeed + 2);
+		this.isMoving = true;
+		this.hasBeenHit = false;
+		this.isJumping = true;
+		this.setMapPosition(undefined, undefined, 1);
+	}
+
+	getDiscreteDirection() {
+		if (this.direction) {
+			if (this.direction <= 90) {
+				return 'east';
+			} else if (this.direction > 90 && this.direction < 150) {
+				return 'esEast';
+			} else if (this.direction >= 150 && this.direction < 180) {
+				return 'sEast';
+			} else if (this.direction === 180) {
+				return 'south';
+			} else if (this.direction > 180 && this.direction <= 210) {
+				return 'sWest';
+			} else if (this.direction > 210 && this.direction < 270) {
+				return 'wsWest';
+			} else if (this.direction >= 270) {
+				return 'west';
+			} else {
+				return 'south';
+			}
+		} else {
+			var xDiff = this.movingToward[0] - this.mapPosition[0];
+			var yDiff = this.movingToward[1] - this.mapPosition[1];
+			if (yDiff <= 0) {
+				if (xDiff > 0) {
+					return 'east';
+				} else {
+					return 'west';
+				}
+			}
+
+			if (this.directions.esEast(xDiff)) {
+				return 'esEast';
+			} else if (this.directions.sEast(xDiff)) {
+				return 'sEast';
+			} else if (this.directions.wsWest(xDiff)) {
+				return 'wsWest';
+			} else if (this.directions.sWest(xDiff)) {
+				return 'sWest';
+			}
+		}
+		return 'south';
+	}
+
+	setDiscreteDirection(d) {
+		if (this.discreteDirections[d]) {
+			this.setDirection(this.discreteDirections[d]);
+		}
+
+		if (d === 'west' || d === 'east') {
+			this.isMoving = false;
+		} else {
+			this.isMoving = true;
+		}
+	}
+
+	getBeingEatenSprite() {
+		return 'blank';
+	}
+
+	getJumpingSprite() {
+		return 'jumping';
+	}
+
+	getTrickSprite() {
+		console.log('Trick step is', this.trickStep);
+		if (this.trickStep === 0) {
+			return 'jumping';
+		} else if (this.trickStep === 1) {
+			return 'somersault1';
+		} else {
+			return 'somersault2';
+		}
+	}
+
+	stop() {
+		if (this.direction > 180) {
+			this.setDiscreteDirection('west');
+		} else {
+			this.setDiscreteDirection('east');
+		}
+	}
+
+	turnEast() {
+		var discreteDirection = this.getDiscreteDirection();
+
+		switch (discreteDirection) {
+			case 'west':
+				this.setDiscreteDirection('wsWest');
+				break;
+			case 'wsWest':
+				this.setDiscreteDirection('sWest');
+				break;
+			case 'sWest':
+				this.setDiscreteDirection('south');
+				break;
+			case 'south':
+				this.setDiscreteDirection('sEast');
+				break;
+			case 'sEast':
+				this.setDiscreteDirection('esEast');
+				break;
+			case 'esEast':
+				this.setDiscreteDirection('east');
+				break;
+			default:
+				this.setDiscreteDirection('south');
+				break;
+		}
+	}
+
+	turnWest() {
+		var discreteDirection = this.getDiscreteDirection();
+
+		switch (discreteDirection) {
+			case 'east':
+				this.setDiscreteDirection('esEast');
+				break;
+			case 'esEast':
+				this.setDiscreteDirection('sEast');
+				break;
+			case 'sEast':
+				this.setDiscreteDirection('south');
+				break;
+			case 'south':
+				this.setDiscreteDirection('sWest');
+				break;
+			case 'sWest':
+				this.setDiscreteDirection('wsWest');
+				break;
+			case 'wsWest':
+				this.setDiscreteDirection('west');
+				break;
+			default:
+				this.setDiscreteDirection('south');
+				break;
+		}
+	}
+
+	stepWest() {
+		this.mapPosition[0] -= this.speed * 2;
+	}
+
+	stepEast() {
+		this.mapPosition[0] += this.speed * 2;
+	}
+
+	setMapPositionTarget(x, y) {
+		if (this.hasBeenHit) return;
+
+		if (Math.abs(this.mapPosition[0] - x) <= 75) {
+			x = this.mapPosition[0];
+		}
+
+		this.movingToward = [ x, y ];
+
+		// this.resetDirection();
+	}
+
+	startMovingIfPossible() {
+		if (!this.hasBeenHit && !this.isBeingEaten) {
+			this.isMoving = true;
+		}
+	}
+
+	setTurnEaseCycles(c) {
+		this.turnEaseCycles = c;
+	}
+
+	getPixelsTravelledDownMountain() {
+		return this.pixelsTravelled;
+	}
+
+	resetSpeed() {
+		this.setSpeed(this.standardSpeed);
+	}
+
+	cycle() {
+		if (this.getSpeedX() <= 0 && this.getSpeedY() <= 0) {
+					this.isMoving = false;
+		}
+		if (this.isMoving) {
+			this.pixelsTravelled += this.speed;
+		}
+
+		if (this.isJumping) {
+			this.setMapPositionTarget(undefined, this.mapPosition[1] + this.getSpeed());
+		}
+
+		super.cycle();
+		
+		this.checkHittableObjects();
+	}
+
+	draw(dContext) {
+		const spritePartToUse = () => {
+			if (this.isBeingEaten) {
+				return getBeingEatenSprite();
+			}
+
+			if (this.isJumping) {
+				if (this.isPerformingTrick) {
+					return getTrickSprite();
+				}
+				return getJumpingSprite();
+			}
+
+			if (this.hasBeenHit) {
+				return 'hit';
+			}
+
+			return this.getDiscreteDirection();
+		};
+
+		return super.draw(dContext, spritePartToUse());
+	}
+
+	hits(obs) {
+		if (this.obstaclesHit.indexOf(obs.id) !== -1) {
+			return false;
+		}
+
+		if (!obs.occupiesZIndex(this.mapPosition[2])) {
+			return false;
+		}
+
+		if (super.hits(obs)) {
+			return true;
+		}
+
+		return false;
+	}
+
+	speedBoost() {
+		var originalSpeed = this.speed;
+		if (this.canSpeedBoost) {
+			this.canSpeedBoost = false;
+			this.setSpeed(this.speed * this.boostMultiplier);
+			setTimeout(() => {
+				this.setSpeed(originalSpeed);
+				setTimeout(() => {
+					this.canSpeedBoost = true;
+				}, 10000);
+			}, 2000);
+		}
+	}
+
+	attemptTrick() {
+		if (this.isJumping) {
+			this.isPerformingTrick = true;
+			this.cancelableStateInterval = setInterval(() => {
+				if (this.trickStep >= 2) {
+					this.trickStep = 0;
+				} else {
+					this.trickStep += 1;
+				}
+			}, 300);
+		}
+	}
+
+	getStandardSpeed() {
+		return this.standardSpeed;
+	}
+
+	easeSpeedToTargetUsingFactor(sp, targetSpeed, f) {
+		if (f === 0 || f === 1) {
+			return targetSpeed;
+		}
+
+		if (sp < targetSpeed) {
+			sp += this.getSpeed() * (f / this.turnEaseCycles);
+		}
+
+		if (sp > targetSpeed) {
+			sp -= this.getSpeed() * (f / this.turnEaseCycles);
+		}
+
+		return sp;
+	}
+
+	getSpeedX() {
+		if (this.getDiscreteDirection() === 'esEast' || this.getDiscreteDirection() === 'wsWest') {
+			this.speedXFactor = 0.5;
+			this.speedX = this.easeSpeedToTargetUsingFactor(this.speedX, this.getSpeed() * this.speedXFactor, this.speedXFactor);
+
+			return this.speedX;
+		}
+
+		if (this.getDiscreteDirection() === 'sEast' || this.getDiscreteDirection() === 'sWest') {
+			this.speedXFactor = 0.33;
+			this.speedX = this.easeSpeedToTargetUsingFactor(this.speedX, this.getSpeed() * this.speedXFactor, this.speedXFactor);
+
+			return this.speedX;
+		}
+
+		// So it must be south
+
+		this.speedX = this.easeSpeedToTargetUsingFactor(this.speedX, 0, this.speedXFactor);
+
+		return this.speedX;
+	}
+
+	setSpeedY(sy) {
+		this.speedY = sy;
+	}
+
+	getSpeedY() {
+		var targetSpeed;
+
+		if (this.isJumping) {
+			return this.speedY;
+		}
+
+		if (this.getDiscreteDirection() === 'esEast' || this.getDiscreteDirection() === 'wsWest') {
+			this.speedYFactor = 0.6;
+			this.speedY = this.easeSpeedToTargetUsingFactor(this.speedY, this.getSpeed() * 0.6, 0.6);
+
+			return this.speedY;
+		}
+
+		if (this.getDiscreteDirection() === 'sEast' || this.getDiscreteDirection() === 'sWest') {
+			this.speedYFactor = 0.85;
+			this.speedY = this.easeSpeedToTargetUsingFactor(this.speedY, this.getSpeed() * 0.85, 0.85);
+
+			return this.speedY;
+		}
+
+		if (this.getDiscreteDirection() === 'east' || this.getDiscreteDirection() === 'west') {
+			this.speedYFactor = 1;
+			this.speedY = 0;
+
+			return this.speedY;
+		}
+
+		// So it must be south
+
+		this.speedY = this.easeSpeedToTargetUsingFactor(this.speedY, this.getSpeed(), this.speedYFactor);
+
+		return this.speedY;
+	}
+
+	hasHitObstacle(obs) {
+		this.setCrashed();
+
+		if (navigator.vibrate) {
+			navigator.vibrate(500);
+		}
+
+		this.obstaclesHit.push(obs.id);
+
+		this.resetSpeed();
+		this.onHitObstacleCb(obs);
+
+		if (this.cancelableStateTimeout) {
+			clearTimeout(this.cancelableStateTimeout);
+		}
+		this.cancelableStateTimeout = setTimeout(() => {
+			this.setNormal();
+		}, 1500);
+	}
+
+	hasHitJump() {
+		this.setJumping();
+
+		if (this.cancelableStateTimeout) {
+			clearTimeout(this.cancelableStateTimeout);
+		}
+		this.cancelableStateTimeout = setTimeout(() => {
+			this.setNormal();
+		}, 1000);
+	}
+
+	isEatenBy(monster, whenEaten) {
+		this.hasHitObstacle(monster);
+		monster.startEating(whenEaten);
+		this.obstaclesHit.push(monster.id);
+		this.isMoving = false;
+		this.isBeingEaten = true;
+	}
+
+	reset() {
+		this.obstaclesHit = [];
+		this.pixelsTravelled = 0;
+		this.isMoving = true;
+		this.isJumping = false;
+		this.hasBeenHit = false;
+		this.canSpeedBoost = true;
+	}
+
+	setHitObstacleCb(fn) {
+		this.onHitObstacleCb = fn || function() {};
+	}
 }
+
+export default Skier

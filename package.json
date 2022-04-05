@@ -19,12 +19,19 @@
     }
   ],
   "scripts": {
+    "start": "webpack --watch --mode=development",
+    "build": "webpack && cp dist/skifree.js dist/skifree.min.js",
     "test": "mocha"
   },
   "devDependencies": {
-    "sugar": "1.3.x",
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "babel-loader": "^8.0.6",
     "mocha": "1.8.x",
-    "should": "1.2.x"
+    "should": "1.2.x",
+    "sugar": "1.3.x",
+    "webpack": "https://registry.npmjs.org/webpack/-/webpack-4.41.2.tgz",
+    "webpack-cli": "^3.3.10"
   },
   "dependencies": {
     "eventedloop": "~1.0.1",
