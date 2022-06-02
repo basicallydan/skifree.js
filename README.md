@@ -4,6 +4,9 @@ This is a **work in progress** JavaScript port of the popular 1991 PC game [SkiF
 
 [**Play this right now if you want to**](http://basicallydan.github.io/skifree.js) (opens a demo page).
 
+##
+* Now with PEPES!!!!
+
 ## Features so far:
 
 * Skiing down a never-ending skislope with randomly-generated trees which do not have transparent backgrounds

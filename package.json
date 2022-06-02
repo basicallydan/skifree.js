@@ -17,6 +17,10 @@
       "name": "andersevenrud",
       "url": "https://github.com/andersevenrud"
     }
+	{
+	  "name": "neverson42"
+	  "url": "http://github.com/neverson42"
+	}
   ],
   "scripts": {
     "test": "mocha"
