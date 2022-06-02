@@ -148,7 +148,11 @@ function startNeverEndingGame (images) {
 			'High Score: ' + highScore,
 			'Skiers left: ' + livesLeft,
 			'Created by Dan Hough (@basicallydan)'
+<<<<<<< Updated upstream
 			'Pepe\'d by @neverson42'
+=======
+			'Pepe\'d by @neverson42',
+>>>>>>> Stashed changes
 		],
 		position: {
 			top: 15,
@@ -190,7 +194,11 @@ function startNeverEndingGame (images) {
 				'Skiers left: ' + livesLeft,
 				'High Score: ' + highScore,
 				'Created by Dan Hough (@basicallydan)',
+<<<<<<< Updated upstream
 				'Pepe\'d by @neverson42'
+=======
+				'Pepe\'d by @neverson42',
+>>>>>>> Stashed changes
 				'Current Speed: ' + player.getSpeed()/*,
 				'Skier Map Position: ' + player.mapPosition[0].toFixed(1) + ', ' + player.mapPosition[1].toFixed(1),
 				'Mouse Map Position: ' + mouseMapPosition[0].toFixed(1) + ', ' + mouseMapPosition[1].toFixed(1)*/
