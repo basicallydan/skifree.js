@@ -203,20 +203,19 @@ function startNeverEndingGame (images) {
 
 	game.addUIElement(infoBox);
 
-	$(mainCanvas)
-	.mousemove(function (e) {
+	mainCanvas.addEventListener('mousemove', function (e) {
 		game.setMouseX(e.pageX);
 		game.setMouseY(e.pageY);
 		player.resetDirection();
 		player.startMovingIfPossible();
-	})
-	.bind('click', function (e) {
+	});
+	mainCanvas.addEventListener('click', function (e) {
 		game.setMouseX(e.pageX);
 		game.setMouseY(e.pageY);
 		player.resetDirection();
 		player.startMovingIfPossible();
-	})
-	.focus(); // So we can listen to events immediately
+	});
+	mainCanvas.focus(); // So we can listen to events immediately
 
 	Mousetrap.bind('f', player.speedBoost);
 	Mousetrap.bind('t', player.attemptTrick);
