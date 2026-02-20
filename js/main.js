@@ -1,7 +1,6 @@
 // Global dependencies which return no modules
 import './lib/canvasRenderingContext2DExtensions.js';
 import './lib/extenders.js';
-import './lib/plugins.js';
 
 // External dependencies
 import Hammer from 'hammerjs';
