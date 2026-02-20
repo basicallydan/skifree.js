@@ -184,6 +184,7 @@ function Skier(data) {
 	};
 
 	that.turnEast = function () {
+		if (that.hasBeenHit) return;
 		var discreteDirection = getDiscreteDirection();
 
 		switch (discreteDirection) {
@@ -212,6 +213,7 @@ function Skier(data) {
 	};
 
 	that.turnWest = function () {
+		if (that.hasBeenHit) return;
 		var discreteDirection = getDiscreteDirection();
 
 		switch (discreteDirection) {
@@ -240,10 +242,12 @@ function Skier(data) {
 	};
 
 	that.stepWest = function () {
+		if (that.hasBeenHit) return;
 		that.mapPosition[0] -= that.speed * 2;
 	};
 
 	that.stepEast = function () {
+		if (that.hasBeenHit) return;
 		that.mapPosition[0] += that.speed * 2;
 	};
 
