@@ -14,4 +14,4 @@ function isMobileDevice() {
 	}
 }
 
-module.exports = isMobileDevice;
+export default isMobileDevice;

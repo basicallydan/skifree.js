@@ -1,11 +1,7 @@
-(function(global) {
-	global.inputControl = {
-		on: function (event, callback) {
-			var eventInfo = event.split('.').map(String.prototype.toLowerCase.apply);
-		}
-	};
-})(this);
+const inputControl = {
+	on: function (event, callback) {
+		var eventInfo = event.split('.').map(String.prototype.toLowerCase.apply);
+	}
+};
 
-if (typeof module !== 'undefined') {
-	module.exports = this.inputControl;
-}
+export default inputControl;

@@ -45,6 +45,4 @@ function InfoBox(data) {
 	return that;
 }
 
-if (typeof module !== 'undefined') {
-	module.exports = InfoBox;
-}
+export default InfoBox;

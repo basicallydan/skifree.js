@@ -1,4 +1,4 @@
-var Sprite = require('./sprite');
+import Sprite from './sprite.js';
 
 function SkiLift(data) {
 	var that = new Sprite(data);
@@ -18,7 +18,4 @@ function SkiLift(data) {
 	return that;
 }
 
-
-if (typeof module !== 'undefined') {
-	module.exports = SkiLift;
-}
+export default SkiLift;

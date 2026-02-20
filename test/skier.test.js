@@ -1,8 +1,9 @@
-var extenders = require(__dirname + '/../js/lib/extenders');
-var Sprite = require(__dirname + '/../js/lib/sprite');
-var Skier = require(__dirname + '/../js/lib/skier');
-var should = require('should');
-var sugar = require('sugar');
+import { describe, it } from 'vitest';
+import { expect } from 'vitest';
+import 'sugar';
+import '../js/lib/extenders.js';
+import Sprite from '../js/lib/sprite.js';
+import Skier from '../js/lib/skier.js';
 
 describe('Skier', function() {
 	describe('#getMovingTowardOpposite()', function() {
@@ -12,8 +13,8 @@ describe('Skier', function() {
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(100, 36);
 
-			skier.getMovingTowardOpposite()[0].should.equal(-90);
-			skier.getMovingTowardOpposite()[1].should.equal(-6);
+			expect(skier.getMovingTowardOpposite()[0]).toBe(-90);
+			expect(skier.getMovingTowardOpposite()[1]).toBe(-6);
 		});
 
 		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going left', function() {
@@ -22,8 +23,8 @@ describe('Skier', function() {
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(-100, 36);
 
-			skier.getMovingTowardOpposite()[0].should.equal(110);
-			skier.getMovingTowardOpposite()[1].should.equal(-6);
+			expect(skier.getMovingTowardOpposite()[0]).toBe(110);
+			expect(skier.getMovingTowardOpposite()[1]).toBe(-6);
 		});
 	});
 
@@ -32,7 +33,7 @@ describe('Skier', function() {
 			var skier = new Skier();
 			skier.setMapPosition(10, 30);
 			skier.hasHitJump();
-			
+
 			var tallSprite = new Sprite({
 				zIndexesOccupied : [0, 1]
 			});
@@ -41,7 +42,7 @@ describe('Skier', function() {
 			tallSprite.setWidth(10);
 			tallSprite.setMapPosition(10, 30);
 
-			skier.hits(tallSprite).should.equal(true);
+			expect(skier.hits(tallSprite)).toBe(true);
 		});
 
 		it('should still hit taller objects with a high-up z-index if jumping', function() {
@@ -50,7 +51,7 @@ describe('Skier', function() {
 			skier.setHeight(10);
 			skier.setWidth(10);
 			skier.hasHitJump();
-			
+
 			var tallSprite = new Sprite({
 				zIndexesOccupied : [0, 1],
 				hitBoxes: {
@@ -63,7 +64,7 @@ describe('Skier', function() {
 			tallSprite.setWidth(10);
 			tallSprite.setMapPosition(30, 30);
 
-			skier.hits(tallSprite).should.equal(true);
+			expect(skier.hits(tallSprite)).toBe(true);
 		});
 
 		it('should not hit shorter objects if jumping', function() {
@@ -79,7 +80,7 @@ describe('Skier', function() {
 			shortSprite.setWidth(10);
 			shortSprite.setMapPosition(10, 30);
 
-			skier.hits(shortSprite).should.equal(false);
+			expect(skier.hits(shortSprite)).toBe(false);
 		});
 	});
 
@@ -90,13 +91,13 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(10, 30);
-			skier.getSpeedX().should.equal(0);
+			expect(skier.getSpeedX()).toBe(0);
 			skier.setMapPositionTarget(150, 35);
-			skier.getSpeedX().should.equal(4 * (0.33 / 5));
-			skier.getSpeedX().should.equal(4 * (0.33 / 5) * 2);
-			skier.getSpeedX().should.equal(4 * (0.33 / 5) * 3);
-			skier.getSpeedX().should.equal(4 * (0.33 / 5) * 4);
-			skier.getSpeedX().should.equal(4 * 0.33);
+			expect(skier.getSpeedX()).toBe(4 * (0.33 / 5));
+			expect(skier.getSpeedX()).toBe(4 * (0.33 / 5) * 2);
+			expect(skier.getSpeedX()).toBe(4 * (0.33 / 5) * 3);
+			expect(skier.getSpeedX()).toBe(4 * (0.33 / 5) * 4);
+			expect(skier.getSpeedX()).toBe(4 * 0.33);
 		});
 
 		it('should ease on the x-axis when the skier turns east-south-east', function () {
@@ -105,13 +106,13 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(10, 30);
-			skier.getSpeedX().should.equal(0);
+			expect(skier.getSpeedX()).toBe(0);
 			skier.setMapPositionTarget(450, 35);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5));
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 2);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 3);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 4);
-			skier.getSpeedX().should.equal(4 * 0.5);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5));
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 2);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 3);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 4);
+			expect(skier.getSpeedX()).toBe(4 * 0.5);
 		});
 
 		it('should ease on the x-axis back down when the skier turns from east-south-east to south', function () {
@@ -120,15 +121,15 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(10, 30);
-			skier.getSpeedX().should.equal(0);
+			expect(skier.getSpeedX()).toBe(0);
 			skier.setMapPositionTarget(450, 35);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5));
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 2);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 3);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 4);
-			skier.getSpeedX().should.equal(4 * 0.5);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5));
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 2);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 3);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 4);
+			expect(skier.getSpeedX()).toBe(4 * 0.5);
 			skier.setMapPositionTarget(10, 35);
-			skier.getSpeedX().should.equal(4 * (0.5 / 5) * 4);
+			expect(skier.getSpeedX()).toBe(4 * (0.5 / 5) * 4);
 		});
 	});
 
@@ -139,13 +140,13 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(15, 30);
-			skier.getSpeedY().should.equal(0);
+			expect(skier.getSpeedY()).toBe(0);
 			skier.setMapPositionTarget(150, 35);
-			skier.getSpeedY().should.equal(4 * (0.85 / 5));
-			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 2);
-			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 3);
-			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 4);
-			skier.getSpeedY().should.equal(4 * (0.85 / 5) * 5);
+			expect(skier.getSpeedY()).toBe(4 * (0.85 / 5));
+			expect(skier.getSpeedY()).toBe(4 * (0.85 / 5) * 2);
+			expect(skier.getSpeedY()).toBe(4 * (0.85 / 5) * 3);
+			expect(skier.getSpeedY()).toBe(4 * (0.85 / 5) * 4);
+			expect(skier.getSpeedY()).toBe(4 * (0.85 / 5) * 5);
 		});
 
 		it('should ease on the y-axis when the skier turns from east (stationary) to east-south-east from', function () {
@@ -154,13 +155,13 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(10, 30);
-			skier.getSpeedY().should.equal(0);
+			expect(skier.getSpeedY()).toBe(0);
 			skier.setMapPositionTarget(450, 35);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5));
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 2);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 3);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 4);
-			skier.getSpeedY().should.equal(4 * 0.6);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5));
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 2);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 3);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 4);
+			expect(skier.getSpeedY()).toBe(4 * 0.6);
 		});
 
 		it('should ease on the y-axis when the skier turns from east (stationary) to east-south-east to south', function () {
@@ -169,16 +170,16 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setMapPosition(10, 30);
 			skier.setMapPositionTarget(10, 30);
-			skier.getSpeedY().should.equal(0);
+			expect(skier.getSpeedY()).toBe(0);
 			skier.setMapPositionTarget(450, 35);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5));
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 2);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 3);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 4);
-			skier.getSpeedY().should.equal(4 * 0.6);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5));
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 2);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 3);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 4);
+			expect(skier.getSpeedY()).toBe(4 * 0.6);
 			skier.setMapPositionTarget(10, 45);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 6);
-			skier.getSpeedY().should.equal(4 * (0.6 / 5) * 7);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 6);
+			expect(skier.getSpeedY()).toBe(4 * (0.6 / 5) * 7);
 		});
 	});
 
@@ -189,11 +190,11 @@ describe('Skier', function() {
 			skier.setSpeed(4);
 			skier.setSpeedY(4);
 			skier.setMapPositionTarget(10, 70);
-			skier.getSpeedY().should.equal(4);
+			expect(skier.getSpeedY()).toBe(4);
 			skier.hasHitJump();
 			skier.cycle();
 			skier.setMapPositionTarget(80, -40);
-			skier.getSpeedY().should.equal(6);
+			expect(skier.getSpeedY()).toBe(6);
 		});
 	});
 
@@ -203,16 +204,16 @@ describe('Skier', function() {
 			skier.setMapPosition(10, 30);
 			skier.setDirection(270);
 			skier.turnEast();
-			skier.direction.should.equal(240);
+			expect(skier.direction).toBe(240);
 		});
-		
+
 		it('should go two discrete directions from stopping west', function () {
 			var skier = new Skier();
 			skier.setMapPosition(10, 30);
 			skier.setDirection(270);
 			skier.turnEast();
 			skier.turnEast();
-			skier.direction.should.equal(195);
+			expect(skier.direction).toBe(195);
 		});
 
 		it('should go three discrete directions from stopping west', function () {
@@ -222,7 +223,7 @@ describe('Skier', function() {
 			skier.turnEast();
 			skier.turnEast();
 			skier.turnEast();
-			skier.direction.should.equal(180);
+			expect(skier.direction).toBe(180);
 		});
 
 		it('should go four discrete directions from stopping west', function () {
@@ -233,7 +234,7 @@ describe('Skier', function() {
 			skier.turnEast();
 			skier.turnEast();
 			skier.turnEast();
-			skier.direction.should.equal(165);
+			expect(skier.direction).toBe(165);
 		});
 
 		it('should go five discrete directions from stopping west', function () {
@@ -245,7 +246,7 @@ describe('Skier', function() {
 			skier.turnEast();
 			skier.turnEast();
 			skier.turnEast();
-			skier.direction.should.equal(120);
+			expect(skier.direction).toBe(120);
 		});
 
 		it('should go six discrete directions from stopping west', function () {
@@ -258,7 +259,7 @@ describe('Skier', function() {
 			skier.turnEast();
 			skier.turnEast();
 			skier.turnEast();
-			skier.direction.should.equal(90);
+			expect(skier.direction).toBe(90);
 		});
 
 		it('should go to next discrete direction from arbitrary direction', function () {
@@ -266,7 +267,7 @@ describe('Skier', function() {
 			skier.setMapPosition(10, 30);
 			skier.setDirection(255);
 			skier.turnEast();
-			skier.direction.should.equal(195);
+			expect(skier.direction).toBe(195);
 		});
 	});
 
@@ -276,7 +277,7 @@ describe('Skier', function() {
 			skier.setMapPosition(10, 30);
 			skier.setDirection(90);
 			skier.turnWest();
-			skier.direction.should.equal(120);
+			expect(skier.direction).toBe(120);
 		});
 
 		it('should go two discrete directions from stopping east', function () {
@@ -285,7 +286,7 @@ describe('Skier', function() {
 			skier.setDirection(90);
 			skier.turnWest();
 			skier.turnWest();
-			skier.direction.should.equal(165);
+			expect(skier.direction).toBe(165);
 		});
 
 		it('should go three discrete directions from stopping east', function () {
@@ -295,9 +296,9 @@ describe('Skier', function() {
 			skier.turnWest();
 			skier.turnWest();
 			skier.turnWest();
-			skier.direction.should.equal(180);
+			expect(skier.direction).toBe(180);
 		});
-		
+
 		it('should go four discrete directions from stopping east', function () {
 			var skier = new Skier();
 			skier.setMapPosition(10, 30);
@@ -306,7 +307,7 @@ describe('Skier', function() {
 			skier.turnWest();
 			skier.turnWest();
 			skier.turnWest();
-			skier.direction.should.equal(195);
+			expect(skier.direction).toBe(195);
 		});
 
 		it('should go five discrete direction from stopping east', function () {
@@ -318,7 +319,7 @@ describe('Skier', function() {
 			skier.turnWest();
 			skier.turnWest();
 			skier.turnWest();
-			skier.direction.should.equal(240);
+			expect(skier.direction).toBe(240);
 		});
 
 		it('should go six discrete direction from stopping east', function () {
@@ -331,7 +332,7 @@ describe('Skier', function() {
 			skier.turnWest();
 			skier.turnWest();
 			skier.turnWest();
-			skier.direction.should.equal(270);
+			expect(skier.direction).toBe(270);
 		});
 	});
 
@@ -341,7 +342,7 @@ describe('Skier', function() {
 			skier.setSpeed(3);
 			skier.setMapPosition(10, 30);
 			skier.stepWest();
-			skier.mapPosition[0].should.equal(4);
+			expect(skier.mapPosition[0]).toBe(4);
 		});
 	});
 
@@ -351,7 +352,7 @@ describe('Skier', function() {
 			skier.setSpeed(3);
 			skier.setMapPosition(10, 30);
 			skier.stepEast();
-			skier.mapPosition[0].should.equal(16);
+			expect(skier.mapPosition[0]).toBe(16);
 		});
 	});
 });

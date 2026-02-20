@@ -1,7 +1,8 @@
-var Sprite = require(__dirname + '/../js/lib/sprite');
-var assert = require('assert');
-var should = require('should');
-var sugar = require('sugar');
+import { describe, it } from 'vitest';
+import { expect } from 'vitest';
+import 'sugar';
+import '../js/lib/extenders.js';
+import Sprite from '../js/lib/sprite.js';
 
 describe('Sprite', function() {
 	describe('#setSpeed()', function() {
@@ -10,7 +11,7 @@ describe('Sprite', function() {
 
 			sprite.setSpeed(5);
 
-			sprite.getSpeed().should.equal(5);
+			expect(sprite.getSpeed()).toBe(5);
 		});
 	});
 
@@ -20,8 +21,8 @@ describe('Sprite', function() {
 
 			sprite.setMapPosition(5, 10);
 
-			sprite.mapPosition[0].should.equal(5);
-			sprite.mapPosition[1].should.equal(10);
+			expect(sprite.mapPosition[0]).toBe(5);
+			expect(sprite.mapPosition[1]).toBe(10);
 		});
 	});
 
@@ -37,8 +38,8 @@ describe('Sprite', function() {
 
 			sprite.cycle();
 
-			sprite.mapPosition[0].should.equal(8);
-			sprite.mapPosition[1].should.equal(13);
+			expect(sprite.mapPosition[0]).toBe(8);
+			expect(sprite.mapPosition[1]).toBe(13);
 		});
 
 		it('should not move the sprite along if it is not moving', function() {
@@ -54,8 +55,8 @@ describe('Sprite', function() {
 
 			sprite.cycle();
 
-			sprite.mapPosition[0].should.equal(5);
-			sprite.mapPosition[1].should.equal(10);
+			expect(sprite.mapPosition[0]).toBe(5);
+			expect(sprite.mapPosition[1]).toBe(10);
 		});
 
 		it('should allow the sprite to move in in opposite directions on either axis', function() {
@@ -69,8 +70,8 @@ describe('Sprite', function() {
 
 			sprite.cycle();
 
-			sprite.mapPosition[0].should.equal(2);
-			sprite.mapPosition[1].should.equal(13);
+			expect(sprite.mapPosition[0]).toBe(2);
+			expect(sprite.mapPosition[1]).toBe(13);
 		});
 
 		it('should be able to decrease in both dimensions', function() {
@@ -84,8 +85,8 @@ describe('Sprite', function() {
 
 			sprite.cycle();
 
-			sprite.mapPosition[0].should.equal(2);
-			sprite.mapPosition[1].should.equal(7);
+			expect(sprite.mapPosition[0]).toBe(2);
+			expect(sprite.mapPosition[1]).toBe(7);
 		});
 
 		it('should move the sprite to the target position if it is nearer than the speed', function() {
@@ -99,8 +100,8 @@ describe('Sprite', function() {
 
 			sprite.cycle();
 
-			assert.equal(7, sprite.mapPosition[0]);
-			assert.equal(11, sprite.mapPosition[1]);
+			expect(sprite.mapPosition[0]).toBe(7);
+			expect(sprite.mapPosition[1]).toBe(11);
 		});
 
 		it('should move up if the y-difference is absolutely greater than the y-position', function() {
@@ -114,8 +115,8 @@ describe('Sprite', function() {
 
 			sprite.cycle();
 
-			sprite.mapPosition[0].should.equal(3);
-			sprite.mapPosition[1].should.equal(17);
+			expect(sprite.mapPosition[0]).toBe(3);
+			expect(sprite.mapPosition[1]).toBe(17);
 		});
 	});
 
@@ -132,7 +133,7 @@ describe('Sprite', function() {
 			object2.setHeight(10);
 			object2.setWidth(10);
 
-			object1.hits(object2).should.equal(false);
+			expect(object1.hits(object2)).toBe(false);
 		});
 
 		it('should not register two objects as having hit if they intersect in the X dimension', function() {
@@ -147,8 +148,8 @@ describe('Sprite', function() {
 			object2.setHeight(10);
 			object2.setWidth(10);
 
-			object1.hits(object2).should.equal(false);
-			object2.hits(object1).should.equal(false);
+			expect(object1.hits(object2)).toBe(false);
+			expect(object2.hits(object1)).toBe(false);
 		});
 
 		it('should not register two objects as having hit if they intersect in the Y dimension', function() {
@@ -163,8 +164,8 @@ describe('Sprite', function() {
 			object2.setHeight(10);
 			object2.setWidth(10);
 
-			object1.hits(object2).should.equal(false);
-			object2.hits(object1).should.equal(false);
+			expect(object1.hits(object2)).toBe(false);
+			expect(object2.hits(object1)).toBe(false);
 		});
 
 		it('should register two objects as having hit if they intersect in both dimensions', function() {
@@ -179,8 +180,8 @@ describe('Sprite', function() {
 			object2.setHeight(10);
 			object2.setWidth(10);
 
-			object1.hits(object2).should.not.equal(false);
-			object2.hits(object1).should.not.equal(false);
+			expect(object1.hits(object2)).not.toBe(false);
+			expect(object2.hits(object1)).not.toBe(false);
 		});
 
 		it('should not register two objects with hitboxes as having hit if they intersect in both dimensions but their hitboxes do not', function() {
@@ -221,11 +222,11 @@ describe('Sprite', function() {
 			object4.setHeight(10);
 			object4.setWidth(10);
 
-			object1.hits(object2).should.equal(false);
-			object2.hits(object1).should.equal(false);
+			expect(object1.hits(object2)).toBe(false);
+			expect(object2.hits(object1)).toBe(false);
 
-			object3.hits(object4).should.equal(false);
-			object4.hits(object3).should.equal(false);
+			expect(object3.hits(object4)).toBe(false);
+			expect(object4.hits(object3)).toBe(false);
 		});
 	});
 
@@ -234,7 +235,7 @@ describe('Sprite', function() {
 			var object1 = new Sprite();
 			var object2 = new Sprite();
 			var testString = 'not hit';
-			
+
 			object1.setCanvasPosition(1, 1);
 			object1.setHeight(10);
 			object1.setWidth(10);
@@ -249,7 +250,7 @@ describe('Sprite', function() {
 
 			object1.cycle();
 
-			testString.should.equal('hit');
+			expect(testString).toBe('hit');
 		});
 
 		it('should not register the hit if a hittable object has been deleted', function() {
@@ -272,7 +273,7 @@ describe('Sprite', function() {
 			object2.deleteOnNextCycle();
 			object1.cycle();
 
-			testString.should.equal('not hit');
+			expect(testString).toBe('not hit');
 		});
 	});
 
@@ -292,11 +293,11 @@ describe('Sprite', function() {
 			hunter.cycle();
 			prey.cycle();
 
-			hunter.mapPosition[0].should.equal(6);
-			hunter.mapPosition[1].should.equal(20);
+			expect(hunter.mapPosition[0]).toBe(6);
+			expect(hunter.mapPosition[1]).toBe(20);
 
-			prey.mapPosition[0].should.equal(10);
-			prey.mapPosition[1].should.equal(20);
+			expect(prey.mapPosition[0]).toBe(10);
+			expect(prey.mapPosition[1]).toBe(20);
 		});
 	});
 
@@ -308,8 +309,8 @@ describe('Sprite', function() {
 			sprite.setDirection(180);
 			sprite.setMapPosition(10, 20);
 			sprite.cycle();
-			sprite.mapPosition[0].should.equal(10);
-			sprite.mapPosition[1].should.equal(21);
+			expect(sprite.mapPosition[0]).toBe(10);
+			expect(sprite.mapPosition[1]).toBe(21);
 		});
 
 		it('should move right by the speed if the direction is 90 degrees', function () {
@@ -319,8 +320,8 @@ describe('Sprite', function() {
 			sprite.setDirection(90);
 			sprite.setMapPosition(10, 20);
 			sprite.cycle();
-			sprite.mapPosition[0].should.equal(11);
-			sprite.mapPosition[1].should.equal(20);
+			expect(sprite.mapPosition[0]).toBe(11);
+			expect(sprite.mapPosition[1]).toBe(20);
 		});
 
 		it('should move left by the speed if the direction is 270 degrees', function () {
@@ -330,8 +331,8 @@ describe('Sprite', function() {
 			sprite.setDirection(270);
 			sprite.setMapPosition(10, 20);
 			sprite.cycle();
-			sprite.mapPosition[0].should.equal(9);
-			sprite.mapPosition[1].should.equal(20);
+			expect(sprite.mapPosition[0]).toBe(9);
+			expect(sprite.mapPosition[1]).toBe(20);
 		});
 
 		it('should move right and down by half by the speed if the direction is 135 degrees', function () {
@@ -341,8 +342,8 @@ describe('Sprite', function() {
 			sprite.setDirection(135);
 			sprite.setMapPosition(10, 20);
 			sprite.cycle();
-			sprite.mapPosition[0].should.equal(10.5);
-			sprite.mapPosition[1].should.equal(20.5);
+			expect(sprite.mapPosition[0]).toBe(10.5);
+			expect(sprite.mapPosition[1]).toBe(20.5);
 		});
 
 		it('should move left and down by half by the speed if the direction is 225 degrees', function () {
@@ -352,8 +353,8 @@ describe('Sprite', function() {
 			sprite.setDirection(225);
 			sprite.setMapPosition(10, 20);
 			sprite.cycle();
-			sprite.mapPosition[0].should.equal(9.5);
-			sprite.mapPosition[1].should.equal(20.5);
+			expect(sprite.mapPosition[0]).toBe(9.5);
+			expect(sprite.mapPosition[1]).toBe(20.5);
 		});
 
 		it('should move up by half by the speed if the direction is 0 degrees', function () {
@@ -363,8 +364,8 @@ describe('Sprite', function() {
 			sprite.setDirection(0);
 			sprite.setMapPosition(10, 20);
 			sprite.cycle();
-			sprite.mapPosition[0].should.equal(10);
-			sprite.mapPosition[1].should.equal(19);
+			expect(sprite.mapPosition[0]).toBe(10);
+			expect(sprite.mapPosition[1]).toBe(19);
 		});
 	});
 });

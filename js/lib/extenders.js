@@ -1,6 +1,11 @@
 // Extends function so that new-able objects can be given new methods easily
 Function.prototype.method = function (name, func) {
-    this.prototype[name] = func;
+    Object.defineProperty(this.prototype, name, {
+        value: func,
+        enumerable: false,
+        writable: true,
+        configurable: true
+    });
     return this;
 };
 
