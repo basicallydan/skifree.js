@@ -10,7 +10,6 @@ import Mousetrap from 'br-mousetrap';
 import isMobileDevice from './lib/isMobileDevice.js';
 
 // Game Objects
-import SpriteArray from './lib/spriteArray.js';
 import Monster from './lib/monster.js';
 import Sprite from './lib/sprite.js';
 import Snowboarder from './lib/snowboarder.js';
