@@ -26,9 +26,9 @@ function Snowboarder(data) {
 	}
 
 	that.cycle = function (dContext) {
-		if (Number.random(10) === 1) {
+		if (Math.floor(Math.random() * 11) === 1) {
 			that.setMapPositionTarget(dContext.getRandomlyInTheCentreOfMap());
-			that.setSpeed(standardSpeed + Number.random(-1, 1));
+			that.setSpeed(standardSpeed + Math.floor(Math.random() * 3) - 1);
 		}
 
 		that.setMapPositionTarget(undefined, dContext.getMapBelowViewport() + 600);

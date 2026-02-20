@@ -10,19 +10,19 @@ SpriteArray.prototype.onPush = function(f, retroactive) {
 	this.pushHandlers.push(f);
 
 	if (retroactive) {
-		this.each(f);
+		this.forEach(f);
 	}
 };
 
 SpriteArray.prototype.push = function(obj) {
 	Array.prototype.push.call(this, obj);
-	this.pushHandlers.each(function(handler) {
+	this.pushHandlers.forEach(function(handler) {
 		handler(obj);
 	});
 };
 
 SpriteArray.prototype.cull = function() {
-	this.each(function (obj, i) {
+	this.forEach(function (obj, i) {
 		if (obj.deleted) {
 			return (delete this[i]);
 		}

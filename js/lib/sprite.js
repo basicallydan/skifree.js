@@ -24,7 +24,8 @@ function Sprite (data) {
 	}
 
 	that.maxHeight = (function () {
-		return Object.values(that.data.parts).map(function (p) { return p[3]; }).max();
+		var heights = Object.values(that.data.parts).map(function (p) { return p[3]; });
+		return heights.length ? Math.max.apply(null, heights) : undefined;
 	}());
 	that.isMoving = true;
 
@@ -37,11 +38,11 @@ function Sprite (data) {
 	}
 
 	function incrementX(amount) {
-		that.canvasX += amount.toNumber();
+		that.canvasX += parseFloat(amount);
 	}
 
 	function incrementY(amount) {
-		that.canvasY += amount.toNumber();
+		that.canvasY += parseFloat(amount);
 	}
 
 	function getHitBox(forZIndex) {
@@ -120,12 +121,12 @@ function Sprite (data) {
 
 	this.setCanvasPosition = function (cx, cy) {
 		if (cx) {
-			if (Object.isString(cx) && (cx.first() === '+' || cx.first() === '-')) incrementX(cx);
+			if (typeof cx === 'string' && (cx[0] === '+' || cx[0] === '-')) incrementX(cx);
 			else that.canvasX = cx;
 		}
 
 		if (cy) {
-			if (Object.isString(cy) && (cy.first() === '+' || cy.first() === '-')) incrementY(cy);
+			if (typeof cy === 'string' && (cy[0] === '+' || cy[0] === '-')) incrementY(cy);
 			else that.canvasY = cy;
 		}
 	};
@@ -229,12 +230,13 @@ function Sprite (data) {
 	};
 
 	this.checkHittableObjects = function () {
-		Object.keys(hittableObjects, function (k, objectData) {
+		Object.keys(hittableObjects).forEach(function (k) {
+			var objectData = hittableObjects[k];
 			if (objectData.object.deleted) {
 				delete hittableObjects[k];
 			} else {
 				if (objectData.object.hits(that)) {
-					objectData.callbacks.each(function (callback) {
+					objectData.callbacks.forEach(function (callback) {
 						callback(that, objectData.object);
 					});
 				}
@@ -360,19 +362,15 @@ function Sprite (data) {
 
 Sprite.createObjects = function createObjects(spriteInfoArray, opts) {
 	if (!Array.isArray(spriteInfoArray)) spriteInfoArray = [ spriteInfoArray ];
-	opts = Object.merge(opts, {
-		rateModifier: 0,
-		dropRate: 1,
-		position: [0, 0]
-	}, false, false);
+	opts = Object.assign({ rateModifier: 0, dropRate: 1, position: [0, 0] }, opts);
 
 	function createOne (spriteInfo) {
 		var position = opts.position;
-		if (Number.random(100 + opts.rateModifier) <= spriteInfo.dropRate) {
+		if (Math.floor(Math.random() * (101 + opts.rateModifier)) <= spriteInfo.dropRate) {
 			var sprite = new Sprite(spriteInfo.sprite);
 			sprite.setSpeed(0);
 
-			if (Object.isFunction(position)) {
+			if (typeof position === 'function') {
 				position = position();
 			}
 
@@ -386,7 +384,7 @@ Sprite.createObjects = function createObjects(spriteInfoArray, opts) {
 		}
 	}
 
-	var objects = spriteInfoArray.map(createOne).remove(undefined);
+	var objects = spriteInfoArray.map(createOne).filter(function(x) { return x !== undefined; });
 
 	return objects;
 };

@@ -61,7 +61,7 @@ function Game (mainCanvas, player) {
 	var intervalNum = 0;
 
 	this.cycle = function () {
-		beforeCycleCallbacks.each(function(c) {
+		beforeCycleCallbacks.forEach(function(c) {
 			c();
 		});
 
@@ -76,24 +76,24 @@ function Game (mainCanvas, player) {
 
 		player.cycle();
 
-		movingObjects.each(function (movingObject, i) {
+		movingObjects.forEach(function (movingObject, i) {
 			movingObject.cycle(dContext);
 		});
 
 		staticObjects.cull();
-		staticObjects.each(function (staticObject, i) {
+		staticObjects.forEach(function (staticObject, i) {
 			if (staticObject.cycle) {
 				staticObject.cycle();
 			}
 		});
 
-		uiElements.each(function (uiElement, i) {
+		uiElements.forEach(function (uiElement, i) {
 			if (uiElement.cycle) {
 				uiElement.cycle();
 			}
 		});
 
-		afterCycleCallbacks.each(function(c) {
+		afterCycleCallbacks.forEach(function(c) {
 			c();
 		});
 	};
@@ -106,17 +106,17 @@ function Game (mainCanvas, player) {
 
 		player.cycle();
 
-		movingObjects.each(function (movingObject, i) {
+		movingObjects.forEach(function (movingObject, i) {
 			movingObject.draw(dContext);
 		});
 
-		staticObjects.each(function (staticObject, i) {
+		staticObjects.forEach(function (staticObject, i) {
 			if (staticObject.draw) {
 				staticObject.draw(dContext, 'main');
 			}
 		});
 
-		uiElements.each(function (uiElement, i) {
+		uiElements.forEach(function (uiElement, i) {
 			if (uiElement.draw) {
 				uiElement.draw(dContext, 'main');
 			}

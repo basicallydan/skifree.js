@@ -47,7 +47,7 @@ function loadImages (sources, next) {
 		}
 	}
 
-	sources.each(function (src) {
+	sources.forEach(function (src) {
 		var im = new Image();
 		im.onload = finish;
 		im.src = src;
@@ -96,7 +96,7 @@ function startNeverEndingGame (images) {
 
 	function randomlySpawnNPC(spawnFunction, dropRate) {
 		var rateModifier = Math.max(800 - mainCanvas.width, 0);
-		if (Number.random(1000 + rateModifier) <= dropRate) {
+		if (Math.floor(Math.random() * (1001 + rateModifier)) <= dropRate) {
 			spawnFunction();
 		}
 	}

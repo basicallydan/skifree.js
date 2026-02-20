@@ -18,7 +18,7 @@ function InfoBox(data) {
 	that.draw = function (dContext) {
 		dContext.font = '11px monospace';
 		var yOffset = 0;
-		that.lines.each(function (line) {
+		that.lines.forEach(function (line) {
 			var fontSize = +dContext.font.slice(0,2);
 			var textWidth = dContext.measureText(line).width;
 			var textHeight = fontSize * 1.5;
@@ -36,7 +36,6 @@ function InfoBox(data) {
 			}
 
 			yOffset += textHeight;
-
 
 			dContext.fillText(line, xPos, yPos);
 		});
