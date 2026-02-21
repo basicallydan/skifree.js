@@ -139,6 +139,7 @@ class Skier extends Sprite {
 	}
 
 	stop() {
+		if (this.isJumping) return;
 		if (this.direction > 180) {
 			this._setDiscreteDirection('west');
 		} else {
@@ -335,6 +336,7 @@ class Skier extends Sprite {
 	}
 
 	hasHitJump() {
+		if (!this.isMoving) return;
 		this._setJumping();
 
 		if (this._cancelableStateTimeout) clearTimeout(this._cancelableStateTimeout);
