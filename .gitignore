@@ -1,3 +1,5 @@
 .DS_Store
 node_modules
 js/bundle.js
+.claude
+test-results
