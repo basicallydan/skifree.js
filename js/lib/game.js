@@ -150,7 +150,6 @@ class Game {
 		this._camera.clearRect(0, 0, this._camera.logicalWidth(), this._camera.logicalHeight());
 
 		this._player.draw(this._camera);
-		this._player.cycle();
 
 		this._movingObjects.forEach(obj => obj.draw(this._camera));
 

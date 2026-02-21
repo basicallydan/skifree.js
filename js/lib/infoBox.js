@@ -25,11 +25,11 @@ class InfoBox {
 			if (this.top) {
 				yPos = this.top + yOffset;
 			} else if (this.bottom) {
-				yPos = dContext.canvas.height - this.top - textHeight + yOffset;
+				yPos = dContext.logicalHeight() - this.bottom - textHeight + yOffset;
 			}
 
 			if (this.right) {
-				xPos = dContext.canvas.width - this.right - textWidth;
+				xPos = dContext.logicalWidth() - this.right - textWidth;
 			} else if (this.left) {
 				xPos = this.left;
 			}
