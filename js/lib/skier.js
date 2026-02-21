@@ -263,17 +263,17 @@ class Skier extends Sprite {
 		return this._speedY;
 	}
 
-	cycle() {
+	cycle(dt = 1) {
 		if (this.getSpeedX() <= 0 && this.getSpeedY() <= 0) {
 			this.isMoving = false;
 		}
 		if (this.isMoving) {
-			this._pixelsTravelled += this.speed;
+			this._pixelsTravelled += this.speed * dt;
 		}
 		if (this.isJumping) {
-			this.setMapPositionTarget(undefined, this.mapPosition[1] + this.getSpeed());
+			this.setMapPositionTarget(undefined, this.mapPosition[1] + this.getSpeed() * dt);
 		}
-		super.cycle();
+		super.cycle(dt);
 		this.checkHittableObjects();
 	}
 

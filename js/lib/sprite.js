@@ -56,7 +56,9 @@ class Sprite {
 		return Math.round(num * 2) / 2;
 	}
 
-	_move() {
+	// dt is a frame-time multiplier (1.0 = one target frame of 20ms).
+	// Multiply all movement by dt so speed stays consistent across frame rates.
+	_move(dt = 1) {
 		if (!this.isMoving) {
 			return;
 		}
@@ -67,22 +69,22 @@ class Sprite {
 		if (typeof this.direction !== 'undefined') {
 			var d = this.direction - 90;
 			if (d < 0) d = 360 + d;
-			currentX += this._roundHalf(this.speed * Math.cos(d * (Math.PI / 180)));
-			currentY += this._roundHalf(this.speed * Math.sin(d * (Math.PI / 180)));
+			currentX += this._roundHalf(this.speed * dt * Math.cos(d * (Math.PI / 180)));
+			currentY += this._roundHalf(this.speed * dt * Math.sin(d * (Math.PI / 180)));
 		} else {
 			if (typeof this.movingToward[0] !== 'undefined') {
 				if (currentX > this.movingToward[0]) {
-					currentX -= Math.min(this.getSpeedX(), Math.abs(currentX - this.movingToward[0]));
+					currentX -= Math.min(this.getSpeedX() * dt, Math.abs(currentX - this.movingToward[0]));
 				} else if (currentX < this.movingToward[0]) {
-					currentX += Math.min(this.getSpeedX(), Math.abs(currentX - this.movingToward[0]));
+					currentX += Math.min(this.getSpeedX() * dt, Math.abs(currentX - this.movingToward[0]));
 				}
 			}
 
 			if (typeof this.movingToward[1] !== 'undefined') {
 				if (currentY > this.movingToward[1]) {
-					currentY -= Math.min(this.getSpeedY(), Math.abs(currentY - this.movingToward[1]));
+					currentY -= Math.min(this.getSpeedY() * dt, Math.abs(currentY - this.movingToward[1]));
 				} else if (currentY < this.movingToward[1]) {
-					currentY += Math.min(this.getSpeedY(), Math.abs(currentY - this.movingToward[1]));
+					currentY += Math.min(this.getSpeedY() * dt, Math.abs(currentY - this.movingToward[1]));
 				}
 			}
 		}
@@ -195,7 +197,7 @@ class Sprite {
 		});
 	}
 
-	cycle() {
+	cycle(dt = 1) {
 		this.checkHittableObjects();
 
 		if (this._trackedSpriteToMoveToward) {
@@ -206,7 +208,7 @@ class Sprite {
 			);
 		}
 
-		this._move();
+		this._move(dt);
 	}
 
 	setMapPositionTarget(x, y, override) {

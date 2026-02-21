@@ -11,8 +11,8 @@ class SkiLift extends Sprite {
 		return super.draw(dContext, 'main');
 	}
 
-	cycle() {
-		return super.cycle();
+	cycle(dt = 1) {
+		return super.cycle(dt);
 	}
 }
 

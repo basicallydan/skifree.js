@@ -5,6 +5,19 @@ class Camera {
 		this._centralSprite = null;
 	}
 
+	// Logical (CSS) dimensions — independent of devicePixelRatio.
+	// All game coordinate calculations must use these so that world coordinates
+	// stay in logical pixels regardless of the backing-store scale.
+	logicalWidth() {
+		const styleWidth = this._ctx.canvas.style.width;
+		return styleWidth ? parseFloat(styleWidth) : this._ctx.canvas.width;
+	}
+
+	logicalHeight() {
+		const styleHeight = this._ctx.canvas.style.height;
+		return styleHeight ? parseFloat(styleHeight) : this._ctx.canvas.height;
+	}
+
 	storeLoadedImage(key, image) {
 		this._images[key] = image;
 	}
@@ -21,8 +34,8 @@ class Camera {
 		return {
 			map: this._centralSprite.mapPosition,
 			canvas: [
-				Math.round(this._ctx.canvas.width * 0.5),
-				Math.round(this._ctx.canvas.height * 0.5),
+				Math.round(this.logicalWidth() * 0.5),
+				Math.round(this.logicalHeight() * 0.5),
 				0
 			]
 		};
@@ -43,15 +56,15 @@ class Camera {
 	}
 
 	getCentreOfViewport() {
-		return Math.floor(this._ctx.canvas.width / 2);
+		return Math.floor(this.logicalWidth() / 2);
 	}
 
 	getMiddleOfViewport() {
-		return Math.floor(this._ctx.canvas.height / 2);
+		return Math.floor(this.logicalHeight() / 2);
 	}
 
 	getBelowViewport() {
-		return Math.floor(this._ctx.canvas.height);
+		return Math.floor(this.logicalHeight());
 	}
 
 	getMapBelowViewport() {
@@ -60,7 +73,7 @@ class Camera {
 	}
 
 	getAboveViewport() {
-		return 0 - Math.floor(this._ctx.canvas.height / 4);
+		return 0 - Math.floor(this.logicalHeight() / 4);
 	}
 
 	getTopOfViewport() {
@@ -69,7 +82,7 @@ class Camera {
 
 	getRandomlyInTheCentreOfCanvas(buffer) {
 		var min = 0;
-		var max = this._ctx.canvas.width;
+		var max = this.logicalWidth();
 		if (buffer) {
 			min -= buffer;
 			max += buffer;

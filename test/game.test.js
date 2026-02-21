@@ -9,6 +9,8 @@ function makeCamera() {
 		canvasPositionToMapPosition: () => [0, 0],
 		followSprite: vi.fn(),
 		clearRect: vi.fn(),
+		logicalWidth: () => 800,
+		logicalHeight: () => 600,
 		canvas: { width: 800, height: 600 },
 		drawImage: vi.fn(),
 		getLoadedImage: vi.fn(),

@@ -86,6 +86,7 @@ function startNeverEndingGame() {
 			]);
 			game.pause();
 			game.cycle();
+			game.draw();
 		}
 	}
 
@@ -257,8 +258,17 @@ function startNeverEndingGame() {
 }
 
 function resizeCanvas() {
-	mainCanvas.width = window.innerWidth;
-	mainCanvas.height = window.innerHeight;
+	const dpr = window.devicePixelRatio || 1;
+	// Set CSS size to logical pixels, backing store to physical pixels.
+	// All game coordinates remain in logical pixels; the scale() call below
+	// handles the mapping so every draw lands on a real screen pixel.
+	mainCanvas.style.width = window.innerWidth + 'px';
+	mainCanvas.style.height = window.innerHeight + 'px';
+	mainCanvas.width = Math.round(window.innerWidth * dpr);
+	mainCanvas.height = Math.round(window.innerHeight * dpr);
+	// canvas resize resets the context, so re-apply the scale and crispness.
+	camera.scale(dpr, dpr);
+	camera.imageSmoothingEnabled = false;
 }
 
 window.addEventListener('resize', resizeCanvas, false);

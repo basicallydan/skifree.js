@@ -5,6 +5,7 @@ class Snowboarder extends Sprite {
 	constructor(data) {
 		super(data);
 		this._standardSpeed = SNOWBOARDER_STANDARD_SPEED;
+		this._camera = null; // set by Game.addMovingObject before first cycle
 		this.setSpeed(this._standardSpeed);
 	}
 
@@ -13,13 +14,13 @@ class Snowboarder extends Sprite {
 		return xDiff > 0 ? 'sEast' : 'sWest';
 	}
 
-	cycle(dContext) {
+	cycle(dt = 1) {
 		if (Math.floor(Math.random() * 11) === 1) {
-			this.setMapPositionTarget(dContext.getRandomlyInTheCentreOfMap());
+			this.setMapPositionTarget(this._camera.getRandomlyInTheCentreOfMap());
 			this.setSpeed(this._standardSpeed + Math.floor(Math.random() * 3) - 1);
 		}
-		this.setMapPositionTarget(undefined, dContext.getMapBelowViewport() + 600);
-		super.cycle();
+		this.setMapPositionTarget(undefined, this._camera.getMapBelowViewport() + 600);
+		super.cycle(dt);
 	}
 
 	draw(dContext) {
