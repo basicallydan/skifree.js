@@ -1,58 +1,52 @@
 import Sprite from './sprite.js';
+import { MONSTER_STANDARD_SPEED, MONSTER_EATING_INTERVAL_MS, MONSTER_EATING_STAGES } from './constants.js';
 
-function Monster(data) {
-	var that = new Sprite(data);
-	var super_draw = that.superior('draw');
-	var spriteVersion = 1;
-	var eatingStage = 0;
-	var standardSpeed = 6;
+class Monster extends Sprite {
+	constructor(data) {
+		super(data);
+		this._spriteVersion = 1;
+		this._eatingStage = 0;
 
-	that.isEating = false;
-	that.isFull = false;
-	that.setSpeed(standardSpeed);
+		this.isEating = false;
+		this.isFull = false;
+		this.setSpeed(MONSTER_STANDARD_SPEED);
+	}
 
-	that.draw = function(dContext) {
-		var spritePartToUse = function () {
-			var xDiff = that.movingToward[0] - that.canvasX;
+	draw(dContext) {
+		const spritePartToUse = () => {
+			var xDiff = this.movingToward[0] - this.canvasX;
 
-			if (that.isEating) {
-				return 'eating' + eatingStage;
+			if (this.isEating) {
+				return 'eating' + this._eatingStage;
 			}
 
-			if (spriteVersion + 0.1 > 2) {
-				spriteVersion = 0.1;
+			if (this._spriteVersion + 0.1 > 2) {
+				this._spriteVersion = 0.1;
 			} else {
-				spriteVersion += 0.1;
+				this._spriteVersion += 0.1;
 			}
-			if (xDiff >= 0) {
-				return 'sEast' + Math.ceil(spriteVersion);
-			} else if (xDiff < 0) {
-				return 'sWest' + Math.ceil(spriteVersion);
-			}
+
+			return xDiff >= 0
+				? 'sEast' + Math.ceil(this._spriteVersion)
+				: 'sWest' + Math.ceil(this._spriteVersion);
 		};
 
-		return super_draw(dContext, spritePartToUse());
-	};
+		return super.draw(dContext, spritePartToUse());
+	}
 
-	function startEating (whenDone) {
-		eatingStage += 1;
-		that.isEating = true;
-		that.isMoving = false;
-		if (eatingStage < 6) {
-			setTimeout(function () {
-				startEating(whenDone);
-			}, 300);
+	startEating(whenDone) {
+		this._eatingStage += 1;
+		this.isEating = true;
+		this.isMoving = false;
+		if (this._eatingStage < MONSTER_EATING_STAGES) {
+			setTimeout(() => this.startEating(whenDone), MONSTER_EATING_INTERVAL_MS);
 		} else {
-			eatingStage = 0;
-			that.isEating = false;
-			that.isMoving = true;
+			this._eatingStage = 0;
+			this.isEating = false;
+			this.isMoving = true;
 			whenDone();
 		}
 	}
-
-	that.startEating = startEating;
-
-	return that;
 }
 
 export default Monster;

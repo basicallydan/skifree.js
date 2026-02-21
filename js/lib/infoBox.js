@@ -1,47 +1,43 @@
-function InfoBox(data) {
-	var that = this;
+class InfoBox {
+	constructor(data) {
+		this.lines = data.initialLines;
+		this.top = data.position.top;
+		this.right = data.position.right;
+		this.bottom = data.position.bottom;
+		this.left = data.position.left;
+		this.width = data.width;
+		this.height = data.height;
+	}
 
-	that.lines = data.initialLines;
+	setLines(lines) {
+		this.lines = lines;
+	}
 
-	that.top = data.position.top;
-	that.right = data.position.right;
-	that.bottom = data.position.bottom;
-	that.left = data.position.left;
-
-	that.width = data.width;
-	that.height = data.height;
-
-	that.setLines = function (lines) {
-		that.lines = lines;
-	};
-
-	that.draw = function (dContext) {
+	draw(dContext) {
 		dContext.font = '11px monospace';
 		var yOffset = 0;
-		that.lines.forEach(function (line) {
-			var fontSize = +dContext.font.slice(0,2);
+		this.lines.forEach(line => {
+			var fontSize = +dContext.font.slice(0, 2);
 			var textWidth = dContext.measureText(line).width;
 			var textHeight = fontSize * 1.5;
 			var xPos, yPos;
-			if (that.top) {
-				yPos = that.top + yOffset;
-			} else if (that.bottom) {
-				yPos = dContext.canvas.height - that.top - textHeight + yOffset;
+
+			if (this.top) {
+				yPos = this.top + yOffset;
+			} else if (this.bottom) {
+				yPos = dContext.canvas.height - this.top - textHeight + yOffset;
 			}
 
-			if (that.right) {
-				xPos = dContext.canvas.width - that.right - textWidth;
-			} else if (that.left) {
-				xPos = that.left;
+			if (this.right) {
+				xPos = dContext.canvas.width - this.right - textWidth;
+			} else if (this.left) {
+				xPos = this.left;
 			}
 
 			yOffset += textHeight;
-
 			dContext.fillText(line, xPos, yPos);
 		});
-	};
-
-	return that;
+	}
 }
 
 export default InfoBox;

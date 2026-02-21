@@ -1,154 +1,123 @@
 import SpriteArray from './spriteArray.js';
 import EventedLoop from 'eventedloop';
 
-function Game (mainCanvas, player) {
-	var staticObjects = new SpriteArray();
-	var movingObjects = new SpriteArray();
-	var uiElements = new SpriteArray();
-	var dContext = mainCanvas.getContext('2d');
-	var mouseX = dContext.getCentreOfViewport();
-	var mouseY = 0;
-	var paused = false;
-	var that = this;
-	var beforeCycleCallbacks = [];
-	var afterCycleCallbacks = [];
-	var gameLoop = new EventedLoop();
+class Game {
+	constructor(camera, player) {
+		this._camera = camera;
+		this._player = player;
+		this._staticObjects = new SpriteArray();
+		this._movingObjects = new SpriteArray();
+		this._uiElements = new SpriteArray();
+		this._mouseX = camera.getCentreOfViewport();
+		this._mouseY = 0;
+		this._paused = false;
+		this._beforeCycleCallbacks = [];
+		this._afterCycleCallbacks = [];
+		this._gameLoop = new EventedLoop();
 
-	this.addStaticObject = function (sprite) {
-		staticObjects.push(sprite);
-	};
+		player.setMapPosition(0, 0);
+		player.setMapPositionTarget(0, -10);
+		camera.followSprite(player);
 
-	this.addStaticObjects = function (sprites) {
+		this._gameLoop.on('20', this.cycle.bind(this));
+		this._gameLoop.on('20', this.draw.bind(this));
+	}
+
+	addStaticObject(sprite) {
+		this._staticObjects.push(sprite);
+	}
+
+	addStaticObjects(sprites) {
 		sprites.forEach(this.addStaticObject.bind(this));
-	};
+	}
 
-	this.addMovingObject = function (movingObject, movingObjectType) {
+	addMovingObject(movingObject, movingObjectType) {
 		if (movingObjectType) {
-			staticObjects.onPush(function (obj) {
+			this._staticObjects.onPush(obj => {
 				if (obj.data && obj.data.hitBehaviour[movingObjectType]) {
 					obj.onHitting(movingObject, obj.data.hitBehaviour[movingObjectType]);
 				}
 			}, true);
 		}
+		this._movingObjects.push(movingObject);
+	}
 
-		movingObjects.push(movingObject);
-	};
+	addUIElement(element) {
+		this._uiElements.push(element);
+	}
 
-	this.addUIElement = function (element) {
-		uiElements.push(element);
-	};
+	beforeCycle(callback) {
+		this._beforeCycleCallbacks.push(callback);
+	}
 
-	this.beforeCycle = function (callback) {
-		beforeCycleCallbacks.push(callback);
-	};
+	afterCycle(callback) {
+		this._afterCycleCallbacks.push(callback);
+	}
 
-	this.afterCycle = function (callback) {
-		afterCycleCallbacks.push(callback);
-	};
+	setMouseX(x) { this._mouseX = x; }
+	setMouseY(y) { this._mouseY = y; }
 
-	this.setMouseX = function (x) {
-		mouseX = x;
-	};
+	cycle() {
+		this._beforeCycleCallbacks.forEach(c => c());
 
-	this.setMouseY = function (y) {
-		mouseY = y;
-	};
+		var mouseMapPosition = this._camera.canvasPositionToMapPosition([this._mouseX, this._mouseY]);
 
-	player.setMapPosition(0, 0);
-	player.setMapPositionTarget(0, -10);
-	dContext.followSprite(player);
-
-	var intervalNum = 0;
-
-	this.cycle = function () {
-		beforeCycleCallbacks.forEach(function(c) {
-			c();
-		});
-
-		// Clear canvas
-		var mouseMapPosition = dContext.canvasPositionToMapPosition([mouseX, mouseY]);
-
-		if (!player.isJumping) {
-			player.setMapPositionTarget(mouseMapPosition[0], mouseMapPosition[1]);
+		if (!this._player.isJumping) {
+			this._player.setMapPositionTarget(mouseMapPosition[0], mouseMapPosition[1]);
 		}
 
-		intervalNum++;
+		this._player.cycle();
 
-		player.cycle();
+		this._movingObjects.forEach(movingObject => movingObject.cycle(this._camera));
 
-		movingObjects.forEach(function (movingObject, i) {
-			movingObject.cycle(dContext);
+		this._staticObjects.cull();
+		this._staticObjects.forEach(staticObject => {
+			if (staticObject.cycle) staticObject.cycle();
 		});
 
-		staticObjects.cull();
-		staticObjects.forEach(function (staticObject, i) {
-			if (staticObject.cycle) {
-				staticObject.cycle();
-			}
+		this._uiElements.forEach(uiElement => {
+			if (uiElement.cycle) uiElement.cycle();
 		});
 
-		uiElements.forEach(function (uiElement, i) {
-			if (uiElement.cycle) {
-				uiElement.cycle();
-			}
+		this._afterCycleCallbacks.forEach(c => c());
+	}
+
+	draw() {
+		this._camera.clearRect(0, 0, this._camera.canvas.width, this._camera.canvas.height);
+
+		this._player.draw(this._camera);
+		this._player.cycle();
+
+		this._movingObjects.forEach(movingObject => movingObject.draw(this._camera));
+
+		this._staticObjects.forEach(staticObject => {
+			if (staticObject.draw) staticObject.draw(this._camera, 'main');
 		});
 
-		afterCycleCallbacks.forEach(function(c) {
-			c();
+		this._uiElements.forEach(uiElement => {
+			if (uiElement.draw) uiElement.draw(this._camera, 'main');
 		});
-	};
+	}
 
-	that.draw = function () {
-		// Clear canvas
-		mainCanvas.width = mainCanvas.width;
+	start() { this._gameLoop.start(); }
 
-		player.draw(dContext);
+	pause() {
+		this._paused = true;
+		this._gameLoop.stop();
+	}
 
-		player.cycle();
+	isPaused() { return this._paused; }
 
-		movingObjects.forEach(function (movingObject, i) {
-			movingObject.draw(dContext);
-		});
-
-		staticObjects.forEach(function (staticObject, i) {
-			if (staticObject.draw) {
-				staticObject.draw(dContext, 'main');
-			}
-		});
-
-		uiElements.forEach(function (uiElement, i) {
-			if (uiElement.draw) {
-				uiElement.draw(dContext, 'main');
-			}
-		});
-	};
-
-	this.start = function () {
-		gameLoop.start();
-	};
-
-	this.pause = function () {
-		paused = true;
-		gameLoop.stop();
-	};
-
-	this.isPaused = function () {
-		return paused;
-	};
-
-	this.reset = function () {
-		paused = false;
-		staticObjects = new SpriteArray();
-		movingObjects = new SpriteArray();
-		mouseX = dContext.getCentreOfViewport();
-		mouseY = 0;
-		player.reset();
-		player.setMapPosition(0, 0, 0);
+	reset() {
+		this._paused = false;
+		this._staticObjects = new SpriteArray();
+		this._movingObjects = new SpriteArray();
+		this._mouseX = this._camera.getCentreOfViewport();
+		this._mouseY = 0;
+		this._player.reset();
+		this._player.setMapPosition(0, 0, 0);
 		this.start();
-	}.bind(this);
-
-	gameLoop.on('20', this.cycle);
-	gameLoop.on('20', this.draw);
+	}
 }
 
 export default Game;

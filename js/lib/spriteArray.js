@@ -1,32 +1,28 @@
-function SpriteArray() {
-	this.pushHandlers = [];
-
-	return this;
-}
-
-SpriteArray.prototype = Object.create(Array.prototype);
-
-SpriteArray.prototype.onPush = function(f, retroactive) {
-	this.pushHandlers.push(f);
-
-	if (retroactive) {
-		this.forEach(f);
+class SpriteArray extends Array {
+	constructor() {
+		super();
+		this.pushHandlers = [];
 	}
-};
 
-SpriteArray.prototype.push = function(obj) {
-	Array.prototype.push.call(this, obj);
-	this.pushHandlers.forEach(function(handler) {
-		handler(obj);
-	});
-};
-
-SpriteArray.prototype.cull = function() {
-	this.forEach(function (obj, i) {
-		if (obj.deleted) {
-			return (delete this[i]);
+	onPush(f, retroactive) {
+		this.pushHandlers.push(f);
+		if (retroactive) {
+			this.forEach(f);
 		}
-	});
-};
+	}
+
+	push(obj) {
+		super.push(obj);
+		this.pushHandlers.forEach(handler => handler(obj));
+	}
+
+	cull() {
+		this.forEach((obj, i) => {
+			if (obj && obj.deleted) {
+				delete this[i];
+			}
+		});
+	}
+}
 
 export default SpriteArray;

@@ -1,6 +1,5 @@
 import { describe, it } from 'vitest';
 import { expect } from 'vitest';
-import '../js/lib/extenders.js';
 import Sprite from '../js/lib/sprite.js';
 import Skier from '../js/lib/skier.js';
 

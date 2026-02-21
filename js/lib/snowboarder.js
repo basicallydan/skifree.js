@@ -1,50 +1,30 @@
 import Sprite from './sprite.js';
+import { SNOWBOARDER_STANDARD_SPEED } from './constants.js';
 
-function Snowboarder(data) {
-	var that = new Sprite(data);
-	var sup = {
-		draw: that.superior('draw'),
-		cycle: that.superior('cycle')
-	};
-	var directions = {
-		sEast: function(xDiff) { return xDiff > 0; },
-		sWest: function(xDiff) { return xDiff <= 0; }
-	};
-	var standardSpeed = 3;
-
-	that.setSpeed(standardSpeed);
-
-	function getDirection() {
-		var xDiff = that.movingToward[0] - that.mapPosition[0];
-		var yDiff = that.movingToward[1] - that.mapPosition[1];
-
-		if (directions.sEast(xDiff)) {
-			return 'sEast';
-		} else {
-			return 'sWest';
-		}
+class Snowboarder extends Sprite {
+	constructor(data) {
+		super(data);
+		this._standardSpeed = SNOWBOARDER_STANDARD_SPEED;
+		this.setSpeed(this._standardSpeed);
 	}
 
-	that.cycle = function (dContext) {
+	_getDirection() {
+		var xDiff = this.movingToward[0] - this.mapPosition[0];
+		return xDiff > 0 ? 'sEast' : 'sWest';
+	}
+
+	cycle(dContext) {
 		if (Math.floor(Math.random() * 11) === 1) {
-			that.setMapPositionTarget(dContext.getRandomlyInTheCentreOfMap());
-			that.setSpeed(standardSpeed + Math.floor(Math.random() * 3) - 1);
+			this.setMapPositionTarget(dContext.getRandomlyInTheCentreOfMap());
+			this.setSpeed(this._standardSpeed + Math.floor(Math.random() * 3) - 1);
 		}
+		this.setMapPositionTarget(undefined, dContext.getMapBelowViewport() + 600);
+		super.cycle();
+	}
 
-		that.setMapPositionTarget(undefined, dContext.getMapBelowViewport() + 600);
-
-		sup.cycle();
-	};
-
-	that.draw = function(dContext) {
-		var spritePartToUse = function () {
-			return getDirection();
-		};
-
-		return sup.draw(dContext, spritePartToUse());
-	};
-
-	return that;
+	draw(dContext) {
+		return super.draw(dContext, this._getDirection());
+	}
 }
 
 export default Snowboarder;

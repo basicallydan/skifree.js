@@ -1,392 +1,323 @@
 import GUID from './guid.js';
+import { SKIER_DEAD_ZONE_X } from './constants.js';
 
-function Sprite (data) {
-	var hittableObjects = {};
-	var zIndexesOccupied = [ 0 ];
-	var that = this;
-	var trackedSpriteToMoveToward;
-	that.direction = undefined;
-	that.mapPosition = [0, 0, 0];
-	that.id = GUID();
-	that.canvasX = 0;
-	that.canvasY = 0;
-	that.canvasZ = 0;
-	that.height = 0;
-	that.speed = 0;
-	that.data = data || { parts : {} };
-	that.movingToward = [ 0, 0 ];
-	that.metresDownTheMountain = 0;
-	that.movingWithConviction = false;
-	that.deleted = false;
+class Sprite {
+	constructor(data) {
+		this._hittableObjects = {};
+		this._zIndexesOccupied = [0];
+		this._trackedSpriteToMoveToward = undefined;
 
-	if (!that.data.parts) {
-		that.data.parts = {};
-	}
+		this.direction = undefined;
+		this.mapPosition = [0, 0, 0];
+		this.id = GUID();
+		this.canvasX = 0;
+		this.canvasY = 0;
+		this.canvasZ = 0;
+		this.height = 0;
+		this.speed = 0;
+		this.data = data || { parts: {} };
+		this.movingToward = [0, 0];
+		this.metresDownTheMountain = 0;
+		this.movingWithConviction = false;
+		this.deleted = false;
 
-	that.maxHeight = (function () {
-		var heights = Object.values(that.data.parts).map(function (p) { return p[3]; });
-		return heights.length ? Math.max.apply(null, heights) : undefined;
-	}());
-	that.isMoving = true;
+		if (!this.data.parts) {
+			this.data.parts = {};
+		}
 
-	if (data && data.id){
-		that.id = data.id;
-	}
+		const heights = Object.values(this.data.parts).map(p => p[3]);
+		this.maxHeight = heights.length ? Math.max(...heights) : undefined;
+		this.isMoving = true;
 
-	if (data && data.zIndexesOccupied) {
-		zIndexesOccupied = data.zIndexesOccupied;
-	}
+		if (data && data.id) {
+			this.id = data.id;
+		}
 
-	function incrementX(amount) {
-		that.canvasX += parseFloat(amount);
-	}
-
-	function incrementY(amount) {
-		that.canvasY += parseFloat(amount);
-	}
-
-	function getHitBox(forZIndex) {
-		if (that.data.hitBoxes) {
-			if (data.hitBoxes[forZIndex]) {
-				return data.hitBoxes[forZIndex];
-			}
+		if (data && data.zIndexesOccupied) {
+			this._zIndexesOccupied = data.zIndexesOccupied;
 		}
 	}
 
-	function roundHalf(num) {
-		num = Math.round(num*2)/2;
-		return num;
+	_incrementX(amount) {
+		this.canvasX += parseFloat(amount);
 	}
 
-	function move() {
-		if (!that.isMoving) {
+	_incrementY(amount) {
+		this.canvasY += parseFloat(amount);
+	}
+
+	_getHitBox(forZIndex) {
+		if (this.data.hitBoxes && this.data.hitBoxes[forZIndex]) {
+			return this.data.hitBoxes[forZIndex];
+		}
+	}
+
+	_roundHalf(num) {
+		return Math.round(num * 2) / 2;
+	}
+
+	_move() {
+		if (!this.isMoving) {
 			return;
 		}
 
-		var currentX = that.mapPosition[0];
-		var currentY = that.mapPosition[1];
+		var currentX = this.mapPosition[0];
+		var currentY = this.mapPosition[1];
 
-		if (typeof that.direction !== 'undefined') {
-			// For this we need to modify the that.direction so it relates to the horizontal
-			var d = that.direction - 90;
+		if (typeof this.direction !== 'undefined') {
+			var d = this.direction - 90;
 			if (d < 0) d = 360 + d;
-			currentX += roundHalf(that.speed * Math.cos(d * (Math.PI / 180)));
-			currentY += roundHalf(that.speed * Math.sin(d * (Math.PI / 180)));
+			currentX += this._roundHalf(this.speed * Math.cos(d * (Math.PI / 180)));
+			currentY += this._roundHalf(this.speed * Math.sin(d * (Math.PI / 180)));
 		} else {
-			if (typeof that.movingToward[0] !== 'undefined') {
-				if (currentX > that.movingToward[0]) {
-					currentX -= Math.min(that.getSpeedX(), Math.abs(currentX - that.movingToward[0]));
-				} else if (currentX < that.movingToward[0]) {
-					currentX += Math.min(that.getSpeedX(), Math.abs(currentX - that.movingToward[0]));
+			if (typeof this.movingToward[0] !== 'undefined') {
+				if (currentX > this.movingToward[0]) {
+					currentX -= Math.min(this.getSpeedX(), Math.abs(currentX - this.movingToward[0]));
+				} else if (currentX < this.movingToward[0]) {
+					currentX += Math.min(this.getSpeedX(), Math.abs(currentX - this.movingToward[0]));
 				}
 			}
 
-			if (typeof that.movingToward[1] !== 'undefined') {
-				if (currentY > that.movingToward[1]) {
-					currentY -= Math.min(that.getSpeedY(), Math.abs(currentY - that.movingToward[1]));
-				} else if (currentY < that.movingToward[1]) {
-					currentY += Math.min(that.getSpeedY(), Math.abs(currentY - that.movingToward[1]));
+			if (typeof this.movingToward[1] !== 'undefined') {
+				if (currentY > this.movingToward[1]) {
+					currentY -= Math.min(this.getSpeedY(), Math.abs(currentY - this.movingToward[1]));
+				} else if (currentY < this.movingToward[1]) {
+					currentY += Math.min(this.getSpeedY(), Math.abs(currentY - this.movingToward[1]));
 				}
 			}
 		}
 
-		that.setMapPosition(currentX, currentY);
+		this.setMapPosition(currentX, currentY);
 	}
 
-	this.draw = function (dCtx, spriteFrame) {
-		var fr = that.data.parts[spriteFrame];
-		that.height = fr[3];
-		that.width = fr[2];
+	draw(dCtx, spriteFrame) {
+		var fr = this.data.parts[spriteFrame];
+		this.height = fr[3];
+		this.width = fr[2];
 
-		var newCanvasPosition = dCtx.mapPositionToCanvasPosition(that.mapPosition);
-		that.setCanvasPosition(newCanvasPosition[0], newCanvasPosition[1]);
+		var newCanvasPosition = dCtx.mapPositionToCanvasPosition(this.mapPosition);
+		this.setCanvasPosition(newCanvasPosition[0], newCanvasPosition[1]);
 
-		dCtx.drawImage(dCtx.getLoadedImage(that.data.$imageFile), fr[0], fr[1], fr[2], fr[3], that.canvasX, that.canvasY, fr[2], fr[3]);
-	};
+		dCtx.drawImage(dCtx.getLoadedImage(this.data.$imageFile), fr[0], fr[1], fr[2], fr[3], this.canvasX, this.canvasY, fr[2], fr[3]);
+	}
 
-	this.setMapPosition = function (x, y, z) {
-		if (typeof x === 'undefined') {
-			x = that.mapPosition[0];
-		}
-		if (typeof y === 'undefined') {
-			y = that.mapPosition[1];
-		}
+	setMapPosition(x, y, z) {
+		if (typeof x === 'undefined') x = this.mapPosition[0];
+		if (typeof y === 'undefined') y = this.mapPosition[1];
 		if (typeof z === 'undefined') {
-			z = that.mapPosition[2];
+			z = this.mapPosition[2];
 		} else {
-			that.zIndexesOccupied = [ z ];
+			this._zIndexesOccupied = [z];
 		}
-		that.mapPosition = [x, y, z];
-	};
+		this.mapPosition = [x, y, z];
+	}
 
-	this.setCanvasPosition = function (cx, cy) {
+	setCanvasPosition(cx, cy) {
 		if (cx) {
-			if (typeof cx === 'string' && (cx[0] === '+' || cx[0] === '-')) incrementX(cx);
-			else that.canvasX = cx;
+			if (typeof cx === 'string' && (cx[0] === '+' || cx[0] === '-')) this._incrementX(cx);
+			else this.canvasX = cx;
 		}
-
 		if (cy) {
-			if (typeof cy === 'string' && (cy[0] === '+' || cy[0] === '-')) incrementY(cy);
-			else that.canvasY = cy;
+			if (typeof cy === 'string' && (cy[0] === '+' || cy[0] === '-')) this._incrementY(cy);
+			else this.canvasY = cy;
 		}
-	};
+	}
 
-	this.getCanvasPositionX = function () {
-		return that.canvasX;
-	};
+	getCanvasPositionX() { return this.canvasX; }
+	getCanvasPositionY() { return this.canvasY; }
 
-	this.getCanvasPositionY = function  () {
-		return that.canvasY;
-	};
-
-	this.getLeftHitBoxEdge = function (zIndex) {
+	getLeftHitBoxEdge(zIndex) {
 		zIndex = zIndex || 0;
 		var lhbe = this.getCanvasPositionX();
-		if (getHitBox(zIndex)) {
-			lhbe += getHitBox(zIndex)[0];
-		}
+		if (this._getHitBox(zIndex)) lhbe += this._getHitBox(zIndex)[0];
 		return lhbe;
-	};
+	}
 
-	this.getTopHitBoxEdge = function (zIndex) {
+	getTopHitBoxEdge(zIndex) {
 		zIndex = zIndex || 0;
 		var thbe = this.getCanvasPositionY();
-		if (getHitBox(zIndex)) {
-			thbe += getHitBox(zIndex)[1];
-		}
+		if (this._getHitBox(zIndex)) thbe += this._getHitBox(zIndex)[1];
 		return thbe;
-	};
+	}
 
-	this.getRightHitBoxEdge = function (zIndex) {
+	getRightHitBoxEdge(zIndex) {
 		zIndex = zIndex || 0;
+		if (this._getHitBox(zIndex)) return this.canvasX + this._getHitBox(zIndex)[2];
+		return this.canvasX + this.width;
+	}
 
-		if (getHitBox(zIndex)) {
-			return that.canvasX + getHitBox(zIndex)[2];
-		}
-
-		return that.canvasX + that.width;
-	};
-
-	this.getBottomHitBoxEdge = function (zIndex) {
+	getBottomHitBoxEdge(zIndex) {
 		zIndex = zIndex || 0;
+		if (this._getHitBox(zIndex)) return this.canvasY + this._getHitBox(zIndex)[3];
+		return this.canvasY + this.height;
+	}
 
-		if (getHitBox(zIndex)) {
-			return that.canvasY + getHitBox(zIndex)[3];
-		}
+	getPositionInFrontOf() {
+		return [this.canvasX, this.canvasY + this.height];
+	}
 
-		return that.canvasY + that.height;
-	};
+	setSpeed(s) {
+		this.speed = s;
+		this.speedX = s;
+		this.speedY = s;
+	}
 
-	this.getPositionInFrontOf = function  () {
-		return [that.canvasX, that.canvasY + that.height];
-	};
+	incrementSpeedBy(s) {
+		this.speed += s;
+	}
 
-	this.setSpeed = function (s) {
-		that.speed = s;
-		that.speedX = s;
-		that.speedY = s;
-	};
+	getSpeed() { return this.speed; }
+	getSpeedX() { return this.speed; }
+	getSpeedY() { return this.speed; }
 
-	this.incrementSpeedBy = function (s) {
-		that.speed += s;
-	};
+	setHeight(h) { this.height = h; }
+	setWidth(w) { this.width = w; }
+	getMaxHeight() { return this.maxHeight; }
 
-	that.getSpeed = function getSpeed () {
-		return that.speed;
-	};
+	getMovingTowardOpposite() {
+		if (!this.isMoving) return [0, 0];
+		var dx = this.movingToward[0] - this.mapPosition[0];
+		var dy = this.movingToward[1] - this.mapPosition[1];
+		var oppositeX = (Math.abs(dx) > SKIER_DEAD_ZONE_X ? 0 - dx : 0);
+		return [oppositeX, -dy];
+	}
 
-	that.getSpeedX = function () {
-		return that.speed;
-	};
-
-	that.getSpeedY = function () {
-		return that.speed;
-	};
-
-	this.setHeight = function (h) {
-		that.height = h;
-	};
-
-	this.setWidth = function (w) {
-		that.width = w;
-	};
-
-	this.getMaxHeight = function () {
-		return that.maxHeight;
-	};
-
-	that.getMovingTowardOpposite = function () {
-		if (!that.isMoving) {
-			return [0, 0];
-		}
-
-		var dx = (that.movingToward[0] - that.mapPosition[0]);
-		var dy = (that.movingToward[1] - that.mapPosition[1]);
-
-		var oppositeX = (Math.abs(dx) > 75 ? 0 - dx : 0);
-		var oppositeY = -dy;
-
-		return [ oppositeX, oppositeY ];
-	};
-
-	this.checkHittableObjects = function () {
-		Object.keys(hittableObjects).forEach(function (k) {
-			var objectData = hittableObjects[k];
+	checkHittableObjects() {
+		Object.keys(this._hittableObjects).forEach(k => {
+			var objectData = this._hittableObjects[k];
 			if (objectData.object.deleted) {
-				delete hittableObjects[k];
+				delete this._hittableObjects[k];
 			} else {
-				if (objectData.object.hits(that)) {
-					objectData.callbacks.forEach(function (callback) {
-						callback(that, objectData.object);
-					});
+				if (objectData.object.hits(this)) {
+					objectData.callbacks.forEach(callback => callback(this, objectData.object));
 				}
 			}
 		});
-	};
+	}
 
-	this.cycle = function () {
-		that.checkHittableObjects();
+	cycle() {
+		this.checkHittableObjects();
 
-		if (trackedSpriteToMoveToward) {
-			that.setMapPositionTarget(trackedSpriteToMoveToward.mapPosition[0], trackedSpriteToMoveToward.mapPosition[1], true);
+		if (this._trackedSpriteToMoveToward) {
+			this.setMapPositionTarget(
+				this._trackedSpriteToMoveToward.mapPosition[0],
+				this._trackedSpriteToMoveToward.mapPosition[1],
+				true
+			);
 		}
 
-		move();
-	};
+		this._move();
+	}
 
-	this.setMapPositionTarget = function (x, y, override) {
+	setMapPositionTarget(x, y, override) {
 		if (override) {
-			that.movingWithConviction = false;
+			this.movingWithConviction = false;
 		}
 
-		if (!that.movingWithConviction) {
-			if (typeof x === 'undefined') {
-				x = that.movingToward[0];
-			}
-
-			if (typeof y === 'undefined') {
-				y = that.movingToward[1];
-			}
-
-			that.movingToward = [ x, y ];
-
-			that.movingWithConviction = false;
+		if (!this.movingWithConviction) {
+			if (typeof x === 'undefined') x = this.movingToward[0];
+			if (typeof y === 'undefined') y = this.movingToward[1];
+			this.movingToward = [x, y];
+			this.movingWithConviction = false;
 		}
+	}
 
-		// that.resetDirection();
-	};
+	setDirection(angle) {
+		if (angle >= 360) angle = 360 - angle;
+		this.direction = angle;
+		this.movingToward = undefined;
+	}
 
-	this.setDirection = function (angle) {
-		if (angle >= 360) {
-			angle = 360 - angle;
+	resetDirection() {
+		this.direction = undefined;
+	}
+
+	setMapPositionTargetWithConviction(cx, cy) {
+		this.setMapPositionTarget(cx, cy);
+		this.movingWithConviction = true;
+	}
+
+	follow(sprite) {
+		this._trackedSpriteToMoveToward = sprite;
+	}
+
+	stopFollowing() {
+		this._trackedSpriteToMoveToward = false;
+	}
+
+	onHitting(objectToHit, callback) {
+		if (this._hittableObjects[objectToHit.id]) {
+			return this._hittableObjects[objectToHit.id].callbacks.push(callback);
 		}
-		that.direction = angle;
-		that.movingToward = undefined;
-	};
-
-	this.resetDirection = function () {
-		that.direction = undefined;
-	};
-
-	this.setMapPositionTargetWithConviction = function (cx, cy) {
-		that.setMapPositionTarget(cx, cy);
-		that.movingWithConviction = true;
-		// that.resetDirection();
-	};
-
-	this.follow = function (sprite) {
-		trackedSpriteToMoveToward = sprite;
-		// that.resetDirection();
-	};
-
-	this.stopFollowing = function () {
-		trackedSpriteToMoveToward = false;
-	};
-
-	this.onHitting = function (objectToHit, callback) {
-		if (hittableObjects[objectToHit.id]) {
-			return hittableObjects[objectToHit.id].callbacks.push(callback);
-		}
-
-		hittableObjects[objectToHit.id] = {
+		this._hittableObjects[objectToHit.id] = {
 			object: objectToHit,
-			callbacks: [ callback ]
+			callbacks: [callback]
 		};
-	};
+	}
 
-	this.deleteOnNextCycle = function () {
-		that.deleted = true;
-	};
+	deleteOnNextCycle() {
+		this.deleted = true;
+	}
 
-	this.occupiesZIndex = function (z) {
-		return zIndexesOccupied.indexOf(z) >= 0;
-	};
+	occupiesZIndex(z) {
+		return this._zIndexesOccupied.indexOf(z) >= 0;
+	}
 
-	this.hits = function (other) {
+	hits(other) {
 		var verticalIntersect = false;
 		var horizontalIntersect = false;
+		var z = this.mapPosition[2];
 
-		// Test that THIS has a bottom edge inside of the other object
-		if (other.getTopHitBoxEdge(that.mapPosition[2]) <= that.getBottomHitBoxEdge(that.mapPosition[2]) && other.getBottomHitBoxEdge(that.mapPosition[2]) >= that.getBottomHitBoxEdge(that.mapPosition[2])) {
+		if (other.getTopHitBoxEdge(z) <= this.getBottomHitBoxEdge(z) && other.getBottomHitBoxEdge(z) >= this.getBottomHitBoxEdge(z)) {
 			verticalIntersect = true;
 		}
-
-		// Test that THIS has a top edge inside of the other object
-		if (other.getTopHitBoxEdge(that.mapPosition[2]) <= that.getTopHitBoxEdge(that.mapPosition[2]) && other.getBottomHitBoxEdge(that.mapPosition[2]) >= that.getTopHitBoxEdge(that.mapPosition[2])) {
+		if (other.getTopHitBoxEdge(z) <= this.getTopHitBoxEdge(z) && other.getBottomHitBoxEdge(z) >= this.getTopHitBoxEdge(z)) {
 			verticalIntersect = true;
 		}
-
-		// Test that THIS has a right edge inside of the other object
-		if (other.getLeftHitBoxEdge(that.mapPosition[2]) <= that.getRightHitBoxEdge(that.mapPosition[2]) && other.getRightHitBoxEdge(that.mapPosition[2]) >= that.getRightHitBoxEdge(that.mapPosition[2])) {
+		if (other.getLeftHitBoxEdge(z) <= this.getRightHitBoxEdge(z) && other.getRightHitBoxEdge(z) >= this.getRightHitBoxEdge(z)) {
 			horizontalIntersect = true;
 		}
-
-		// Test that THIS has a left edge inside of the other object
-		if (other.getLeftHitBoxEdge(that.mapPosition[2]) <= that.getLeftHitBoxEdge(that.mapPosition[2]) && other.getRightHitBoxEdge(that.mapPosition[2]) >= that.getLeftHitBoxEdge(that.mapPosition[2])) {
+		if (other.getLeftHitBoxEdge(z) <= this.getLeftHitBoxEdge(z) && other.getRightHitBoxEdge(z) >= this.getLeftHitBoxEdge(z)) {
 			horizontalIntersect = true;
 		}
 
 		return verticalIntersect && horizontalIntersect;
-	};
-
-	this.isAboveOnCanvas = function (cy) {
-		return (that.canvasY + that.height) < cy;
-	};
-
-	this.isBelowOnCanvas = function (cy) {
-		return (that.canvasY) > cy;
-	};
-
-	return that;
-}
-
-Sprite.createObjects = function createObjects(spriteInfoArray, opts) {
-	if (!Array.isArray(spriteInfoArray)) spriteInfoArray = [ spriteInfoArray ];
-	opts = Object.assign({ rateModifier: 0, dropRate: 1, position: [0, 0] }, opts);
-
-	function createOne (spriteInfo) {
-		var position = opts.position;
-		if (Math.floor(Math.random() * (101 + opts.rateModifier)) <= spriteInfo.dropRate) {
-			var sprite = new Sprite(spriteInfo.sprite);
-			sprite.setSpeed(0);
-
-			if (typeof position === 'function') {
-				position = position();
-			}
-
-			sprite.setMapPosition(position[0], position[1]);
-
-			if (spriteInfo.sprite.hitBehaviour && spriteInfo.sprite.hitBehaviour.skier && opts.player) {
-				sprite.onHitting(opts.player, spriteInfo.sprite.hitBehaviour.skier);
-			}
-
-			return sprite;
-		}
 	}
 
-	var objects = spriteInfoArray.map(createOne).filter(function(x) { return x !== undefined; });
+	isAboveOnCanvas(cy) {
+		return (this.canvasY + this.height) < cy;
+	}
 
-	return objects;
-};
+	isBelowOnCanvas(cy) {
+		return this.canvasY > cy;
+	}
+
+	static createObjects(spriteInfoArray, opts) {
+		if (!Array.isArray(spriteInfoArray)) spriteInfoArray = [spriteInfoArray];
+		opts = Object.assign({ rateModifier: 0, dropRate: 1, position: [0, 0] }, opts);
+
+		function createOne(spriteInfo) {
+			var position = opts.position;
+			if (Math.floor(Math.random() * (101 + opts.rateModifier)) <= spriteInfo.dropRate) {
+				var sprite = new Sprite(spriteInfo.sprite);
+				sprite.setSpeed(0);
+
+				if (typeof position === 'function') {
+					position = position();
+				}
+
+				sprite.setMapPosition(position[0], position[1]);
+
+				if (spriteInfo.sprite.hitBehaviour && spriteInfo.sprite.hitBehaviour.skier && opts.player) {
+					sprite.onHitting(opts.player, spriteInfo.sprite.hitBehaviour.skier);
+				}
+
+				return sprite;
+			}
+		}
+
+		return spriteInfoArray.map(createOne).filter(x => x !== undefined);
+	}
+}
 
 export default Sprite;
