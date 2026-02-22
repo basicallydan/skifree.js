@@ -1,18 +1,12 @@
-// External dependencies
-import Hammer from 'hammerjs';
-import Mousetrap from 'br-mousetrap';
-
-// Method modules
-import isMobileDevice from './lib/isMobileDevice.js';
 import Camera from './lib/camera.js';
-
-// Game Objects
 import Monster from './lib/monster.js';
 import Sprite from './lib/sprite.js';
 import Snowboarder from './lib/snowboarder.js';
 import Skier from './lib/skier.js';
 import InfoBox from './lib/infoBox.js';
 import Game from './lib/game.js';
+import setupInput from './lib/input.js';
+import isMobileDevice from './lib/isMobileDevice.js';
 import sprites from './spriteInfo.js';
 import { PIXELS_PER_METRE, MONSTER_DISTANCE_THRESHOLD } from './lib/constants.js';
 
@@ -85,13 +79,6 @@ function startNeverEndingGame() {
 		}
 	}
 
-	function randomlySpawnNPC(spawnFunction, dropRate) {
-		const rateModifier = Math.max(800 - camera.logicalWidth(), 0);
-		if (Math.floor(Math.random() * (1001 + rateModifier)) <= dropRate) {
-			spawnFunction();
-		}
-	}
-
 	function spawnMonster() {
 		const newMonster = new Monster(sprites.monster);
 		const randomPosition = camera.getRandomMapPositionAboveViewport();
@@ -110,6 +97,48 @@ function startNeverEndingGame() {
 		newBoarder.setMapPositionTarget(randomPositionBelow[0], randomPositionBelow[1]);
 		newBoarder.onHitting(player, sprites.snowboarder.hitBehaviour.skier);
 		game.addMovingObject(newBoarder);
+	}
+
+	function randomlySpawnNPC(spawnFunction, dropRate) {
+		const rateModifier = Math.max(800 - camera.logicalWidth(), 0);
+		if (Math.floor(Math.random() * (1001 + rateModifier)) <= dropRate) {
+			spawnFunction();
+		}
+	}
+
+	function spawnTerrain() {
+		if (!player.isMoving) return [];
+		return Sprite.createObjects([
+			{ sprite: sprites.smallTree, dropRate: dropRates.smallTree },
+			{ sprite: sprites.tallTree, dropRate: dropRates.tallTree },
+			{ sprite: sprites.jump, dropRate: dropRates.jump },
+			{ sprite: sprites.thickSnow, dropRate: dropRates.thickSnow },
+			{ sprite: sprites.rock, dropRate: dropRates.rock },
+		], {
+			rateModifier: Math.max(800 - camera.logicalWidth(), 0),
+			position: () => camera.getRandomMapPositionBelowViewport(),
+			player,
+		});
+	}
+
+	function tickNPCs() {
+		randomlySpawnNPC(spawnBoarder, 0.1);
+		state.distanceTravelled = parseFloat(player.getPixelsTravelledDownMountain() / PIXELS_PER_METRE).toFixed(1);
+		if (state.distanceTravelled > MONSTER_DISTANCE_THRESHOLD) {
+			randomlySpawnNPC(spawnMonster, 0.001);
+		}
+	}
+
+	function updateHUD() {
+		infoBox.setLines([
+			'SkiFree.js',
+			infoBoxControls,
+			`Travelled ${state.distanceTravelled}m`,
+			`Skiers left: ${state.livesLeft}`,
+			`High Score: ${state.highScore}`,
+			'Created by Dan Hough (@basicallydan)',
+			`Current Speed: ${player.getSpeed()}`,
+		]);
 	}
 
 	player = new Skier(sprites.skier);
@@ -135,102 +164,20 @@ function startNeverEndingGame() {
 	});
 
 	game.beforeCycle(() => {
-		let newObjects = [];
-		if (player.isMoving) {
-			newObjects = Sprite.createObjects([
-				{ sprite: sprites.smallTree, dropRate: dropRates.smallTree },
-				{ sprite: sprites.tallTree, dropRate: dropRates.tallTree },
-				{ sprite: sprites.jump, dropRate: dropRates.jump },
-				{ sprite: sprites.thickSnow, dropRate: dropRates.thickSnow },
-				{ sprite: sprites.rock, dropRate: dropRates.rock },
-			], {
-				rateModifier: Math.max(800 - camera.logicalWidth(), 0),
-				position: () => camera.getRandomMapPositionBelowViewport(),
-				player,
-			});
-		}
+		game.addStaticObjects(spawnTerrain());
 		if (!game.isPaused()) {
-			game.addStaticObjects(newObjects);
-
-			randomlySpawnNPC(spawnBoarder, 0.1);
-			state.distanceTravelled = parseFloat(player.getPixelsTravelledDownMountain() / PIXELS_PER_METRE).toFixed(1);
-
-			if (state.distanceTravelled > MONSTER_DISTANCE_THRESHOLD) {
-				randomlySpawnNPC(spawnMonster, 0.001);
-			}
-
-			infoBox.setLines([
-				'SkiFree.js',
-				infoBoxControls,
-				`Travelled ${state.distanceTravelled}m`,
-				`Skiers left: ${state.livesLeft}`,
-				`High Score: ${state.highScore}`,
-				'Created by Dan Hough (@basicallydan)',
-				`Current Speed: ${player.getSpeed()}`,
-			]);
+			tickNPCs();
+			updateHUD();
 		}
 	});
 
 	game.afterCycle(() => {
-		if (state.livesLeft === 0) {
-			detectEnd();
-		}
+		if (state.livesLeft === 0) detectEnd();
 	});
 
 	game.addUIElement(infoBox);
 
-	mainCanvas.addEventListener('mousemove', e => {
-		game.setMouseX(e.pageX);
-		game.setMouseY(e.pageY);
-		player.resetDirection();
-		player.startMovingIfPossible();
-	});
-	mainCanvas.addEventListener('click', e => {
-		game.setMouseX(e.pageX);
-		game.setMouseY(e.pageY);
-		player.resetDirection();
-		player.startMovingIfPossible();
-	});
-	mainCanvas.focus();
-
-	Mousetrap.bind('f', player.speedBoost.bind(player));
-	Mousetrap.bind('t', player.attemptTrick.bind(player));
-	Mousetrap.bind(['w', 'up'], () => player.stop());
-	Mousetrap.bind(['a', 'left'], () => {
-		if (player.direction === 270) {
-			player.stepWest();
-		} else {
-			player.turnWest();
-		}
-	});
-	Mousetrap.bind(['s', 'down'], () => {
-		player.setDirection(180);
-		player.startMovingIfPossible();
-	});
-	Mousetrap.bind(['d', 'right'], () => {
-		if (player.direction === 90) {
-			player.stepEast();
-		} else {
-			player.turnEast();
-		}
-	});
-	Mousetrap.bind('m', spawnMonster);
-	Mousetrap.bind('b', spawnBoarder);
-	Mousetrap.bind('space', resetGame);
-
-	Hammer(mainCanvas).on('press', e => {
-		e.preventDefault();
-		game.setMouseX(e.gesture.center.x);
-		game.setMouseY(e.gesture.center.y);
-	}).on('tap', e => {
-		game.setMouseX(e.gesture.center.x);
-		game.setMouseY(e.gesture.center.y);
-	}).on('pan', e => {
-		game.setMouseX(e.gesture.center.x);
-		game.setMouseY(e.gesture.center.y);
-		player.resetDirection();
-		player.startMovingIfPossible();
-	}).on('doubletap', () => player.speedBoost());
+	setupInput({ player, game, canvas: mainCanvas, spawnMonster, spawnBoarder, resetGame });
 
 	player.isMoving = false;
 	player.setDirection(270);
