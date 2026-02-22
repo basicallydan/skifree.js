@@ -7,6 +7,7 @@ import {
 	SKIER_DIRECTION_THRESHOLD_SHARP,
 	SKIER_BOOST_DURATION_MS,
 	SKIER_BOOST_COOLDOWN_MS,
+	SKIER_OUCH_DURATION_MS,
 	SKIER_CRASH_RECOVERY_MS,
 	SKIER_JUMP_DURATION_MS,
 	SKIER_JUMP_SPEED_BONUS,
@@ -51,6 +52,7 @@ class Skier extends Sprite {
 
 		this.isMoving = true;
 		this.hasBeenHit = false;
+		this.isOuching = false;
 		this.isJumping = false;
 		this.isPerformingTrick = false;
 		this.onHitObstacleCb = function() {};
@@ -62,6 +64,17 @@ class Skier extends Sprite {
 		this.setSpeed(this._standardSpeed);
 		this.isMoving = true;
 		this.hasBeenHit = false;
+		this.isOuching = false;
+		this.isJumping = false;
+		this.isPerformingTrick = false;
+		if (this._cancelableStateInterval) clearInterval(this._cancelableStateInterval);
+		this.setMapPosition(undefined, undefined, 0);
+	}
+
+	_setOuching() {
+		this.isMoving = false;
+		this.hasBeenHit = true;
+		this.isOuching = true;
 		this.isJumping = false;
 		this.isPerformingTrick = false;
 		if (this._cancelableStateInterval) clearInterval(this._cancelableStateInterval);
@@ -71,6 +84,7 @@ class Skier extends Sprite {
 	_setCrashed() {
 		this.isMoving = false;
 		this.hasBeenHit = true;
+		this.isOuching = false;
 		this.isJumping = false;
 		this.isPerformingTrick = false;
 		if (this._cancelableStateInterval) clearInterval(this._cancelableStateInterval);
@@ -283,6 +297,7 @@ class Skier extends Sprite {
 			if (this.isJumping) {
 				return this.isPerformingTrick ? this._getTrickSprite() : this._getJumpingSprite();
 			}
+			if (this.isOuching) return 'ouch';
 			if (this.hasBeenHit) return 'hit';
 			return this._getDiscreteDirection();
 		};
@@ -320,7 +335,7 @@ class Skier extends Sprite {
 	}
 
 	hasHitObstacle(obs) {
-		this._setCrashed();
+		this._setOuching();
 
 		if (navigator.vibrate) {
 			navigator.vibrate(500);
@@ -331,7 +346,10 @@ class Skier extends Sprite {
 		this.onHitObstacleCb(obs);
 
 		if (this._cancelableStateTimeout) clearTimeout(this._cancelableStateTimeout);
-		this._cancelableStateTimeout = setTimeout(() => this._setNormal(), SKIER_CRASH_RECOVERY_MS);
+		this._cancelableStateTimeout = setTimeout(() => {
+			this._setCrashed();
+			this._cancelableStateTimeout = setTimeout(() => this._setNormal(), SKIER_CRASH_RECOVERY_MS - SKIER_OUCH_DURATION_MS);
+		}, SKIER_OUCH_DURATION_MS);
 	}
 
 	hasHitJump() {
@@ -356,6 +374,7 @@ class Skier extends Sprite {
 		this.isMoving = true;
 		this.isJumping = false;
 		this.hasBeenHit = false;
+		this.isOuching = false;
 		this._canSpeedBoost = true;
 	}
 
