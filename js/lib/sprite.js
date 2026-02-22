@@ -1,5 +1,4 @@
 import GUID from './guid.js';
-import { SKIER_DEAD_ZONE_X } from './constants.js';
 
 class Sprite {
 	constructor(data) {
@@ -175,14 +174,6 @@ class Sprite {
 	setHeight(h) { this.height = h; }
 	setWidth(w) { this.width = w; }
 	getMaxHeight() { return this.maxHeight; }
-
-	getMovingTowardOpposite() {
-		if (!this.isMoving) return [0, 0];
-		var dx = this.movingToward[0] - this.mapPosition[0];
-		var dy = this.movingToward[1] - this.mapPosition[1];
-		var oppositeX = (Math.abs(dx) > SKIER_DEAD_ZONE_X ? 0 - dx : 0);
-		return [oppositeX, -dy];
-	}
 
 	checkHittableObjects() {
 		Object.keys(this._hittableObjects).forEach(k => {

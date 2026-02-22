@@ -125,7 +125,6 @@ class Skier extends Sprite {
 	_getJumpingSprite() { return 'jumping'; }
 
 	_getTrickSprite() {
-		console.log('Trick step is', this._trickStep);
 		if (this._trickStep === 0) return 'jumping';
 		if (this._trickStep === 1) return 'somersault1';
 		return 'somersault2';

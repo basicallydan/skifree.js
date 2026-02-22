@@ -4,28 +4,6 @@ import Sprite from '../js/lib/sprite.js';
 import Skier from '../js/lib/skier.js';
 
 describe('Skier', function() {
-	describe('#getMovingTowardOpposite()', function() {
-		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going right', function() {
-			var skier = new Skier();
-			skier.setSpeed(3);
-			skier.setMapPosition(10, 30);
-			skier.setMapPositionTarget(100, 36);
-
-			expect(skier.getMovingTowardOpposite()[0]).toBe(-90);
-			expect(skier.getMovingTowardOpposite()[1]).toBe(-6);
-		});
-
-		it('should return the point relative to the skier, rotated 180 degrees around the skier if the skier is going left', function() {
-			var skier = new Skier();
-			skier.setSpeed(3);
-			skier.setMapPosition(10, 30);
-			skier.setMapPositionTarget(-100, 36);
-
-			expect(skier.getMovingTowardOpposite()[0]).toBe(110);
-			expect(skier.getMovingTowardOpposite()[1]).toBe(-6);
-		});
-	});
-
 	describe('#hits()', function() {
 		it('should still hit taller objects if jumping', function() {
 			var skier = new Skier();
